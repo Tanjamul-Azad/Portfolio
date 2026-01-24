@@ -1,36 +1,162 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio
+
+A modern, high-performance portfolio website built with Next.js 15 and React 19.
+
+## Tech Stack
+
+- **Framework:** Next.js 15 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS 4
+- **Animations:** Framer Motion
+- **UI Components:** Radix UI
+- **Form Handling:** React Hook Form + Zod
+- **Theming:** next-themes
+
+## Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── globals.css         # Global styles
+│   ├── layout.tsx          # Root layout
+│   └── page.tsx            # Home page
+├── components/
+│   ├── common/             # Shared components
+│   │   └── preloader.tsx   # Site preloader animation
+│   ├── layout/             # Layout components
+│   │   ├── navbar.tsx      # Navigation bar
+│   │   └── footer.tsx      # Footer
+│   ├── providers/          # Context providers
+│   │   └── theme-provider.tsx
+│   ├── sections/           # Page sections
+│   │   ├── hero.tsx
+│   │   ├── projects.tsx
+│   │   ├── experience.tsx
+│   │   ├── tech-stack.tsx
+│   │   └── contact.tsx
+│   └── ui/                 # UI primitives (Radix-based)
+├── config/                 # Site configuration
+│   ├── site.ts             # Site metadata & settings
+│   └── navigation.ts       # Navigation links
+├── data/                   # Static data
+│   ├── projects.ts
+│   ├── experiences.ts
+│   └── tech-stack.ts
+├── lib/                    # Utilities & helpers
+│   ├── utils.ts            # General utilities
+│   ├── validations.ts      # Zod schemas
+│   └── animations.ts       # Framer Motion variants
+└── types/                  # TypeScript definitions
+    └── index.ts
+```
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18.17 or later
+- pnpm (recommended) or npm
+
+### Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Clone the repository
+git clone <repository-url>
+cd portfolio
+
+# Install dependencies
+pnpm install
+
+# Start development server
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the site.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Site Settings
 
-## Learn More
+Edit `src/config/site.ts` to update:
+- Name and title
+- Contact information
+- Social links
+- Author statistics
 
-To learn more about Next.js, take a look at the following resources:
+### Content
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Update data files in `src/data/` to modify:
+- Projects (`projects.ts`)
+- Work experience (`experiences.ts`)
+- Tech stack (`tech-stack.ts`)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Styling
 
-## Deploy on Vercel
+- Global styles: `src/app/globals.css`
+- Theme colors: CSS variables in globals.css
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Scripts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm dev      # Start development server
+pnpm build    # Build for production
+pnpm start    # Start production server
+pnpm lint     # Run ESLint
+```
+
+## Deployment
+
+### Vercel (Recommended)
+
+1. Push to GitHub
+2. Import project to Vercel
+3. Deploy
+
+### Other Platforms
+
+Build the project and deploy the `.next` folder:
+
+```bash
+pnpm build
+```
+
+## Backend Integration
+
+This project is structured for easy backend integration:
+
+### API Routes
+
+Add API routes in `src/app/api/`:
+
+```
+src/app/api/
+├── contact/
+│   └── route.ts    # Contact form submission
+└── projects/
+    └── route.ts    # Projects API
+```
+
+### Database
+
+1. Install your preferred ORM (Prisma, Drizzle)
+2. Add database schemas in `src/db/`
+3. Create server actions in `src/actions/`
+
+### Environment Variables
+
+Create `.env.local`:
+
+```env
+# Database
+DATABASE_URL=
+
+# Email (for contact form)
+RESEND_API_KEY=
+
+# Analytics
+NEXT_PUBLIC_GA_ID=
+```
+
+## License
+
+MIT
