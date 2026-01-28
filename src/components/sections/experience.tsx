@@ -53,7 +53,7 @@ export function Experience() {
               {/* Content */}
               <div className="flex-1">
                 <div
-                  className={`p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800/50 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-sm hover:border-amber-400/30 dark:hover:border-amber-500/20 hover:bg-white dark:hover:bg-neutral-900/80 transition-all duration-500 ${
+                  className={`p-6 rounded-2xl glass hover:border-amber-400/30 dark:hover:border-amber-500/20 glass-hover transition-all duration-500 shadow-sm ${
                     index % 2 === 0 ? "md:text-left" : "md:text-right"
                   }`}
                 >

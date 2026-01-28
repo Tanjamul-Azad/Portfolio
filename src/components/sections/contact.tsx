@@ -1,8 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, Calendar, ArrowUpRight, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Mail, MessageCircle, ArrowUpRight, Clock } from "lucide-react";
 import { ContactForm } from "./contact-form";
 import { siteConfig } from "@/config";
 
@@ -56,40 +55,40 @@ export function Contact() {
             >
               <a
                 href={`mailto:${siteConfig.contact.email}`}
-                className="flex items-center gap-4 p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800/50 bg-white/50 dark:bg-neutral-900/30 hover:border-amber-400/40 dark:hover:border-amber-500/30 hover:bg-white dark:hover:bg-neutral-900/50 transition-all duration-300 group"
+                className="group flex items-center gap-4 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800/50 bg-white dark:bg-neutral-900/50 transition-all duration-300 ease-out hover:border-amber-400/60 dark:hover:border-amber-500/40 hover:shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1 active:translate-y-0"
               >
-                <div className="w-12 h-12 rounded-full bg-amber-400/10 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:bg-amber-400/20 dark:group-hover:bg-amber-500/20 transition-colors">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400/20 to-orange-400/20 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform duration-300">
                   <Mail className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
                   <div className="text-xs text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-1">
                     Email
                   </div>
-                  <div className="text-neutral-900 dark:text-white font-medium group-hover:text-amber-600 dark:group-hover:text-amber-200 transition-colors">
+                  <div className="text-neutral-900 dark:text-white font-medium group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                     {siteConfig.contact.email}
                   </div>
                 </div>
-                <ArrowUpRight className="w-5 h-5 text-neutral-400 dark:text-neutral-600 group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors" />
+                <ArrowUpRight className="w-5 h-5 text-neutral-300 dark:text-neutral-600 group-hover:text-amber-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
               </a>
 
               <a
-                href={siteConfig.contact.calendly}
+                href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-4 p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800/50 bg-white/50 dark:bg-neutral-900/30 hover:border-amber-400/40 dark:hover:border-amber-500/30 hover:bg-white dark:hover:bg-neutral-900/50 transition-all duration-300 group"
+                className="group flex items-center gap-4 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800/50 bg-white dark:bg-neutral-900/50 transition-all duration-300 ease-out hover:border-green-400/60 dark:hover:border-green-500/40 hover:shadow-xl hover:shadow-green-500/10 hover:-translate-y-1 active:translate-y-0"
               >
-                <div className="w-12 h-12 rounded-full bg-amber-400/10 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:bg-amber-400/20 dark:group-hover:bg-amber-500/20 transition-colors">
-                  <Calendar className="w-5 h-5" />
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-400/20 to-emerald-400/20 flex items-center justify-center text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform duration-300">
+                  <MessageCircle className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
                   <div className="text-xs text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-1">
-                    Schedule
+                    WhatsApp
                   </div>
-                  <div className="text-neutral-900 dark:text-white font-medium group-hover:text-amber-600 dark:group-hover:text-amber-200 transition-colors">
-                    Book a 30-min call
+                  <div className="text-neutral-900 dark:text-white font-medium group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
+                    Chat with me directly
                   </div>
                 </div>
-                <ArrowUpRight className="w-5 h-5 text-neutral-400 dark:text-neutral-600 group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors" />
+                <ArrowUpRight className="w-5 h-5 text-neutral-300 dark:text-neutral-600 group-hover:text-green-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
               </a>
               
               {/* Response time notice */}

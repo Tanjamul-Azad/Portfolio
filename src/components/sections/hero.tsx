@@ -1,14 +1,23 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { ArrowRight, Download, Github, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { getFeaturedProjects } from "@/data";
+import { Scene3D, Magnetic } from "@/components/effects";
+
+// Roles to cycle through (with proper articles)
+const roles = [
+  { article: "an", role: "AI/ML Enthusiast..." },
+  { article: "a", role: "Full Stack Developer..." },
+  { article: "a", role: "UI/UX Designer..." },
+  { article: "a", role: "Tech Explorer" },
+];
 
 interface HeroProps {
   showContent?: boolean;
@@ -16,6 +25,15 @@ interface HeroProps {
 
 export function Hero({ showContent = true }: HeroProps) {
   const sectionRef = useRef(null);
+  const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
+
+  // Cycle through roles
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentRoleIndex((prev) => (prev + 1) % roles.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -23,8 +41,6 @@ export function Hero({ showContent = true }: HeroProps) {
   });
 
   const photoScale = useTransform(scrollYProgress, [0, 0.3], [1, 1.02]);
-
-  const { author } = siteConfig;
 
   if (!showContent) {
     return (
@@ -41,9 +57,10 @@ export function Hero({ showContent = true }: HeroProps) {
       {/* Main Hero Section */}
       <div className="relative min-h-screen flex items-center py-20 overflow-hidden">
         {/* Background */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:60px_60px]" />
-        <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-amber-500/10 dark:bg-blue-600/5 blur-[150px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-1/4 right-0 w-[500px] h-[500px] bg-orange-400/10 dark:bg-purple-600/5 blur-[120px] rounded-full pointer-events-none" />
+        <Scene3D />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:60px_60px] pointer-events-none" />
+        <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-amber-500/5 dark:bg-blue-600/5 blur-[150px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-1/4 right-0 w-[500px] h-[500px] bg-orange-400/5 dark:bg-purple-600/5 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="container px-6 mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -78,87 +95,60 @@ export function Hero({ showContent = true }: HeroProps) {
                 variants={fadeInUp}
                 className="text-xl md:text-2xl text-neutral-600 dark:text-neutral-200 leading-relaxed mb-6 font-light"
               >
-                Crafting digital experiences that blend
-                <span className="text-amber-600 dark:text-amber-300 font-medium"> aesthetics</span> with
-                <span className="text-amber-600 dark:text-amber-300 font-medium"> performance</span>.
+                <span className="text-neutral-500 dark:text-neutral-400">I&apos;m {roles[currentRoleIndex].article} </span>
+                <span className="relative inline-block min-w-[280px] md:min-w-[320px]">
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={currentRoleIndex}
+                      initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
+                      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                      exit={{ opacity: 0, y: -20, filter: "blur(8px)" }}
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                      className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 dark:from-amber-300 dark:via-orange-400 dark:to-amber-300 font-medium"
+                    >
+                      {roles[currentRoleIndex].role}
+                    </motion.span>
+                  </AnimatePresence>
+                  <motion.span
+                    className="inline-block w-[3px] h-6 md:h-7 bg-amber-500 dark:bg-amber-400 ml-1 align-middle"
+                    animate={{ opacity: [1, 0] }}
+                    transition={{ duration: 0.8, repeat: Infinity, repeatType: "reverse" }}
+                  />
+                </span>
               </motion.p>
 
               <motion.p
                 variants={fadeInUp}
                 className="text-base md:text-lg text-neutral-500 dark:text-neutral-400 leading-relaxed mb-10 max-w-lg"
               >
-                I build fast, accessible, and beautifully designed web applications 
-                with modern technologies. Every pixel matters.
+                Building intelligent systems and elegant web solutions with clarity and purpose.
               </motion.p>
 
               {/* CTAs */}
-              <motion.div variants={fadeInUp} className="flex flex-wrap gap-4 mb-6">
+              <motion.div variants={fadeInUp} className="flex flex-wrap gap-4 mb-14">
                 <Button
                   asChild
                   size="lg"
-                  className="rounded-full px-8 py-6 text-base bg-gradient-to-r from-amber-400 to-orange-500 text-black hover:from-amber-300 hover:to-orange-400 transition-all duration-500 group font-semibold shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30"
+                  className="btn-primary-cta group rounded-full px-7 sm:px-9 py-5 sm:py-6 text-base text-black font-semibold"
                 >
-                  <Link href={`/projects/${getFeaturedProjects()[0]?.slug || ''}`}>
-                    <Sparkles className="mr-2 w-4 h-4" />
-                    View My Best Project
-                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                  <Link href="#contact">
+                    <span className="relative z-10 flex items-center">
+                      Let&apos;s Talk
+                      <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                    </span>
                   </Link>
                 </Button>
                 <Button
                   asChild
                   size="lg"
                   variant="outline"
-                  className="rounded-full px-8 py-6 text-base border-neutral-300 dark:border-neutral-600 bg-white/50 dark:bg-neutral-900/50 text-neutral-800 dark:text-white hover:border-amber-500/50 hover:text-amber-600 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-all duration-500 font-medium"
+                  className="btn-secondary-cta group rounded-full px-7 sm:px-9 py-5 sm:py-6 text-base border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-800 dark:text-white hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10 font-medium"
                 >
                   <a href="/resume.pdf" download>
-                    <Download className="mr-2 w-4 h-4" />
+                    <Download className="mr-2 w-4 h-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-200" />
                     Download Resume
                   </a>
                 </Button>
-              </motion.div>
-
-              {/* Secondary CTAs */}
-              <motion.div variants={fadeInUp} className="flex flex-wrap gap-3 mb-14">
-                <Button
-                  asChild
-                  size="sm"
-                  variant="ghost"
-                  className="rounded-full px-6 text-neutral-600 dark:text-neutral-400 hover:text-amber-600 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10"
-                >
-                  <a href={siteConfig.links.github} target="_blank" rel="noopener noreferrer">
-                    <Github className="mr-2 w-4 h-4" />
-                    GitHub
-                  </a>
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  variant="ghost"
-                  className="rounded-full px-6 text-neutral-600 dark:text-neutral-400 hover:text-amber-600 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10"
-                >
-                  <Link href="#contact">
-                    Let&apos;s Talk
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                  </Link>
-                </Button>
-              </motion.div>
-
-              {/* Stats */}
-              <motion.div variants={fadeInUp} className="flex gap-10 md:gap-14">
-                {[
-                  { value: `${author.yearsOfExperience}+`, label: "Years" },
-                  { value: `${author.projectsCompleted}+`, label: "Projects" },
-                  { value: `${Math.floor(author.hoursWorked / 1000)}K+`, label: "Hours" },
-                ].map((stat, i) => (
-                  <div key={i} className="text-left group">
-                    <div className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-neutral-800 to-neutral-500 dark:from-white dark:to-neutral-400 group-hover:from-amber-500 group-hover:to-amber-600 dark:group-hover:from-amber-200 dark:group-hover:to-amber-400 transition-all duration-500">
-                      {stat.value}
-                    </div>
-                    <div className="text-xs md:text-sm text-neutral-400 dark:text-neutral-500 mt-2 uppercase tracking-widest font-medium">
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
               </motion.div>
             </motion.div>
 
@@ -213,7 +203,7 @@ export function Hero({ showContent = true }: HeroProps) {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.8 }}
                 >
-                  {author.yearsOfExperience}+ Years Exp.
+                  Open to Opportunities
                 </motion.div>
 
                 <motion.div

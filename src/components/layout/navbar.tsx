@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Github, Linkedin, X } from "lucide-react";
+import { motion } from "framer-motion";
+import { Menu, Github, Linkedin, Facebook, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { siteConfig, navLinks } from "@/config";
@@ -24,7 +25,7 @@ export function Navbar() {
       className={cn(
         "fixed top-0 w-full z-50 transition-all duration-300 border-b border-transparent",
         scrolled
-          ? "bg-white/80 dark:bg-black/80 backdrop-blur-md border-neutral-200 dark:border-neutral-800/50"
+          ? "bg-white/60 dark:bg-black/60 backdrop-blur-lg border-neutral-200/40 dark:border-white/10 shadow-sm"
           : "bg-transparent"
       )}
     >
@@ -38,43 +39,62 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
-            >
-              {link.name}
-            </Link>
-          ))}
+        <div className="hidden md:flex items-center gap-1">
+          {navLinks.map((link) => {
+            // Check if it's an anchor link or a page route
+            const isAnchorLink = link.href.startsWith('#');
+            const href = isAnchorLink ? `/${link.href}` : link.href;
+            
+            return (
+              <Link
+                key={link.name}
+                href={href}
+                className="group relative px-4 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors duration-300"
+              >
+                {link.name}
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-amber-400 to-orange-500 group-hover:w-3/4 transition-all duration-300 ease-out rounded-full" />
+              </Link>
+            );
+          })}
 
-          <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-800 mx-2" />
+          <div className="w-px h-5 bg-neutral-300 dark:bg-neutral-700 mx-3" />
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link
               href={siteConfig.links.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+              className="p-2 rounded-full text-neutral-500 dark:text-neutral-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-amber-500/10 hover:scale-110 active:scale-95 transition-all duration-300"
             >
-              <Github className="w-5 h-5" />
+              <Github className="w-[18px] h-[18px]" />
             </Link>
             <Link
               href={siteConfig.links.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+              className="p-2 rounded-full text-neutral-500 dark:text-neutral-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-amber-500/10 hover:scale-110 active:scale-95 transition-all duration-300"
             >
-              <Linkedin className="w-5 h-5" />
+              <Linkedin className="w-[18px] h-[18px]" />
+            </Link>
+            <Link
+              href={siteConfig.links.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-full text-neutral-500 dark:text-neutral-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-amber-500/10 hover:scale-110 active:scale-95 transition-all duration-300"
+            >
+              <Facebook className="w-[18px] h-[18px]" />
             </Link>
             <ThemeToggle />
             <Button
+              asChild
               variant="outline"
               size="sm"
-              className="font-semibold rounded-full px-6 border-neutral-300 dark:border-neutral-600 bg-neutral-900 dark:bg-white text-white dark:text-black hover:bg-amber-500 hover:border-amber-500 hover:text-black transition-all duration-300"
+              className="btn-lift group relative font-semibold rounded-full px-5 py-2 ml-1 border-0 bg-neutral-900 dark:bg-white text-white dark:text-black overflow-hidden"
             >
-              Resume
+              <a href="/resume.pdf" download>
+                <span className="relative z-10">Resume</span>
+                <span className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </a>
             </Button>
           </div>
         </div>
@@ -108,18 +128,23 @@ export function Navbar() {
                 {/* Navigation Links */}
                 <nav className="flex-1 py-8">
                   <ul className="space-y-2">
-                    {navLinks.map((link) => (
-                      <li key={link.name}>
-                        <SheetClose asChild>
-                          <Link
-                            href={link.href}
-                            className="flex items-center px-4 py-3 text-lg font-medium text-neutral-700 dark:text-neutral-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-xl transition-all duration-200 touch-target"
-                          >
-                            {link.name}
-                          </Link>
-                        </SheetClose>
-                      </li>
-                    ))}
+                    {navLinks.map((link) => {
+                      const isAnchorLink = link.href.startsWith('#');
+                      const href = isAnchorLink ? `/${link.href}` : link.href;
+                      
+                      return (
+                        <li key={link.name}>
+                          <SheetClose asChild>
+                            <Link
+                              href={href}
+                              className="flex items-center px-4 py-3 text-lg font-medium text-neutral-700 dark:text-neutral-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-xl transition-all duration-200 touch-target"
+                            >
+                              {link.name}
+                            </Link>
+                          </SheetClose>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </nav>
                 
@@ -144,6 +169,15 @@ export function Navbar() {
                     >
                       <Linkedin className="w-5 h-5" />
                       <span className="sr-only">LinkedIn</span>
+                    </Link>
+                    <Link
+                      href={siteConfig.links.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-colors touch-target"
+                    >
+                      <Facebook className="w-5 h-5" />
+                      <span className="sr-only">Facebook</span>
                     </Link>
                   </div>
                   

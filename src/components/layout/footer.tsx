@@ -17,7 +17,7 @@ export function Footer() {
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-neutral-400 dark:text-neutral-600 hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-300"
+              className="text-xs text-neutral-400 dark:text-neutral-600 hover:text-amber-600 dark:hover:text-amber-400 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
             >
               {link.name}
             </Link>

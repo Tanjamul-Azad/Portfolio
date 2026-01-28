@@ -11,6 +11,7 @@ import {
   Achievements,
   Now,
   Testimonials,
+  Blog,
   Contact,
 } from "@/components/sections";
 
@@ -31,6 +32,7 @@ export default function Home() {
           <Experience />
           <Achievements />
           <Testimonials />
+          <Blog />
           <Contact />
           <Footer />
         </>

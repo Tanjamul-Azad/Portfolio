@@ -8,11 +8,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { techStack } from "@/data";
+import { TechOrbit } from "@/components/effects";
 
 export function TechStack() {
   return (
-    <section className="py-16 border-y border-neutral-200 dark:border-neutral-800/50 bg-neutral-100/50 dark:bg-neutral-950/50">
-      <div className="container px-6 mx-auto">
+    <section className="py-24 relative border-y border-neutral-200 dark:border-neutral-800/50 bg-neutral-100/50 dark:bg-neutral-950/50 overflow-hidden">
+      <TechOrbit />
+      <div className="container px-6 mx-auto relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -46,7 +48,7 @@ export function TechStack() {
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.05 }}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-white/50 dark:bg-neutral-900/50 rounded-full border border-neutral-200 dark:border-neutral-800/50 hover:border-amber-400/50 dark:hover:border-amber-500/30 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 transition-all duration-300 cursor-default group"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-md rounded-full border border-neutral-200 dark:border-neutral-800/50 hover:border-amber-400/50 dark:hover:border-amber-500/30 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 transition-all duration-300 cursor-default group"
                     >
                       <span className="text-lg group-hover:scale-110 transition-transform duration-300">{tech.icon}</span>
                       <span className="font-medium text-sm text-neutral-600 dark:text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-neutral-200 transition-colors">

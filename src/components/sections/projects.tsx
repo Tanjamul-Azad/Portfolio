@@ -124,9 +124,9 @@ export function Projects() {
                 <div className="absolute -inset-4 bg-gradient-to-br from-amber-500/20 via-transparent to-orange-500/20 rounded-3xl blur-2xl opacity-60" />
                 
                 {/* Image container */}
-                <div className="relative rounded-2xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 shadow-2xl shadow-neutral-900/10 dark:shadow-black/30 bg-white dark:bg-neutral-900">
+                <div className="relative rounded-2xl overflow-hidden glass shadow-2xl shadow-neutral-900/10 dark:shadow-black/30">
                   {/* Browser-like header */}
-                  <div className="flex items-center gap-2 px-4 py-3 bg-neutral-100 dark:bg-neutral-800/50 border-b border-neutral-200/50 dark:border-neutral-700/50">
+                  <div className="flex items-center gap-2 px-4 py-3 bg-white/40 dark:bg-neutral-800/20 border-b border-neutral-200/50 dark:border-neutral-700/50 backdrop-blur-sm">
                     <div className="flex gap-1.5">
                       <div className="w-3 h-3 rounded-full bg-red-400/80" />
                       <div className="w-3 h-3 rounded-full bg-yellow-400/80" />
@@ -190,10 +190,10 @@ export function Projects() {
                             <Button
                               asChild
                               size="sm"
-                              className="rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-black hover:from-amber-300 hover:to-orange-400 font-medium shadow-md shadow-amber-500/20"
+                              className="group rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-black font-medium shadow-md shadow-amber-500/20 hover:shadow-lg hover:shadow-amber-500/30 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300"
                             >
                               <a href={activeProject.liveUrl} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                                <ExternalLink className="w-3.5 h-3.5 mr-1.5 group-hover:rotate-12 transition-transform duration-300" />
                                 Live Demo
                               </a>
                             </Button>
@@ -202,10 +202,10 @@ export function Projects() {
                             asChild
                             size="sm"
                             variant="outline"
-                            className="rounded-full border-neutral-300 dark:border-neutral-700 hover:border-amber-500/50 hover:bg-amber-50 dark:hover:bg-amber-500/10 font-medium"
+                            className="group rounded-full border-neutral-300 dark:border-neutral-700 hover:border-amber-500/50 hover:bg-amber-50 dark:hover:bg-amber-500/10 font-medium hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300"
                           >
                             <Link href={`/projects/${activeProject?.slug}`}>
-                              <FileText className="w-3.5 h-3.5 mr-1.5" />
+                              <FileText className="w-3.5 h-3.5 mr-1.5 group-hover:scale-110 transition-transform duration-300" />
                               Case Study
                             </Link>
                           </Button>
@@ -214,10 +214,10 @@ export function Projects() {
                               asChild
                               size="icon"
                               variant="ghost"
-                              className="rounded-full w-8 h-8 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                              className="group rounded-full w-8 h-8 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:scale-110 active:scale-95 transition-all duration-300"
                             >
                               <a href={activeProject.sourceUrl} target="_blank" rel="noopener noreferrer" title="View Source">
-                                <Github className="w-4 h-4" />
+                                <Github className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
                               </a>
                             </Button>
                           )}
@@ -248,84 +248,83 @@ export function Projects() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <Link
-                href={`/projects/${project.slug}`}
-                className="block"
-              >
-                <div className="rounded-2xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 bg-white dark:bg-neutral-900 shadow-lg">
-                  {/* Image area */}
-                  <div className="aspect-video relative bg-gradient-to-br from-neutral-100 to-neutral-50 dark:from-neutral-800 dark:to-neutral-900">
+              <div className="rounded-2xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 bg-white dark:bg-neutral-900 shadow-lg">
+                {/* Image area - clickable to case study */}
+                <Link href={`/projects/${project.slug}`} className="block">
+                  <div className="aspect-video relative bg-gradient-to-br from-neutral-100 to-neutral-50 dark:from-neutral-800 dark:to-neutral-900 group">
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center group-hover:scale-105 transition-transform">
                         <span className="text-2xl font-bold text-white">
                           {project.title.substring(0, 1)}
                         </span>
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Content */}
-                  <div className="p-5">
+                </Link>
+                
+                {/* Content */}
+                <div className="p-5">
+                  <Link href={`/projects/${project.slug}`} className="block group">
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-xl font-bold text-neutral-900 dark:text-white">
+                      <h3 className="text-xl font-bold text-neutral-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                         {project.title}
                       </h3>
-                      <ArrowUpRight className="w-5 h-5 text-amber-500" />
+                      <ArrowUpRight className="w-5 h-5 text-amber-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                     </div>
-                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
-                      {project.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.tags.slice(0, 3).map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-xs px-2 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 rounded-md"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    {/* Action buttons for mobile */}
-                    <div className="flex items-center gap-2 pt-3 border-t border-neutral-100 dark:border-neutral-800">
-                      {project.liveUrl && project.liveUrl !== '#' && (
-                        <Button
-                          asChild
-                          size="sm"
-                          className="flex-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-black hover:from-amber-300 hover:to-orange-400 text-xs font-medium"
-                        >
-                          <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-                            <ExternalLink className="w-3 h-3 mr-1" />
-                            Live Demo
-                          </a>
-                        </Button>
-                      )}
+                  </Link>
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+                    {project.description}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {project.tags.slice(0, 3).map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs px-2 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 rounded-md"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  {/* Action buttons for mobile */}
+                  <div className="flex items-center gap-2 pt-3 border-t border-neutral-100 dark:border-neutral-800">
+                    {project.liveUrl && project.liveUrl !== '#' && (
                       <Button
                         asChild
                         size="sm"
-                        variant="outline"
-                        className="flex-1 rounded-full border-neutral-300 dark:border-neutral-700 text-xs font-medium"
+                        className="group flex-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-black text-xs font-medium shadow-md shadow-amber-500/20 hover:shadow-lg hover:shadow-amber-500/30 active:scale-[0.97] transition-all duration-300"
                       >
-                        <Link href={`/projects/${project.slug}`}>
-                          <FileText className="w-3 h-3 mr-1" />
-                          Case Study
-                        </Link>
+                        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="w-3 h-3 mr-1 group-hover:rotate-12 transition-transform duration-300" />
+                          Live Demo
+                        </a>
                       </Button>
-                      {project.sourceUrl && project.sourceUrl !== '#' && (
-                        <Button
-                          asChild
-                          size="icon"
-                          variant="ghost"
-                          className="rounded-full w-8 h-8 shrink-0"
-                        >
-                          <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-                            <Github className="w-4 h-4" />
-                          </a>
-                        </Button>
-                      )}
-                    </div>
+                    )}
+                    <Button
+                      asChild
+                      size="sm"
+                      variant="outline"
+                      className="group flex-1 rounded-full border-neutral-300 dark:border-neutral-700 hover:border-amber-500/50 text-xs font-medium active:scale-[0.97] transition-all duration-300"
+                    >
+                      <Link href={`/projects/${project.slug}`}>
+                        <FileText className="w-3 h-3 mr-1 group-hover:scale-110 transition-transform duration-300" />
+                        Case Study
+                      </Link>
+                    </Button>
+                    {project.sourceUrl && project.sourceUrl !== '#' && (
+                      <Button
+                        asChild
+                        size="icon"
+                        variant="ghost"
+                        className="group rounded-full w-8 h-8 shrink-0 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:scale-110 active:scale-95 transition-all duration-300"
+                      >
+                        <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer">
+                          <Github className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+                        </a>
+                      </Button>
+                    )}
                   </div>
                 </div>
-              </Link>
+              </div>
             </motion.div>
           ))}
         </div>

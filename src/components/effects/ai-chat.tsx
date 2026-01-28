@@ -149,10 +149,10 @@ export function AiChat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-48px)] h-[500px] max-h-[calc(100vh-150px)] bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl shadow-black/20 dark:shadow-black/50 border border-neutral-200 dark:border-neutral-800 flex flex-col overflow-hidden"
+            className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-48px)] h-[500px] max-h-[calc(100vh-150px)] glass rounded-2xl shadow-2xl shadow-black/20 dark:shadow-black/50 flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+            <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-amber-500/90 to-orange-500/90 text-white backdrop-blur-sm">
               <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                 <Sparkles className="w-5 h-5" />
               </div>
@@ -167,7 +167,7 @@ export function AiChat() {
             </div>
 
             {/* Messages */}
-            <div className="flex-grow overflow-y-auto p-4 space-y-4 bg-neutral-50 dark:bg-neutral-950">
+            <div className="flex-grow overflow-y-auto p-4 space-y-4 bg-white/40 dark:bg-neutral-950/40 backdrop-blur-md">
               {messages.map((message) => (
                 <motion.div
                   key={message.id}
@@ -257,7 +257,7 @@ export function AiChat() {
             {/* Input */}
             <form
               onSubmit={handleSubmit}
-              className="p-3 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900"
+              className="p-3 border-t border-neutral-200/50 dark:border-neutral-800/50 bg-white/60 dark:bg-neutral-900/60 backdrop-blur-md"
             >
               <div className="flex items-center gap-2">
                 <input
@@ -266,7 +266,7 @@ export function AiChat() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask me anything..."
-                  className="flex-grow px-4 py-2.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white placeholder:text-neutral-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 border border-transparent focus:border-amber-500/30"
+                  className="flex-grow px-4 py-2.5 rounded-full bg-white/50 dark:bg-neutral-800/50 text-neutral-900 dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 border border-neutral-200/50 dark:border-neutral-700/50 focus:border-amber-500/30 transition-all"
                   disabled={isLoading}
                 />
                 <Button

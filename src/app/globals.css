@@ -48,6 +48,110 @@
   --animate-gradient: gradient 3s ease infinite;
 }
 
+@layer base {
+  ::selection {
+    @apply bg-amber-500/30 text-amber-500;
+  }
+  
+  html.lenis, html.lenis body {
+    height: auto;
+  }
+  
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+  
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+  
+  .text-shadow-md {
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .text-shadow-lg {
+    text-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  }
+
+  .glass {
+    @apply bg-white/70 dark:bg-black/70 backdrop-blur-md border border-neutral-200/50 dark:border-neutral-800/50;
+  }
+  
+  .glass-hover {
+    @apply hover:bg-white/80 dark:hover:bg-black/80 transition-colors duration-300;
+  }
+
+  /* Premium Button Hover Effects */
+  .btn-lift {
+    @apply transition-all duration-200 ease-out;
+    transform: translateY(0) scale(1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .btn-lift:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  }
+  .btn-lift:active {
+    transform: translateY(-1px) scale(0.99);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  /* Primary CTA Button */
+  .btn-primary-cta {
+    @apply relative overflow-hidden;
+    background: linear-gradient(135deg, #f59e0b 0%, #ea580c 50%, #f59e0b 100%);
+    background-size: 200% 200%;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-primary-cta:hover {
+    background-position: 100% 50%;
+    box-shadow: 0 8px 30px rgba(245, 158, 11, 0.5);
+    transform: translateY(-4px);
+  }
+  .btn-primary-cta:active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+  }
+
+  /* Secondary/Outline Button */
+  .btn-secondary-cta {
+    @apply relative overflow-hidden border-2;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-secondary-cta:hover {
+    border-color: #f59e0b;
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.2);
+    transform: translateY(-4px);
+  }
+  .btn-secondary-cta:active {
+    transform: translateY(-2px);
+  }
+}
+
 /* Custom Animations */
 @keyframes gradient {
   0%,
@@ -220,5 +324,81 @@
   /* 3D Card Flip */
   .perspective-1000 {
     perspective: 1000px;
+  }
+}
+
+/* Professional Interactive Elements */
+@layer components {
+  /* Links with animated underline */
+  a:not([class*="btn"]):not([class*="button"]) {
+    @apply transition-colors duration-300;
+  }
+  
+  /* Card hover effects */
+  .card-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+  
+  .card-hover:hover {
+    @apply -translate-y-1 shadow-xl;
+  }
+  
+  /* Glow effect on hover */
+  .glow-hover {
+    @apply relative overflow-hidden;
+  }
+  
+  .glow-hover::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(251, 191, 36, 0.15), transparent 50%);
+  }
+  
+  .glow-hover:hover::before {
+    @apply opacity-100;
+  }
+  
+  /* Icon button animations */
+  .icon-btn {
+    @apply transition-all duration-300 ease-out;
+  }
+  
+  .icon-btn:hover {
+    @apply scale-110;
+  }
+  
+  .icon-btn:active {
+    @apply scale-95;
+  }
+  
+  /* Magnetic button effect helper class */
+  .magnetic-btn {
+    @apply transition-transform duration-200 ease-out;
+  }
+  
+  /* Shine effect */
+  .shine-effect {
+    @apply relative overflow-hidden;
+  }
+  
+  .shine-effect::after {
+    content: '';
+    @apply absolute top-0 -left-full w-full h-full transition-all duration-500;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  }
+  
+  .shine-effect:hover::after {
+    @apply left-full;
+  }
+  
+  /* Pulse ring effect for important CTAs */
+  .pulse-ring {
+    @apply relative;
+  }
+  
+  .pulse-ring::before {
+    content: '';
+    @apply absolute inset-0 rounded-full animate-ping opacity-20;
+    background: inherit;
   }
 }

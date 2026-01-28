@@ -1,26 +1,24 @@
 export const siteConfig = {
   name: "Tanjamul",
-  title: "Tanjamul | Frontend Developer",
+  title: "Tanjamul | AI/ML Enthusiast & Full-Stack Developer",
   description:
-    "Frontend web developer dedicated to turning ideas into creative solutions. Specializing in React, Next.js, and creating seamless user experiences.",
+    "Full-stack developer and AI/ML enthusiast dedicated to turning ideas into creative solutions. Specializing in React, Next.js, and creating seamless user experiences.",
   url: "https://tanjamul.dev",
   ogImage: "https://i.postimg.cc/8JZRwxxV/og-image.jpg",
   links: {
     github: "https://github.com/Tanjamul-Azad",
     linkedin: "https://linkedin.com/in/tanjamul",
-    twitter: "https://twitter.com/tanjamul",
+    facebook: "https://www.facebook.com/tanjamul.tonmoy69/",
   },
   contact: {
     email: "i.m.tanjamul@gmail.com",
-    calendly: "https://calendly.com/tanjamul",
+    whatsapp: "+8801316022879",
   },
   author: {
-    name: "Tanjamul",
-    role: "Frontend Developer",
+    name: "Tanjamul Azad",
+    role: "Full-Stack Developer & AI/ML Enthusiast",
     location: "Bangladesh",
-    yearsOfExperience: 3,
-    projectsCompleted: 40,
-    hoursWorked: 10000,
+ 
   },
 } as const;
 

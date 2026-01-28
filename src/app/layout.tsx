@@ -4,7 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config";
-import { ParticleBackground, ScrollProgress, StickyEmail, AiChat } from "@/components/effects";
+import { ParticleBackground, ScrollProgress, StickyEmail, AiChat, SmoothScroll } from "@/components/effects";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -106,6 +106,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <SmoothScroll />
           <ParticleBackground />
           <ScrollProgress />
           <StickyEmail />

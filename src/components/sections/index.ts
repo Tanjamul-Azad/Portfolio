@@ -7,3 +7,4 @@ export { Contact } from "./contact";
 export { ContactForm } from "./contact-form";
 export { Now } from "./now";
 export { Testimonials } from "./testimonials";
+export { Blog } from "./blog";
