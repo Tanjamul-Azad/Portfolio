@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Sparkles } from "lucide-react";
+import { ArrowUpRight, Sparkles, ExternalLink, Github, FileText } from "lucide-react";
 import { projects } from "@/data";
 import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export function Projects() {
   const [hoveredProject, setHoveredProject] = useState<string | null>(projects[0]?.id || null);
@@ -47,10 +49,8 @@ export function Projects() {
                 className="group relative"
                 onMouseEnter={() => setHoveredProject(project.id)}
               >
-                <a
-                  href={project.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href={`/projects/${project.slug}`}
                   className={`block py-6 cursor-pointer transition-all duration-500 ${
                     hoveredProject === project.id 
                       ? "opacity-100" 
@@ -104,7 +104,7 @@ export function Projects() {
                       </div>
                     </div>
                   </div>
-                </a>
+                </Link>
               </motion.div>
             ))}
           </div>
@@ -180,14 +180,53 @@ export function Projects() {
                         </span>
                         
                         {/* Impact stat */}
-                        <p className="mt-6 text-xs text-neutral-400 dark:text-neutral-500 italic">
+                        <p className="mt-4 text-xs text-neutral-400 dark:text-neutral-500 italic">
                           "{activeProject?.impact}"
                         </p>
+                        
+                        {/* Action buttons */}
+                        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+                          {activeProject?.liveUrl && activeProject.liveUrl !== '#' && (
+                            <Button
+                              asChild
+                              size="sm"
+                              className="rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-black hover:from-amber-300 hover:to-orange-400 font-medium shadow-md shadow-amber-500/20"
+                            >
+                              <a href={activeProject.liveUrl} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                                Live Demo
+                              </a>
+                            </Button>
+                          )}
+                          <Button
+                            asChild
+                            size="sm"
+                            variant="outline"
+                            className="rounded-full border-neutral-300 dark:border-neutral-700 hover:border-amber-500/50 hover:bg-amber-50 dark:hover:bg-amber-500/10 font-medium"
+                          >
+                            <Link href={`/projects/${activeProject?.slug}`}>
+                              <FileText className="w-3.5 h-3.5 mr-1.5" />
+                              Case Study
+                            </Link>
+                          </Button>
+                          {activeProject?.sourceUrl && activeProject.sourceUrl !== '#' && (
+                            <Button
+                              asChild
+                              size="icon"
+                              variant="ghost"
+                              className="rounded-full w-8 h-8 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                            >
+                              <a href={activeProject.sourceUrl} target="_blank" rel="noopener noreferrer" title="View Source">
+                                <Github className="w-4 h-4" />
+                              </a>
+                            </Button>
+                          )}
+                        </div>
                       </motion.div>
                     </div>
                     
                     {/* Gradient overlay */}
-                    <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white dark:from-neutral-900 to-transparent pointer-events-none" />
+                    <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white dark:from-neutral-900 to-transparent pointer-events-none" />
                   </div>
                 </div>
                 
@@ -202,53 +241,92 @@ export function Projects() {
         {/* Mobile Project Cards */}
         <div className="lg:hidden mt-12 space-y-6">
           {projects.map((project, index) => (
-            <motion.a
+            <motion.div
               key={project.id + '-mobile'}
-              href={project.liveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="block"
             >
-              <div className="rounded-2xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 bg-white dark:bg-neutral-900 shadow-lg">
-                {/* Image area */}
-                <div className="aspect-video relative bg-gradient-to-br from-neutral-100 to-neutral-50 dark:from-neutral-800 dark:to-neutral-900">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
-                      <span className="text-2xl font-bold text-white">
-                        {project.title.substring(0, 1)}
-                      </span>
+              <Link
+                href={`/projects/${project.slug}`}
+                className="block"
+              >
+                <div className="rounded-2xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 bg-white dark:bg-neutral-900 shadow-lg">
+                  {/* Image area */}
+                  <div className="aspect-video relative bg-gradient-to-br from-neutral-100 to-neutral-50 dark:from-neutral-800 dark:to-neutral-900">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+                        <span className="text-2xl font-bold text-white">
+                          {project.title.substring(0, 1)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="p-5">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-xl font-bold text-neutral-900 dark:text-white">
+                        {project.title}
+                      </h3>
+                      <ArrowUpRight className="w-5 h-5 text-amber-500" />
+                    </div>
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+                      {project.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {project.tags.slice(0, 3).map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-xs px-2 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 rounded-md"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    {/* Action buttons for mobile */}
+                    <div className="flex items-center gap-2 pt-3 border-t border-neutral-100 dark:border-neutral-800">
+                      {project.liveUrl && project.liveUrl !== '#' && (
+                        <Button
+                          asChild
+                          size="sm"
+                          className="flex-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-black hover:from-amber-300 hover:to-orange-400 text-xs font-medium"
+                        >
+                          <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                            <ExternalLink className="w-3 h-3 mr-1" />
+                            Live Demo
+                          </a>
+                        </Button>
+                      )}
+                      <Button
+                        asChild
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 rounded-full border-neutral-300 dark:border-neutral-700 text-xs font-medium"
+                      >
+                        <Link href={`/projects/${project.slug}`}>
+                          <FileText className="w-3 h-3 mr-1" />
+                          Case Study
+                        </Link>
+                      </Button>
+                      {project.sourceUrl && project.sourceUrl !== '#' && (
+                        <Button
+                          asChild
+                          size="icon"
+                          variant="ghost"
+                          className="rounded-full w-8 h-8 shrink-0"
+                        >
+                          <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                            <Github className="w-4 h-4" />
+                          </a>
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
-                
-                {/* Content */}
-                <div className="p-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-bold text-neutral-900 dark:text-white">
-                      {project.title}
-                    </h3>
-                    <ArrowUpRight className="w-5 h-5 text-amber-500" />
-                  </div>
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.tags.slice(0, 3).map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-xs px-2 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 rounded-md"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.a>
+              </Link>
+            </motion.div>
           ))}
         </div>
       </div>

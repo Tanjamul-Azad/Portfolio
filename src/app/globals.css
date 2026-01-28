@@ -146,15 +146,54 @@
     @apply bg-background text-foreground;
   }
 
-  /* Smooth scroll */
+  /* Smooth scroll with reduced motion support */
   html {
     scroll-behavior: smooth;
+  }
+  
+  /* Respect user's motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 
   /* Hide scrollbar but keep scroll functionality */
   ::-webkit-scrollbar {
     width: 0;
     background: transparent;
+  }
+}
+
+/* Responsive utilities for small screens */
+@layer utilities {
+  /* Better touch targets for mobile */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  /* Container adjustments for 13" laptops */
+  @media (max-width: 1366px) {
+    .container {
+      @apply px-4;
+    }
+  }
+  
+  /* Mobile safe area padding */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
   }
 }
 

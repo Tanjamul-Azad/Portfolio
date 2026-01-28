@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore, useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useTheme } from "next-themes";
 
 interface Particle {
@@ -15,12 +15,12 @@ interface Particle {
 
 // Generate particles deterministically based on seed
 function generateParticles(): Particle[] {
-  return Array.from({ length: 50 }, (_, i) => ({
+  return Array.from({ length: 30 }, (_, i) => ({
     id: i,
     size: ((i * 7 + 3) % 30) / 10 + 1,
     left: ((i * 13 + 7) % 100),
     top: ((i * 17 + 11) % 100),
-    duration: ((i * 11 + 5) % 15) + 10,
+    duration: ((i * 11 + 5) % 15) + 15,
     delay: ((i * 19 + 3) % 10),
   }));
 }
@@ -37,11 +37,17 @@ function useIsClient() {
 export function ParticleBackground() {
   const isClient = useIsClient();
   const { resolvedTheme } = useTheme();
+  const prefersReducedMotion = useReducedMotion();
 
   // Generate particles with consistent values
   const particles = useMemo(() => generateParticles(), []);
 
   if (!isClient) return null;
+  
+  // Disable particle animations for users who prefer reduced motion
+  if (prefersReducedMotion) {
+    return null;
+  }
 
   const isDark = resolvedTheme === "dark";
 

@@ -2,11 +2,13 @@
 
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Download } from "lucide-react";
+import { ArrowRight, Download, Github, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
+import { getFeaturedProjects } from "@/data";
 
 interface HeroProps {
   showContent?: boolean;
@@ -90,21 +92,54 @@ export function Hero({ showContent = true }: HeroProps) {
               </motion.p>
 
               {/* CTAs */}
-              <motion.div variants={fadeInUp} className="flex flex-wrap gap-4 mb-14">
+              <motion.div variants={fadeInUp} className="flex flex-wrap gap-4 mb-6">
                 <Button
+                  asChild
                   size="lg"
                   className="rounded-full px-8 py-6 text-base bg-gradient-to-r from-amber-400 to-orange-500 text-black hover:from-amber-300 hover:to-orange-400 transition-all duration-500 group font-semibold shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30"
                 >
-                  Let&apos;s Talk
-                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                  <Link href={`/projects/${getFeaturedProjects()[0]?.slug || ''}`}>
+                    <Sparkles className="mr-2 w-4 h-4" />
+                    View My Best Project
+                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                  </Link>
                 </Button>
                 <Button
+                  asChild
                   size="lg"
                   variant="outline"
                   className="rounded-full px-8 py-6 text-base border-neutral-300 dark:border-neutral-600 bg-white/50 dark:bg-neutral-900/50 text-neutral-800 dark:text-white hover:border-amber-500/50 hover:text-amber-600 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-all duration-500 font-medium"
                 >
-                  Resume
-                  <Download className="ml-2 w-4 h-4" />
+                  <a href="/resume.pdf" download>
+                    <Download className="mr-2 w-4 h-4" />
+                    Download Resume
+                  </a>
+                </Button>
+              </motion.div>
+
+              {/* Secondary CTAs */}
+              <motion.div variants={fadeInUp} className="flex flex-wrap gap-3 mb-14">
+                <Button
+                  asChild
+                  size="sm"
+                  variant="ghost"
+                  className="rounded-full px-6 text-neutral-600 dark:text-neutral-400 hover:text-amber-600 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10"
+                >
+                  <a href={siteConfig.links.github} target="_blank" rel="noopener noreferrer">
+                    <Github className="mr-2 w-4 h-4" />
+                    GitHub
+                  </a>
+                </Button>
+                <Button
+                  asChild
+                  size="sm"
+                  variant="ghost"
+                  className="rounded-full px-6 text-neutral-600 dark:text-neutral-400 hover:text-amber-600 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10"
+                >
+                  <Link href="#contact">
+                    Let&apos;s Talk
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </Link>
                 </Button>
               </motion.div>
 
@@ -129,22 +164,22 @@ export function Hero({ showContent = true }: HeroProps) {
 
             {/* Photo Section */}
             <motion.div
-              className="order-1 lg:order-2"
+              className="order-1 lg:order-2 flex justify-center lg:justify-end"
               style={{ scale: photoScale }}
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              <div className="relative aspect-[4/5] max-w-md mx-auto lg:max-w-none">
+              <div className="relative aspect-[4/5] w-[280px] sm:w-[320px] md:w-[360px] lg:w-[400px] xl:w-full xl:max-w-[450px]">
                 {/* Frame decorations */}
                 <motion.div
-                  className="absolute -top-4 -left-4 w-16 h-16 border-l-2 border-t-2 border-neutral-300 dark:border-white/20"
+                  className="absolute -top-3 -left-3 md:-top-4 md:-left-4 w-12 h-12 md:w-16 md:h-16 border-l-2 border-t-2 border-neutral-300 dark:border-white/20"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.6 }}
                 />
                 <motion.div
-                  className="absolute -bottom-4 -right-4 w-16 h-16 border-r-2 border-b-2 border-neutral-300 dark:border-white/20"
+                  className="absolute -bottom-3 -right-3 md:-bottom-4 md:-right-4 w-12 h-12 md:w-16 md:h-16 border-r-2 border-b-2 border-neutral-300 dark:border-white/20"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.6 }}
@@ -156,9 +191,19 @@ export function Hero({ showContent = true }: HeroProps) {
                     src="/images/profile.jpg"
                     alt={siteConfig.name}
                     fill
+                    sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 360px, 450px"
                     className="object-cover"
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAUH/8QAIBAAAgIBBAMBAAAAAAAAAAAAAQIDBAAFBhESITFBUf/EABUBAQEAAAAAAAAAAAAAAAAAAAAB/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AztNR1C1bhjhuTpGsgVVWRgAM+AMZwxGP/9k="
                     priority
                   />
+                  {/* Gradient overlay on edges */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-neutral-50/40 dark:from-black/40 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-neutral-50/40 dark:from-black/40 to-transparent" />
+                    <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-neutral-50/30 dark:from-black/30 to-transparent" />
+                    <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-neutral-50/30 dark:from-black/30 to-transparent" />
+                  </div>
                 </div>
 
                 {/* Floating badges */}

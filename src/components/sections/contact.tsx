@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, Calendar, ArrowUpRight } from "lucide-react";
+import { Mail, Calendar, ArrowUpRight, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ContactForm } from "./contact-form";
 import { siteConfig } from "@/config";
@@ -91,6 +91,14 @@ export function Contact() {
                 </div>
                 <ArrowUpRight className="w-5 h-5 text-neutral-400 dark:text-neutral-600 group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors" />
               </a>
+              
+              {/* Response time notice */}
+              <div className="flex items-center gap-2 mt-6 p-3 rounded-xl bg-amber-50 dark:bg-amber-500/5 border border-amber-200/50 dark:border-amber-500/20">
+                <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                <span className="text-sm text-amber-700 dark:text-amber-300">
+                  Typically replies within 24–48 hours
+                </span>
+              </div>
             </motion.div>
           </div>
 

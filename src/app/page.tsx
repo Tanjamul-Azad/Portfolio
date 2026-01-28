@@ -9,6 +9,8 @@ import {
   Projects,
   Experience,
   Achievements,
+  Now,
+  Testimonials,
   Contact,
 } from "@/components/sections";
 
@@ -23,10 +25,12 @@ export default function Home() {
         <>
           <Navbar />
           <Hero />
+          <Now />
           <TechStack />
           <Projects />
           <Experience />
           <Achievements />
+          <Testimonials />
           <Contact />
           <Footer />
         </>
