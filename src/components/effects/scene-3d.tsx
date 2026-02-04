@@ -7,13 +7,13 @@ import * as THREE from "three";
 
 function Particles(props: any) {
   const ref = useRef<THREE.Points>(null!);
-  
+
   // Generate particles in a sphere manually to avoid NaN issues
   const sphere = useMemo(() => {
     const count = 5000;
     const radius = 1.5;
     const points = new Float32Array(count * 3);
-    
+
     for (let i = 0; i < count; i++) {
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
@@ -53,33 +53,33 @@ function Particles(props: any) {
 }
 
 function FloatingShape() {
-    const meshRef = useRef<THREE.Mesh>(null!);
-    
-    useFrame((state) => {
-        const t = state.clock.getElapsedTime();
-        if (meshRef.current) {
-            meshRef.current.rotation.x = Math.cos(t / 4) / 2;
-            meshRef.current.rotation.y = Math.sin(t / 4) / 2;
-            meshRef.current.rotation.z = Math.sin(t / 1.5) / 2;
-            meshRef.current.position.y = Math.sin(t / 1.5) / 10;
-        }
-    });
+  const meshRef = useRef<THREE.Mesh>(null!);
 
-    return (
-        <Float speed={2} rotationIntensity={1.5} floatIntensity={2}>
-            <mesh ref={meshRef} maxScale={1.5}>
-                <torusKnotGeometry args={[1, 0.3, 128, 16]} />
-                <meshStandardMaterial 
-                    color="#4338ca" 
-                    emissive="#4338ca"
-                    emissiveIntensity={0.5}
-                    roughness={0.3}
-                    metalness={0.8} 
-                    wireframe 
-                />
-            </mesh>
-        </Float>
-    );
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime();
+    if (meshRef.current) {
+      meshRef.current.rotation.x = Math.cos(t / 4) / 2;
+      meshRef.current.rotation.y = Math.sin(t / 4) / 2;
+      meshRef.current.rotation.z = Math.sin(t / 1.5) / 2;
+      meshRef.current.position.y = Math.sin(t / 1.5) / 10;
+    }
+  });
+
+  return (
+    <Float speed={2} rotationIntensity={1.5} floatIntensity={2}>
+      <mesh ref={meshRef}>
+        <torusKnotGeometry args={[1, 0.3, 128, 16]} />
+        <meshStandardMaterial
+          color="#4338ca"
+          emissive="#4338ca"
+          emissiveIntensity={0.5}
+          roughness={0.3}
+          metalness={0.8}
+          wireframe
+        />
+      </mesh>
+    </Float>
+  );
 }
 
 export function Scene3D() {

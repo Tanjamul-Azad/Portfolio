@@ -42,7 +42,7 @@ export function Contact() {
               transition={{ delay: 0.1 }}
               className="text-lg text-neutral-500 dark:text-neutral-400 mb-12 max-w-md leading-relaxed"
             >
-              Have a project in mind? Let&apos;s discuss how we can work together 
+              Have a project in mind? Let&apos;s discuss how we can work together
               to bring your vision to life.
             </motion.p>
 
@@ -90,7 +90,7 @@ export function Contact() {
                 </div>
                 <ArrowUpRight className="w-5 h-5 text-neutral-300 dark:text-neutral-600 group-hover:text-green-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
               </a>
-              
+
               {/* Response time notice */}
               <div className="flex items-center gap-2 mt-6 p-3 rounded-xl bg-amber-50 dark:bg-amber-500/5 border border-amber-200/50 dark:border-amber-500/20">
                 <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />

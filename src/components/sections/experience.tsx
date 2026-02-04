@@ -43,9 +43,8 @@ export function Experience() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`relative flex flex-col md:flex-row gap-8 ${
-                index % 2 === 0 ? "md:flex-row-reverse" : ""
-              }`}
+              className={`relative flex flex-col md:flex-row gap-8 ${index % 2 === 0 ? "md:flex-row-reverse" : ""
+                }`}
             >
               {/* Timeline Dot */}
               <div className="absolute left-0 md:left-1/2 w-3 h-3 bg-amber-500 dark:bg-amber-400 rounded-full -translate-x-1/2 mt-2 hidden md:block ring-4 ring-neutral-50 dark:ring-black shadow-lg shadow-amber-500/20" />
@@ -53,9 +52,8 @@ export function Experience() {
               {/* Content */}
               <div className="flex-1">
                 <div
-                  className={`p-6 rounded-2xl glass hover:border-amber-400/30 dark:hover:border-amber-500/20 glass-hover transition-all duration-500 shadow-sm ${
-                    index % 2 === 0 ? "md:text-left" : "md:text-right"
-                  }`}
+                  className={`p-6 rounded-2xl glass hover:border-amber-400/30 dark:hover:border-amber-500/20 glass-hover transition-all duration-500 shadow-sm ${index % 2 === 0 ? "md:text-left" : "md:text-right"
+                    }`}
                 >
                   <div className="flex flex-col gap-1 mb-4">
                     <span className="text-xs text-amber-600 dark:text-amber-400/70 font-mono">{exp.period}</span>
@@ -63,11 +61,10 @@ export function Experience() {
                     <div className="text-neutral-500 dark:text-neutral-400 font-medium">{exp.company}</div>
                   </div>
                   <ul
-                    className={`space-y-2 text-neutral-600 dark:text-neutral-500 text-sm ${
-                      index % 2 === 0
-                        ? "md:pl-0"
-                        : "md:pl-0"
-                    }`}
+                    className={`space-y-2 text-neutral-600 dark:text-neutral-500 text-sm ${index % 2 === 0
+                      ? "md:pl-0"
+                      : "md:pl-0"
+                      }`}
                   >
                     {exp.description.map((item, i) => (
                       <li key={i} className="leading-relaxed flex items-start gap-2">

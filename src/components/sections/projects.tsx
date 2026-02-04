@@ -18,7 +18,7 @@ export function Projects() {
       {/* Subtle background accents */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-500/5 dark:bg-amber-500/3 blur-[150px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-orange-500/5 dark:bg-orange-500/3 blur-[120px] rounded-full pointer-events-none" />
-      
+
       <div className="container px-6 mx-auto relative">
         {/* Header */}
         <div className="mb-16">
@@ -51,49 +51,44 @@ export function Projects() {
               >
                 <Link
                   href={`/projects/${project.slug}`}
-                  className={`block py-6 cursor-pointer transition-all duration-500 ${
-                    hoveredProject === project.id 
-                      ? "opacity-100" 
-                      : "opacity-40 hover:opacity-70"
-                  }`}
+                  className={`block py-6 cursor-pointer transition-all duration-500 ${hoveredProject === project.id
+                    ? "opacity-100"
+                    : "opacity-40 hover:opacity-70"
+                    }`}
                 >
                   <div className="flex items-start gap-4">
                     {/* Index number */}
-                    <span className={`font-mono text-sm mt-2 transition-colors duration-300 ${
-                      hoveredProject === project.id 
-                        ? "text-amber-500" 
-                        : "text-neutral-400 dark:text-neutral-600"
-                    }`}>
+                    <span className={`font-mono text-sm mt-2 transition-colors duration-300 ${hoveredProject === project.id
+                      ? "text-amber-500"
+                      : "text-neutral-400 dark:text-neutral-600"
+                      }`}>
                       _{(index + 1).toString().padStart(2, "0")}.
                     </span>
-                    
+
                     {/* Project info */}
                     <div className="flex-grow">
                       <div className="flex items-center gap-3">
-                        <h3 className={`text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight transition-all duration-500 ${
-                          hoveredProject === project.id
-                            ? "text-transparent bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 dark:from-amber-300 dark:via-orange-400 dark:to-amber-400 bg-clip-text"
-                            : "text-neutral-700 dark:text-neutral-400"
-                        }`}>
+                        <h3 className={`text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight transition-all duration-500 ${hoveredProject === project.id
+                          ? "text-transparent bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 dark:from-amber-300 dark:via-orange-400 dark:to-amber-400 bg-clip-text"
+                          : "text-neutral-700 dark:text-neutral-400"
+                          }`}>
                           {project.title}
                         </h3>
-                        <ArrowUpRight className={`w-6 h-6 transition-all duration-300 ${
-                          hoveredProject === project.id
-                            ? "text-amber-500 opacity-100 translate-x-0"
-                            : "text-neutral-400 opacity-0 -translate-x-2"
-                        }`} />
+                        <ArrowUpRight className={`w-6 h-6 transition-all duration-300 ${hoveredProject === project.id
+                          ? "text-amber-500 opacity-100 translate-x-0"
+                          : "text-neutral-400 opacity-0 -translate-x-2"
+                          }`} />
                       </div>
-                      
+
                       {/* Tags */}
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3">
                         {project.tags.slice(0, 4).map((tag, tagIndex) => (
                           <span
                             key={tag}
-                            className={`text-sm transition-colors duration-300 ${
-                              hoveredProject === project.id
-                                ? "text-neutral-600 dark:text-neutral-400"
-                                : "text-neutral-400 dark:text-neutral-600"
-                            }`}
+                            className={`text-sm transition-colors duration-300 ${hoveredProject === project.id
+                              ? "text-neutral-600 dark:text-neutral-400"
+                              : "text-neutral-400 dark:text-neutral-600"
+                              }`}
                           >
                             {tag}
                             {tagIndex < Math.min(project.tags.length, 4) - 1 && (
@@ -122,7 +117,7 @@ export function Projects() {
               >
                 {/* Decorative frame */}
                 <div className="absolute -inset-4 bg-gradient-to-br from-amber-500/20 via-transparent to-orange-500/20 rounded-3xl blur-2xl opacity-60" />
-                
+
                 {/* Image container */}
                 <div className="relative rounded-2xl overflow-hidden glass shadow-2xl shadow-neutral-900/10 dark:shadow-black/30">
                   {/* Browser-like header */}
@@ -138,7 +133,7 @@ export function Projects() {
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Project image/preview */}
                   <div className="aspect-[4/3] relative bg-gradient-to-br from-neutral-100 via-white to-neutral-50 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900">
                     {/* Placeholder with project branding */}
@@ -150,7 +145,7 @@ export function Projects() {
                           backgroundSize: '40px 40px'
                         }}
                       />
-                      
+
                       {/* Project showcase */}
                       <motion.div
                         key={activeProject?.id + '-content'}
@@ -165,25 +160,25 @@ export function Projects() {
                             {activeProject?.title.substring(0, 1)}
                           </span>
                         </div>
-                        
+
                         <h4 className="text-2xl font-bold text-neutral-800 dark:text-white mb-3">
                           {activeProject?.title}
                         </h4>
                         <p className="text-sm text-neutral-500 dark:text-neutral-400 max-w-sm mx-auto mb-4">
                           {activeProject?.description}
                         </p>
-                        
+
                         {/* Role badge */}
                         <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-sm font-medium">
                           <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                           {activeProject?.role}
                         </span>
-                        
+
                         {/* Impact stat */}
                         <p className="mt-4 text-xs text-neutral-400 dark:text-neutral-500 italic">
                           "{activeProject?.impact}"
                         </p>
-                        
+
                         {/* Action buttons */}
                         <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
                           {activeProject?.liveUrl && activeProject.liveUrl !== '#' && (
@@ -224,12 +219,12 @@ export function Projects() {
                         </div>
                       </motion.div>
                     </div>
-                    
+
                     {/* Gradient overlay */}
                     <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white dark:from-neutral-900 to-transparent pointer-events-none" />
                   </div>
                 </div>
-                
+
                 {/* Floating decorative elements */}
                 <div className="absolute -top-2 -right-2 w-20 h-20 bg-amber-400/20 rounded-full blur-2xl" />
                 <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-orange-400/10 rounded-full blur-3xl" />
@@ -261,7 +256,7 @@ export function Projects() {
                     </div>
                   </div>
                 </Link>
-                
+
                 {/* Content */}
                 <div className="p-5">
                   <Link href={`/projects/${project.slug}`} className="block group">
