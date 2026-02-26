@@ -1,3 +1,5 @@
+import { siteConfig } from "./site";
+
 export const navLinks = [
   { name: "Now", href: "#now" },
   { name: "Projects", href: "#projects" },
@@ -7,7 +9,7 @@ export const navLinks = [
 ] as const;
 
 export const footerLinks = [
-  { name: "GitHub", href: "https://github.com/tanjamul" },
-  { name: "LinkedIn", href: "https://linkedin.com/in/tanjamul" },
-  { name: "Twitter", href: "https://twitter.com/tanjamul" },
+  { name: "GitHub", href: siteConfig.links.github },
+  { name: "LinkedIn", href: siteConfig.links.linkedin },
+  { name: "Twitter", href: siteConfig.links.twitter },
 ] as const;

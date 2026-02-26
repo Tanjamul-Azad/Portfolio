@@ -136,6 +136,17 @@ export function Projects() {
 
                   {/* Project image/preview */}
                   <div className="aspect-[4/3] relative bg-gradient-to-br from-neutral-100 via-white to-neutral-50 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900">
+                    {/* Actual screenshot — visible when file exists, hidden on 404 */}
+                    {activeProject?.image && (
+                      <img
+                        src={activeProject.image}
+                        alt={activeProject.title}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                    )}
                     {/* Placeholder with project branding */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
                       {/* Decorative grid */}
@@ -246,7 +257,17 @@ export function Projects() {
               <div className="rounded-2xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 bg-white dark:bg-neutral-900 shadow-lg">
                 {/* Image area - clickable to case study */}
                 <Link href={`/projects/${project.slug}`} className="block">
-                  <div className="aspect-video relative bg-gradient-to-br from-neutral-100 to-neutral-50 dark:from-neutral-800 dark:to-neutral-900 group">
+                  <div className="aspect-video relative bg-gradient-to-br from-neutral-100 to-neutral-50 dark:from-neutral-800 dark:to-neutral-900 group overflow-hidden">
+                    {project.image && (
+                      <img
+                        src={project.image}
+                        alt={project.title}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                    )}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center group-hover:scale-105 transition-transform">
                         <span className="text-2xl font-bold text-white">

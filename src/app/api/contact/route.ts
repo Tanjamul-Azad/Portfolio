@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { Resend } from "resend";
+import { siteConfig } from "@/config";
 
 // Server-side validation schema
 const contactSchema = z.object({
@@ -73,65 +75,45 @@ export async function POST(request: NextRequest) {
 
     const { name, email, message } = result.data;
 
-    // Option 1: Send email via Resend (recommended for production)
-    // Uncomment and configure if you have Resend API key
-    /*
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    await resend.emails.send({
-      from: "Portfolio Contact <contact@yourdomain.com>",
-      to: siteConfig.contact.email,
-      replyTo: email,
-      subject: `New Contact Form Submission from ${name}`,
-      html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Message:</strong></p>
-        <p>${message.replace(/\n/g, "<br>")}</p>
-      `,
-    });
-    */
+    const resendApiKey = process.env.RESEND_API_KEY;
 
-    // Option 2: Use nodemailer with SMTP
-    // Uncomment and configure if you have SMTP credentials
-    /*
-    const nodemailer = require("nodemailer");
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || "587"),
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-    
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM,
-      to: siteConfig.contact.email,
-      replyTo: email,
-      subject: `New Contact Form Submission from ${name}`,
-      html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Message:</strong></p>
-        <p>${message.replace(/\n/g, "<br>")}</p>
-      `,
-    });
-    */
+    if (resendApiKey) {
+      const resend = new Resend(resendApiKey);
+      const fromAddress = process.env.RESEND_FROM_EMAIL || "Portfolio Contact <onboarding@resend.dev>";
 
-    // For now, just log the message (replace with actual email sending in production)
-    console.log("Contact form submission:", {
-      name,
-      email,
-      message,
-      timestamp: new Date().toISOString(),
-      ip,
-    });
+      await resend.emails.send({
+        from: fromAddress,
+        to: siteConfig.contact.email,
+        replyTo: email,
+        subject: `New message from ${name} via Portfolio`,
+        html: `
+          <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;border:1px solid #e5e7eb;border-radius:8px;">
+            <h2 style="margin-top:0;color:#111827;">New Portfolio Contact</h2>
+            <table style="width:100%;border-collapse:collapse;">
+              <tr><td style="padding:8px 0;color:#6b7280;width:80px;">Name</td><td style="padding:8px 0;font-weight:600;color:#111827;">${name}</td></tr>
+              <tr><td style="padding:8px 0;color:#6b7280;">Email</td><td style="padding:8px 0;"><a href="mailto:${email}" style="color:#f59e0b;">${email}</a></td></tr>
+            </table>
+            <div style="margin-top:16px;padding:16px;background:#f9fafb;border-radius:6px;">
+              <p style="margin:0;color:#374151;white-space:pre-wrap;">${message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
+            </div>
+            <p style="margin-top:16px;font-size:12px;color:#9ca3af;">Sent from ${siteConfig.url} · IP: ${ip}</p>
+          </div>
+        `,
+      });
+    } else {
+      // Fallback: log to console during development
+      console.log("[Contact Form] No RESEND_API_KEY set. Message received:", {
+        name,
+        email,
+        message,
+        timestamp: new Date().toISOString(),
+        ip,
+      });
+    }
 
-    return NextResponse.json({ 
-      success: true, 
-      message: "Message received successfully" 
+    return NextResponse.json({
+      success: true,
+      message: "Message received successfully",
     });
   } catch (error) {
     console.error("Contact form error:", error);

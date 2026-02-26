@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config";
 import { ParticleBackground, ScrollProgress, StickyEmail, AiChat, SmoothScroll } from "@/components/effects";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -78,7 +79,7 @@ export const metadata: Metadata = {
     title: siteConfig.title,
     description: siteConfig.description,
     images: [siteConfig.ogImage],
-    creator: "@tanjamul",
+    creator: siteConfig.author.twitterHandle,
   },
   icons: {
     icon: [
@@ -113,6 +114,7 @@ export default function RootLayout({
           <AiChat />
           <div className="relative min-h-screen flex flex-col">{children}</div>
           <Toaster position="bottom-right" />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>

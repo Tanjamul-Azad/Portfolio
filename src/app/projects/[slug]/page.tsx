@@ -109,6 +109,29 @@ export default function ProjectCaseStudy() {
         </div>
       </section>
 
+      {/* Project Screenshot */}
+      {project.image && (
+        <section className="bg-neutral-50 dark:bg-black py-6">
+          <div className="container px-6 mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="relative max-w-5xl mx-auto rounded-2xl overflow-hidden shadow-2xl ring-1 ring-neutral-200 dark:ring-neutral-800 bg-gradient-to-br from-neutral-200 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800"
+            >
+              <img
+                src={project.image}
+                alt={`${project.title} screenshot`}
+                className="w-full h-auto object-cover block"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).parentElement!.style.display = "none";
+                }}
+              />
+            </motion.div>
+          </div>
+        </section>
+      )}
+
       {/* Problem & Solution */}
       {(project.problem || project.solution) && (
         <section className="py-20 bg-white dark:bg-neutral-900/50">

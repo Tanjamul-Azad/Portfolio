@@ -93,6 +93,18 @@ export function Hero() {
                   <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
+
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="h-14 px-8 rounded-full text-base font-medium border-neutral-300 dark:border-neutral-700 hover:border-amber-500/50 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-all"
+              >
+                <a href="/resume.pdf" download className="flex items-center gap-2">
+                  <Download className="w-4 h-4" />
+                  Resume
+                </a>
+              </Button>
             </motion.div>
           </motion.div>
 

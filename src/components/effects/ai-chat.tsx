@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Bot, User, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/config";
 
 interface Message {
   id: string;
@@ -14,8 +15,8 @@ interface Message {
 const SUGGESTED_QUESTIONS = [
   "What's your tech stack?",
   "Tell me about your projects",
-  "How can I hire you?",
-  "What's your experience?",
+  "Are you available for hire?",
+  "What are you building now?",
 ];
 
 export function AiChat() {
@@ -24,7 +25,7 @@ export function AiChat() {
     {
       id: "welcome",
       role: "assistant",
-      content: "Hi! 👋 I'm Tanjamul's AI assistant. Ask me anything about his skills, projects, or experience!",
+      content: `Hi! 👋 I'm ${siteConfig.author.name}'s AI assistant. Ask me anything about his skills, projects, or how to work with him!`,
     },
   ]);
   const [input, setInput] = useState("");
@@ -79,21 +80,37 @@ export function AiChat() {
       const data = await response.json();
 
       if (data.error) {
+        if (data.error === "quota_exceeded") {
+          throw new Error("__quota__");
+        }
         throw new Error(data.error);
       }
+
+      // Client-side safety: strip any leaked markdown artifacts
+      const cleanResponse = (data.response as string)
+        .replace(/^(Assistant:|AI:|Bot:)\s*/i, "")
+        .replace(/\*\*(.*?)\*\*/g, "$1")  // **bold** → bold
+        .replace(/\*(.*?)\*/g, "$1")       // *italic* → italic
+        .replace(/`([^`]+)`/g, "$1")       // `code` → code
+        .replace(/^#{1,6}\s+/gm, "")       // ## headings
+        .replace(/^[-*+]\s+/gm, "• ")      // - list items → • list items
+        .trim();
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: data.response,
+        content: cleanResponse,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch {
+    } catch (err) {
+      const isQuota = err instanceof Error && err.message === "__quota__";
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "Sorry, I'm having trouble connecting right now. Please try again or reach out via email!",
+        content: isQuota
+          ? `The AI API has hit its daily free-tier limit. It resets every 24 hours. In the meantime, feel free to reach out directly at ${siteConfig.contact.email}!`
+          : "Sorry, I'm having trouble connecting right now. Please try again or reach out via email!",
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -158,7 +175,7 @@ export function AiChat() {
               </div>
               <div className="flex-grow">
                 <h3 className="font-semibold text-sm">AI Assistant</h3>
-                <p className="text-xs text-white/80">Ask me about Tanjamul</p>
+                <p className="text-xs text-white/80">Ask me about {siteConfig.author.name}</p>
               </div>
               <div className="flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />

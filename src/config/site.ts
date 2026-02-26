@@ -9,6 +9,7 @@ export const siteConfig = {
     github: "https://github.com/Tanjamul-Azad",
     linkedin: "https://linkedin.com/in/tanjamul",
     facebook: "https://www.facebook.com/tanjamul.tonmoy69/",
+    twitter: "https://twitter.com/tanjamul",
   },
   contact: {
     email: "i.m.tanjamul@gmail.com",
@@ -18,7 +19,7 @@ export const siteConfig = {
     name: "Tanjamul Azad",
     role: "Full-Stack Developer & AI/ML Enthusiast",
     location: "Bangladesh",
- 
+    twitterHandle: "@tanjamul",
   },
 } as const;
 
