@@ -1,12 +1,12 @@
 "use client";
 
 import { useRef, useMemo } from "react";
+import type { ComponentProps } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
-import type { PointsProps } from "@react-three/fiber";
 
-function Particles(props: Omit<PointsProps, "positions">) {
+function Particles(props: Omit<ComponentProps<typeof Points>, "positions">) {
   const ref = useRef<THREE.Points>(null!);
 
   // Generate particles in a sphere manually to avoid NaN issues
