@@ -9,99 +9,115 @@ interface PreloaderProps {
 }
 
 export function Preloader({ onComplete }: PreloaderProps) {
+  const [count, setCount] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
-  const name = siteConfig.name.toUpperCase();
+  const [phase, setPhase] = useState<"counting" | "reveal" | "exit">("counting");
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-      setTimeout(onComplete, 1000);
-    }, 2200);
+    let frame = 0;
+    const total = 60;
+    const timeouts: NodeJS.Timeout[] = [];
 
-    return () => clearTimeout(timer);
+    const timer = setInterval(() => {
+      frame++;
+      const progress = frame / total;
+      const eased = progress < 0.5
+        ? 2 * progress * progress
+        : -1 + (4 - 2 * progress) * progress;
+      setCount(Math.round(eased * 100));
+
+      if (frame >= total) {
+        clearInterval(timer);
+        setCount(100);
+        setPhase("reveal");
+
+        timeouts.push(setTimeout(() => {
+          setPhase("exit");
+          timeouts.push(setTimeout(() => {
+            setIsVisible(false);
+            timeouts.push(setTimeout(onComplete, 900));
+          }, 750));
+        }, 650));
+      }
+    }, 30);
+
+    return () => {
+      clearInterval(timer);
+      timeouts.forEach(clearTimeout);
+    };
   }, [onComplete]);
 
-  const letterVariants = {
-    hidden: { y: 120, opacity: 0 },
-    visible: (i: number) => ({
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        delay: i * 0.05,
-        ease: [0.215, 0.61, 0.355, 1] as const,
-      },
-    }),
-    exit: (i: number) => ({
-      y: -120,
-      opacity: 0,
-      transition: {
-        duration: 0.4,
-        delay: i * 0.02,
-        ease: [0.55, 0.055, 0.675, 0.19] as const,
-      },
-    }),
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 1 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.05 },
-    },
-    exit: {
-      opacity: 1,
-      transition: { staggerChildren: 0.02 },
-    },
-  };
-
-  const overlayVariants = {
-    visible: { clipPath: "inset(0 0 0 0)" },
-    exit: {
-      clipPath: "inset(0 0 100% 0)",
-      transition: {
-        duration: 0.8,
-        delay: 0.4,
-        ease: [0.76, 0, 0.24, 1] as const,
-      },
-    },
-  };
+  const name = siteConfig.name.toUpperCase();
 
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
-          variants={overlayVariants}
-          initial="visible"
-          exit="exit"
+          className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center overflow-hidden"
+          exit={{ clipPath: "inset(0 0 100% 0)" }}
+          transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
         >
-          <div className="absolute inset-0 bg-black" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
+          <div
+            className="absolute top-0 left-0 h-px bg-white transition-all duration-[30ms] linear"
+            style={{ width: `${count}%` }}
+          />
 
-          <div className="relative z-10 flex flex-col items-center">
-            <motion.div
-              className="flex overflow-hidden"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              {name.split("").map((letter, i) => (
-                <motion.span
-                  key={i}
-                  custom={i}
-                  variants={letterVariants}
-                  className="text-6xl sm:text-8xl md:text-[10rem] lg:text-[12rem] font-bold font-heading tracking-[-0.02em] text-white"
-                  style={{ fontWeight: 800 }}
-                >
-                  {letter}
-                </motion.span>
-              ))}
-            </motion.div>
-          </div>
+          <motion.div
+            className="absolute top-8 right-8 font-mono text-xs text-neutral-500 tabular-nums tracking-widest"
+            animate={{ opacity: phase === "reveal" ? 0 : 1 }}
+            transition={{ duration: 0.25 }}
+          >
+            {String(count).padStart(3, "0")}
+          </motion.div>
+
+          <AnimatePresence>
+            {phase === "counting" && (
+              <motion.div
+                key="sweep"
+                className="absolute w-full h-px bg-gradient-to-r from-transparent via-neutral-700/50 to-transparent"
+                initial={{ y: "100vh" }}
+                animate={{ y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.6, ease: [0.76, 0, 0.24, 1] }}
+              />
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {phase !== "counting" && (
+              <motion.div
+                key="name"
+                initial={{ clipPath: "inset(0 100% 0 0)" }}
+                animate={{ clipPath: "inset(0 0% 0 0)" }}
+                exit={{ clipPath: "inset(0 0 0 100%)" }}
+                transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
+                className="relative z-10 select-none"
+              >
+                <h1 className="text-[clamp(3rem,12vw,10rem)] font-bold font-heading text-white tracking-[-0.02em] leading-none">
+                  {name}
+                </h1>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {phase === "reveal" && (
+              <motion.p
+                key="role"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.4, delay: 0.35 }}
+                className="absolute bottom-12 font-mono text-xs text-neutral-500 tracking-[0.3em] uppercase text-center w-full px-4"
+              >
+                {siteConfig.author.role}
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         </motion.div>
       )}
     </AnimatePresence>
