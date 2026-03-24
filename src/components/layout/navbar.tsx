@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Menu, Github, Linkedin, Facebook, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
@@ -13,11 +13,40 @@ import { ThemeToggle } from "@/components/common";
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>("now");
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const sectionIds = navLinks
+      .map((link) => link.href.replace("#", ""))
+      .filter(Boolean);
+
+    const sections = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter((section): section is HTMLElement => section !== null);
+
+    if (sections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visibleEntries.length > 0) {
+          setActiveSection(visibleEntries[0].target.id);
+        }
+      },
+      { rootMargin: "-35% 0px -45% 0px", threshold: [0.2, 0.5, 0.8] }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -32,9 +61,8 @@ export function Navbar() {
       <div className="container mx-auto px-6 flex items-center justify-between">
         <Link
           href="/"
-          className="text-xl font-bold font-heading tracking-tight flex items-center gap-2 text-neutral-900 dark:text-white group"
+          className="text-xl font-bold font-heading tracking-tight text-neutral-900 dark:text-white"
         >
-          <span className="text-amber-500 group-hover:rotate-12 transition-transform duration-300">⚡</span>
           {siteConfig.name}
         </Link>
 
@@ -44,12 +72,21 @@ export function Navbar() {
             {navLinks.map((link) => {
               const isAnchorLink = link.href.startsWith('#');
               const href = isAnchorLink ? `/${link.href}` : link.href;
+              const sectionId = link.href.replace("#", "");
+              const isActive = isAnchorLink && activeSection === sectionId;
 
               return (
                 <Link
                   key={link.name}
                   href={href}
-                  className="link-underline relative px-3 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors duration-300"
+                  scroll={!isAnchorLink}
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "link-underline relative px-3 py-2 text-sm font-medium transition-colors duration-300",
+                    isActive
+                      ? "text-neutral-900 dark:text-white"
+                      : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                  )}
                 >
                   {link.name}
                 </Link>
@@ -61,18 +98,19 @@ export function Navbar() {
 
           <div className="flex items-center gap-2">
             {[
-              { Icon: Github, href: siteConfig.links.github },
-              { Icon: Linkedin, href: siteConfig.links.linkedin },
-              { Icon: Facebook, href: siteConfig.links.facebook },
-            ].map(({ Icon, href }, i) => (
+              { Icon: Github, href: siteConfig.links.github, label: "GitHub" },
+              { Icon: Linkedin, href: siteConfig.links.linkedin, label: "LinkedIn" },
+              { Icon: Facebook, href: siteConfig.links.facebook, label: "Facebook" },
+            ].map(({ Icon, href, label }, i) => (
               <Link
                 key={i}
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-full text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/10 transition-all duration-300 hover-lift"
+                aria-label={`Open ${label}`}
+                className="p-2 rounded-full text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/10 transition-all duration-300 hover-lift focus-visible:ring-2 focus-visible:ring-amber-500/70"
               >
-                <Icon className="w-[18px] h-[18px]" />
+                <Icon className="w-4.5 h-4.5" />
               </Link>
             ))}
 
@@ -124,7 +162,8 @@ export function Navbar() {
                         <SheetClose asChild>
                           <Link
                             href={link.href.startsWith('#') ? `/${link.href}` : link.href}
-                            className="block text-2xl font-light tracking-tight hover:text-amber-500 transition-colors"
+                            scroll={!link.href.startsWith('#')}
+                            className="block text-2xl font-light tracking-tight hover:text-amber-500 transition-colors focus-visible:text-amber-500"
                           >
                             {link.name}
                           </Link>
@@ -137,14 +176,15 @@ export function Navbar() {
                 <div className="pt-6 border-t border-neutral-100 dark:border-neutral-900">
                   <div className="flex gap-4 justify-center mb-6">
                     {[
-                      { Icon: Github, href: siteConfig.links.github },
-                      { Icon: Linkedin, href: siteConfig.links.linkedin },
-                    ].map(({ Icon, href }, i) => (
+                      { Icon: Github, href: siteConfig.links.github, label: "GitHub" },
+                      { Icon: Linkedin, href: siteConfig.links.linkedin, label: "LinkedIn" },
+                    ].map(({ Icon, href, label }, i) => (
                       <Link
                         key={i}
                         href={href}
                         target="_blank"
-                        className="p-3 rounded-full bg-neutral-100 dark:bg-neutral-900 hover:bg-amber-100 dark:hover:bg-amber-900/20 text-neutral-600 dark:text-neutral-400 hover:text-amber-600 dark:hover:text-amber-500 transition-colors"
+                        aria-label={`Open ${label}`}
+                        className="p-3 rounded-full bg-neutral-100 dark:bg-neutral-900 hover:bg-amber-100 dark:hover:bg-amber-900/20 text-neutral-600 dark:text-neutral-400 hover:text-amber-600 dark:hover:text-amber-500 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500/70"
                       >
                         <Icon className="w-5 h-5" />
                       </Link>

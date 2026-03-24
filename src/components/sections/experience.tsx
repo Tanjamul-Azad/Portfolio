@@ -11,15 +11,19 @@ import {
 } from "framer-motion";
 import { experiences } from "@/data";
 import type { Experience } from "@/types";
+import { MOTION_TOKENS } from "@/lib";
+import { useRouteTransitioning } from "@/components/providers/page-transition";
 
 function ExperienceCard({
   exp,
   index,
   side,
+  isRouteTransitioning,
 }: {
   exp: Experience;
   index: number;
   side: "left" | "right";
+  isRouteTransitioning: boolean;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0);
@@ -53,16 +57,16 @@ function ExperienceCard({
   return (
     <motion.div
       initial={{ opacity: 0, x: side === "left" ? -40 : 40, y: 20 }}
-      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      whileInView={isRouteTransitioning ? undefined : { opacity: 1, x: 0, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
+      transition={{ duration: MOTION_TOKENS.duration.slow, delay: index * MOTION_TOKENS.stagger.regular, ease: MOTION_TOKENS.easing.premium }}
       className={`flex-1 relative w-full ${side === "left" ? "md:pr-12 md:text-right" : "md:pl-12 text-left"}`}
     >
       {/* Desktop Connection line */}
-      <div className={`hidden md:block absolute top-[4.5rem] w-12 h-px bg-gradient-to-r ${side === "left" ? "right-0 from-transparent to-amber-500/30" : "left-0 from-amber-500/30 to-transparent"}`} />
+      <div className={`hidden md:block absolute top-18 w-12 h-px bg-linear-to-r ${side === "left" ? "right-0 from-transparent to-amber-500/30" : "left-0 from-amber-500/30 to-transparent"}`} />
 
       {/* Mobile Connection line */}
-      <div className="md:hidden absolute top-[4.5rem] -left-8 w-8 h-px bg-gradient-to-r from-amber-500/30 to-transparent" />
+      <div className="md:hidden absolute top-18 -left-8 w-8 h-px bg-linear-to-r from-amber-500/30 to-transparent" />
 
       <motion.div
         ref={cardRef}
@@ -101,8 +105,8 @@ function ExperienceCard({
               {exp.description.map((item, i) => (
                 <motion.li
                   initial={{ opacity: 0, x: side === "left" ? 10 : -10 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 + (i * 0.1) }}
+                  whileInView={isRouteTransitioning ? undefined : { opacity: 1, x: 0 }}
+                  transition={{ delay: MOTION_TOKENS.duration.regular + (i * MOTION_TOKENS.stagger.tight), duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
                   viewport={{ once: true }}
                   key={i}
                   className={`text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed flex items-start gap-3 ${side === "left" ? "md:flex-row-reverse md:text-right" : ""}`}
@@ -135,6 +139,7 @@ function ExperienceCard({
 
 export function Experience() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { isRouteTransitioning } = useRouteTransitioning();
 
   // Track scroll dynamically to draw the timeline
   const { scrollYProgress } = useScroll({
@@ -152,13 +157,13 @@ export function Experience() {
   return (
     <section id="experience" className="py-24 md:py-32 bg-neutral-50 dark:bg-neutral-950 relative overflow-hidden">
       {/* Background aesthetic glow */}
-      <div className="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-amber-500/5 blur-[120px] rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute top-1/2 left-1/2 w-150 h-150 bg-amber-500/5 blur-[120px] rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2" />
 
       <div className="container px-4 md:px-6 mx-auto relative z-10">
         <div className="mb-20 md:mb-28 text-center max-w-2xl mx-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            whileInView={isRouteTransitioning ? undefined : { opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-xs font-mono tracking-widest uppercase mb-6"
           >
@@ -167,8 +172,9 @@ export function Experience() {
           </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            whileInView={isRouteTransitioning ? undefined : { opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: MOTION_TOKENS.duration.slow, ease: MOTION_TOKENS.easing.premium }}
             className="text-4xl md:text-5xl lg:text-6xl font-bold font-heading text-neutral-900 dark:text-white tracking-tight"
           >
             My Experience
@@ -177,9 +183,9 @@ export function Experience() {
 
         <div className="max-w-5xl mx-auto relative" ref={containerRef}>
           {/* Main Timeline Line */}
-          <div className="absolute left-6 md:left-1/2 top-4 bottom-4 w-[2px] -translate-x-1/2 bg-neutral-200 dark:bg-neutral-800">
+          <div className="absolute left-6 md:left-1/2 top-4 bottom-4 w-0.5 -translate-x-1/2 bg-neutral-200 dark:bg-neutral-800">
             <motion.div
-              className="absolute top-0 left-0 w-full bg-gradient-to-b from-amber-500 via-orange-500 to-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+              className="absolute top-0 left-0 w-full bg-linear-to-b from-amber-500 via-orange-500 to-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
               style={{ height: heightTransform }}
             />
           </div>
@@ -193,19 +199,19 @@ export function Experience() {
                   className={`relative flex flex-col md:flex-row items-start md:items-center gap-0 md:gap-8 ${isEven ? "md:flex-row-reverse" : ""}`}
                 >
                   {/* The Timeline Node */}
-                  <div className="absolute left-6 md:left-1/2 -translate-x-1/2 z-20 flex items-center justify-center top-[4.5rem] md:top-auto">
+                  <div className="absolute left-6 md:left-1/2 -translate-x-1/2 z-20 flex items-center justify-center top-18 md:top-auto">
                     <motion.div
-                      style={{
-                        scale: useTransform(scrollYProgress,
-                          [Math.max(0, (index - 0.5) / experiences.length), Math.min(1, (index + 0.5) / experiences.length)],
-                          [0.8, 1.2])
-                      }}
+                      initial={{ scale: 0.9 }}
+                      whileInView={isRouteTransitioning ? undefined : { scale: 1.05 }}
+                      viewport={{ once: true, amount: 0.6 }}
+                      transition={{ duration: 0.35, ease: "easeOut" }}
                       className="w-5 h-5 rounded-full bg-neutral-50 dark:bg-black border-4 border-neutral-300 dark:border-neutral-700 flex items-center justify-center transition-colors duration-300"
                     >
                       <motion.div
-                        style={{
-                          opacity: useTransform(scrollYProgress, [Number(index) / experiences.length, (Number(index) + 0.2) / experiences.length], [0, 1])
-                        }}
+                        initial={{ opacity: 0.3, scale: 0.8 }}
+                        whileInView={isRouteTransitioning ? undefined : { opacity: 1, scale: 1 }}
+                        viewport={{ once: true, amount: 0.6 }}
+                        transition={{ duration: 0.35, ease: "easeOut", delay: 0.05 }}
                         className="w-full h-full rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.8)] border border-amber-300"
                       />
                     </motion.div>
@@ -213,7 +219,12 @@ export function Experience() {
 
                   {/* Wrapper for side padding on mobile */}
                   <div className="w-full flex md:contents pl-16 md:pl-0">
-                    <ExperienceCard exp={exp} index={index} side={isEven ? "left" : "right"} />
+                    <ExperienceCard
+                      exp={exp}
+                      index={index}
+                      side={isEven ? "left" : "right"}
+                      isRouteTransitioning={isRouteTransitioning}
+                    />
                     <div className="flex-1 hidden md:block" />
                   </div>
                 </div>

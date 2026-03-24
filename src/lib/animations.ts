@@ -5,6 +5,99 @@
 
 import type { Variants } from "framer-motion";
 
+export const MOTION_TOKENS = {
+  duration: {
+    quick: 0.12,
+    regular: 0.22,
+    medium: 0.38,
+    slow: 0.55,
+  },
+  stagger: {
+    tight: 0.04,
+    regular: 0.08,
+    loose: 0.12,
+  },
+  distance: {
+    sm: 8,
+    md: 16,
+    lg: 24,
+  },
+  easing: {
+    premium: [0.22, 1, 0.36, 1] as [number, number, number, number],
+  },
+};
+
+export const HERO_SEQUENCE = {
+  container: {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        delayChildren: MOTION_TOKENS.duration.quick,
+        staggerChildren: MOTION_TOKENS.stagger.regular,
+      },
+    },
+  } satisfies Variants,
+  item: {
+    hidden: { opacity: 0, y: MOTION_TOKENS.distance.md },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: MOTION_TOKENS.duration.slow,
+        ease: MOTION_TOKENS.easing.premium,
+      },
+    },
+  } satisfies Variants,
+  media: {
+    hidden: { opacity: 0, x: 40, y: MOTION_TOKENS.distance.sm },
+    visible: {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      transition: {
+        duration: 0.75,
+        ease: MOTION_TOKENS.easing.premium,
+      },
+    },
+  } satisfies Variants,
+};
+
+export const SECTION_REVEAL = {
+  container: {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        delayChildren: MOTION_TOKENS.duration.quick,
+        staggerChildren: MOTION_TOKENS.stagger.regular,
+      },
+    },
+  } satisfies Variants,
+  heading: {
+    hidden: { opacity: 0, y: MOTION_TOKENS.distance.md },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: MOTION_TOKENS.duration.medium,
+        ease: MOTION_TOKENS.easing.premium,
+      },
+    },
+  } satisfies Variants,
+  item: {
+    hidden: { opacity: 0, y: MOTION_TOKENS.distance.lg },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: MOTION_TOKENS.duration.slow,
+        ease: MOTION_TOKENS.easing.premium,
+      },
+    },
+  } satisfies Variants,
+};
+
 // Helper to create accessible animations
 // Use with Framer Motion's useReducedMotion hook
 export const getReducedMotionVariant = (

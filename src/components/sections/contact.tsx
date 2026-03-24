@@ -4,13 +4,23 @@ import { motion } from "framer-motion";
 import { Mail, MessageCircle, ArrowUpRight, Clock } from "lucide-react";
 import { ContactForm } from "./contact-form";
 import { siteConfig } from "@/config";
+import { NetworkPattern } from "@/components/ui/network-pattern";
 
 export function Contact() {
   return (
-    <section id="contact" className="py-28 relative overflow-hidden bg-neutral-50 dark:bg-black">
+    <section id="contact" className="scroll-section py-32 relative overflow-hidden bg-neutral-50 dark:bg-black min-h-screen flex items-center">
+      {/* Network connection pattern */}
+      <NetworkPattern
+        className="opacity-50 dark:opacity-30"
+        numNodes={20}
+        connectionDistance={180}
+        animationSpeed={0.4}
+        lineOpacity={0.25}
+        nodeOpacity={0.7}
+      />
       {/* Background */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-amber-400/5 dark:bg-amber-500/3 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-orange-400/5 dark:bg-orange-500/3 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-150 h-150 bg-amber-400/5 dark:bg-amber-500/3 blur-[150px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-100 h-100 bg-orange-400/5 dark:bg-orange-500/3 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="container px-6 mx-auto relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
@@ -31,7 +41,7 @@ export function Contact() {
               className="text-4xl md:text-6xl font-bold font-heading mb-6 tracking-tight text-neutral-900 dark:text-white leading-[1.1]"
             >
               Let&apos;s build<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500 dark:from-amber-200 dark:to-orange-300">
+              <span className="text-amber-500 dark:text-amber-300">
                 something great.
               </span>
             </motion.h2>
@@ -57,7 +67,7 @@ export function Contact() {
                 href={`mailto:${siteConfig.contact.email}`}
                 className="group flex items-center gap-4 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800/50 bg-white dark:bg-neutral-900/50 transition-all duration-300 ease-out hover:border-amber-400/60 dark:hover:border-amber-500/40 hover:shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1 active:translate-y-0"
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400/20 to-orange-400/20 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-amber-500/15 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform duration-300">
                   <Mail className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
@@ -75,20 +85,20 @@ export function Contact() {
                 href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-center gap-4 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800/50 bg-white dark:bg-neutral-900/50 transition-all duration-300 ease-out hover:border-green-400/60 dark:hover:border-green-500/40 hover:shadow-xl hover:shadow-green-500/10 hover:-translate-y-1 active:translate-y-0"
+                className="group flex items-center gap-4 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800/50 bg-white dark:bg-neutral-900/50 transition-all duration-300 ease-out hover:border-emerald-400/55 dark:hover:border-emerald-500/35 hover:shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1 active:translate-y-0"
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-400/20 to-emerald-400/20 flex items-center justify-center text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/12 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform duration-300">
                   <MessageCircle className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
                   <div className="text-xs text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-1">
                     WhatsApp
                   </div>
-                  <div className="text-neutral-900 dark:text-white font-medium group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
+                  <div className="text-neutral-900 dark:text-white font-medium group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                     Chat with me directly
                   </div>
                 </div>
-                <ArrowUpRight className="w-5 h-5 text-neutral-300 dark:text-neutral-600 group-hover:text-green-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
+                <ArrowUpRight className="w-5 h-5 text-neutral-300 dark:text-neutral-600 group-hover:text-emerald-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
               </a>
 
               {/* Response time notice */}

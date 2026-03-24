@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Calendar, Clock, ArrowRight, Sparkles } from "lucide-react";
+import { Calendar, Clock, ArrowRight } from "lucide-react";
 import { Navbar, Footer } from "@/components/layout";
 import { blogPosts } from "@/data";
 import Link from "next/link";
@@ -17,8 +17,7 @@ export default function BlogPage() {
       
       {/* Hero */}
       <section className="pt-32 pb-16 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:60px_60px]" />
-        <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-amber-500/10 dark:bg-amber-500/5 blur-[150px] rounded-full pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-size-[60px_60px]" />
         
         <div className="container px-6 mx-auto relative">
           <motion.div
@@ -27,9 +26,8 @@ export default function BlogPage() {
             animate="visible"
             className="max-w-3xl"
           >
-            <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-4">
-              <Sparkles className="w-5 h-5 text-amber-500" />
-              <span className="text-sm text-amber-600 dark:text-amber-400/80 tracking-[0.2em] uppercase font-medium">
+            <motion.div variants={fadeInUp} className="mb-4">
+              <span className="text-sm text-neutral-500 dark:text-neutral-400 tracking-[0.16em] uppercase font-medium">
                 Blog & Notes
               </span>
             </motion.div>
@@ -66,7 +64,7 @@ export default function BlogPage() {
                 >
                   <Link 
                     href={`/blog/${post.slug}`}
-                    className="block p-6 rounded-2xl bg-gradient-to-br from-amber-500/5 via-orange-500/5 to-transparent border border-amber-500/20 hover:border-amber-500/40 transition-all group h-full"
+                    className="block p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 transition-all group h-full"
                   >
                     <div className="flex flex-wrap gap-2 mb-4">
                       {post.tags.slice(0, 3).map(tag => (

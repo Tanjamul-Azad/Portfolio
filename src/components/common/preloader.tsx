@@ -53,14 +53,14 @@ export function Preloader({ onComplete }: PreloaderProps) {
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center overflow-hidden"
+          className="fixed inset-0 z-100 bg-black flex flex-col items-center justify-center overflow-hidden"
           exit={{ clipPath: "inset(0 0 100% 0)" }}
           transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
         >
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
           <div
-            className="absolute top-0 left-0 h-px bg-white transition-all duration-[30ms] linear"
+            className="absolute top-0 left-0 h-px bg-white transition-all duration-30 linear"
             style={{ width: `${count}%` }}
           />
 
@@ -76,7 +76,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
             {phase === "counting" && (
               <motion.div
                 key="sweep"
-                className="absolute w-full h-px bg-gradient-to-r from-transparent via-neutral-700/50 to-transparent"
+                className="absolute w-full h-px bg-linear-to-r from-transparent via-neutral-700/50 to-transparent"
                 initial={{ y: "100vh" }}
                 animate={{ y: 0 }}
                 exit={{ opacity: 0 }}
@@ -117,7 +117,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
             )}
           </AnimatePresence>
 
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
         </motion.div>
       )}
     </AnimatePresence>

@@ -1,10 +1,15 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/providers";
+import {
+  HashScrollManager,
+  PageTransition,
+  RouteTransitionProvider,
+  ThemeProvider,
+} from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config";
-import { ParticleBackground, ScrollProgress, StickyEmail, AiChat, SmoothScroll } from "@/components/effects";
+import { ScrollProgress, StickyEmail, SmoothScroll } from "@/components/effects";
 import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
@@ -101,18 +106,22 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${outfit.variable} font-sans antialiased`}
       >
+        <a href="#main-content" className="skip-link">Skip to main content</a>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          <SmoothScroll />
-          <ParticleBackground />
-          <ScrollProgress />
-          <StickyEmail />
-          <AiChat />
-          <div className="relative min-h-screen flex flex-col">{children}</div>
+          <RouteTransitionProvider>
+            <HashScrollManager />
+            <SmoothScroll />
+            <ScrollProgress />
+            <StickyEmail />
+            <div id="main-content" className="relative min-h-screen flex flex-col">
+              <PageTransition>{children}</PageTransition>
+            </div>
+          </RouteTransitionProvider>
           <Toaster position="bottom-right" />
           <Analytics />
         </ThemeProvider>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ExternalLink, Award, Medal, Trophy, Star, Sparkles } from "lucide-react";
+import { ExternalLink, Award, Medal, Trophy, Star } from "lucide-react";
 import { achievements } from "@/data";
 import type { Achievement } from "@/types";
 
@@ -34,18 +34,12 @@ function AchievementCard({ achievement, index }: { achievement: Achievement; ind
       >
         {/* Front of Card */}
         <div
-          className="absolute inset-0 rounded-3xl border border-amber-400/30 dark:border-amber-500/20 bg-gradient-to-br from-white via-neutral-50 to-neutral-100 dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-800 p-6 flex flex-col overflow-hidden"
+          className="absolute inset-0 rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 flex flex-col overflow-hidden"
           style={{ backfaceVisibility: "hidden" }}
         >
-          {/* Animated gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-400/5 via-transparent to-orange-400/5 dark:from-amber-500/5 dark:to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-          
-          {/* Glow effect */}
-          <div className="absolute -top-20 -right-20 w-40 h-40 bg-amber-400/10 dark:bg-amber-500/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-          
-          {/* Shimmer line */}
+          {/* Accent border line */}
           <motion.div
-            className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-400/50 to-transparent"
+            className="absolute top-0 left-0 w-full h-[1px] bg-linear-to-r from-transparent via-amber-500/70 to-transparent"
             initial={{ x: "-100%" }}
             animate={{ x: "100%" }}
             transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
@@ -55,31 +49,28 @@ function AchievementCard({ achievement, index }: { achievement: Achievement; ind
           <div className="flex items-start justify-between mb-6 relative">
             <motion.div
               className="relative"
-              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400 }}
             >
-              <span className="text-5xl drop-shadow-lg">{achievement.icon}</span>
-              <motion.div
-                className="absolute -inset-2 bg-amber-400/20 rounded-full blur-xl"
-                animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
+              <div className="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
+                <TypeIcon className="w-5 h-5 text-amber-500" />
+              </div>
             </motion.div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-400/10 dark:bg-amber-500/10 border border-amber-400/30 dark:border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-medium backdrop-blur-sm">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-600 dark:text-amber-400 text-xs font-medium">
               <TypeIcon className="w-3 h-3" />
               <span className="capitalize">{achievement.type}</span>
             </div>
           </div>
 
           {/* Title */}
-          <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2 leading-tight group-hover:text-amber-700 dark:group-hover:text-amber-100 transition-colors duration-300">
+          <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2 leading-tight group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors duration-300">
             {achievement.title}
           </h3>
 
           {/* Issuer & Date */}
           <div className="flex items-center gap-2 text-sm mb-4">
             <span className="text-neutral-500 dark:text-neutral-400">{achievement.issuer}</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-400" />
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
             <span className="text-amber-600 dark:text-amber-400 font-medium">{achievement.date}</span>
           </div>
 
@@ -97,36 +88,22 @@ function AchievementCard({ achievement, index }: { achievement: Achievement; ind
               </motion.span>
             ))}
             {achievement.skills.length > 3 && (
-              <span className="text-[10px] px-2.5 py-1 bg-amber-400/10 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-full border border-amber-400/30 dark:border-amber-500/20">
+              <span className="text-[10px] px-2.5 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-full border border-amber-500/25">
                 +{achievement.skills.length - 3}
               </span>
             )}
           </div>
-
-          {/* Flip Hint */}
-          <motion.div 
-            className="absolute bottom-4 right-4 flex items-center gap-2 text-neutral-400 dark:text-neutral-600 text-xs"
-            animate={{ opacity: [0.4, 0.8, 0.4] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <Sparkles className="w-3 h-3" />
-            <span>Hover to reveal</span>
-          </motion.div>
         </div>
 
         {/* Back of Card */}
         <div
-          className="absolute inset-0 rounded-3xl border border-amber-400/40 dark:border-amber-500/30 bg-gradient-to-br from-white via-neutral-50/95 to-amber-50/20 dark:from-neutral-900 dark:via-neutral-900/95 dark:to-amber-950/20 p-6 flex flex-col overflow-hidden"
+          className="absolute inset-0 rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 flex flex-col overflow-hidden"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
-          {/* Glow effect */}
-          <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-amber-400/15 dark:bg-amber-500/15 rounded-full blur-3xl" />
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-orange-400/10 dark:bg-orange-500/10 rounded-full blur-2xl" />
-
           {/* Header */}
-          <div className="flex items-center gap-3 mb-4 pb-4 border-b border-amber-400/20 dark:border-amber-500/10 relative">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400/20 to-orange-400/20 dark:from-amber-500/20 dark:to-orange-500/20 flex items-center justify-center text-2xl border border-amber-400/30 dark:border-amber-500/20">
-              {achievement.icon}
+          <div className="flex items-center gap-3 mb-4 pb-4 border-b border-neutral-200 dark:border-neutral-800 relative">
+            <div className="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
+              <TypeIcon className="w-5 h-5 text-amber-500" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-neutral-900 dark:text-white leading-tight">
@@ -137,21 +114,21 @@ function AchievementCard({ achievement, index }: { achievement: Achievement; ind
           </div>
 
           {/* Description */}
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4 flex-grow">
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4 grow">
             {achievement.description}
           </p>
 
           {/* Skills */}
           <div className="mb-4">
             <p className="text-[10px] text-neutral-400 dark:text-neutral-500 uppercase tracking-widest mb-2 flex items-center gap-1">
-              <Star className="w-3 h-3 text-amber-500/70 dark:text-amber-500/50" />
+              <Star className="w-3 h-3 text-amber-500/70" />
               Skills & Technologies
             </p>
             <div className="flex flex-wrap gap-1.5">
               {achievement.skills.map((skill) => (
                 <span
                   key={skill}
-                  className="text-[10px] px-2.5 py-1 rounded-full bg-amber-400/10 dark:bg-amber-500/10 border border-amber-400/30 dark:border-amber-500/20 text-amber-700 dark:text-amber-300"
+                  className="text-[10px] px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-700 dark:text-amber-300"
                 >
                   {skill}
                 </span>
@@ -165,7 +142,7 @@ function AchievementCard({ achievement, index }: { achievement: Achievement; ind
               href={achievement.credentialUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 py-3 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold text-sm shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 hover:from-amber-400 hover:to-orange-400 transition-all duration-300"
+              className="flex items-center justify-center gap-2 py-3 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black font-semibold text-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-300"
               onClick={(e) => e.stopPropagation()}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -196,10 +173,6 @@ export function Achievements() {
 
   return (
     <section id="achievements" className="py-28 relative bg-neutral-100 dark:bg-black overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-amber-400/5 dark:bg-amber-500/5 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-1/4 left-0 w-[400px] h-[400px] bg-orange-400/5 dark:bg-orange-500/5 blur-[120px] rounded-full pointer-events-none" />
-
       <div className="container px-6 mx-auto relative">
         {/* Header */}
         <div className="mb-16 text-center">
@@ -207,7 +180,7 @@ export function Achievements() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-xs text-amber-600 dark:text-amber-400/80 tracking-[0.3em] uppercase mb-4 block"
+            className="text-xs text-neutral-500 dark:text-neutral-400 tracking-[0.3em] uppercase mb-4 block"
           >
             Recognition
           </motion.span>
@@ -245,7 +218,7 @@ export function Achievements() {
                 onClick={() => setFilter(f.value)}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
                   filter === f.value
-                    ? "bg-amber-500 text-black shadow-lg shadow-amber-500/20"
+                    ? "bg-amber-500 text-black"
                     : "bg-white/50 dark:bg-neutral-900/50 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white border border-neutral-200 dark:border-neutral-800"
                 }`}
               >
@@ -277,20 +250,38 @@ export function Achievements() {
           className="mt-20 grid grid-cols-3 gap-4 max-w-2xl mx-auto"
         >
           {[
-            { count: achievements.filter((a) => a.type === "certification").length, label: "Certifications", icon: Award },
-            { count: achievements.filter((a) => a.type === "award").length, label: "Awards", icon: Trophy },
-            { count: achievements.filter((a) => a.type === "achievement").length, label: "Achievements", icon: Star },
+            {
+              count: achievements.filter((a) => a.type === "certification").length,
+              label: "Certifications",
+              icon: Award,
+              accentLine: "via-amber-500/70",
+              accentIcon: "text-amber-500/70",
+            },
+            {
+              count: achievements.filter((a) => a.type === "award").length,
+              label: "Awards",
+              icon: Trophy,
+              accentLine: "via-sky-500/65",
+              accentIcon: "text-sky-500/70",
+            },
+            {
+              count: achievements.filter((a) => a.type === "achievement").length,
+              label: "Achievements",
+              icon: Star,
+              accentLine: "via-emerald-500/65",
+              accentIcon: "text-emerald-500/70",
+            },
           ].map((stat, i) => {
             const Icon = stat.icon;
             return (
               <motion.div
                 key={i}
                 whileHover={{ scale: 1.03, y: -2 }}
-                className="relative text-center p-5 rounded-2xl bg-gradient-to-br from-white/80 to-neutral-100/40 dark:from-neutral-900/80 dark:to-neutral-900/40 border border-amber-400/20 dark:border-amber-500/10 hover:border-amber-400/40 dark:hover:border-amber-500/30 transition-colors duration-300 overflow-hidden group"
+                className="relative text-center p-5 rounded-2xl bg-white/80 dark:bg-neutral-900/80 border border-neutral-200 dark:border-neutral-800 hover:border-amber-500/30 transition-colors duration-300 overflow-hidden group"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-400/5 to-orange-400/5 dark:from-amber-500/5 dark:to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <Icon className="w-5 h-5 text-amber-500/70 dark:text-amber-500/50 mx-auto mb-2" />
-                <div className="text-3xl font-bold bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 dark:from-amber-200 dark:via-orange-300 dark:to-amber-200 bg-clip-text text-transparent">{stat.count}</div>
+                <div className={`absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent ${stat.accentLine} to-transparent`} />
+                <Icon className={`w-5 h-5 mx-auto mb-2 ${stat.accentIcon}`} />
+                <div className="text-3xl font-bold text-neutral-900 dark:text-white">{stat.count}</div>
                 <div className="text-xs text-neutral-500 mt-1">{stat.label}</div>
               </motion.div>
             );

@@ -26,7 +26,7 @@ export function ScrollProgress() {
       <div className="w-1 h-24 rounded-full bg-neutral-200/80 dark:bg-neutral-800/50 overflow-hidden backdrop-blur-sm">
         {/* Progress */}
         <motion.div
-          className="w-full bg-gradient-to-b from-amber-400 to-orange-500 rounded-full origin-top"
+          className="w-full bg-neutral-700 dark:bg-neutral-300 rounded-full origin-top"
           style={{ height: `${scrollProgress}%` }}
           initial={{ height: 0 }}
           transition={{ duration: 0.1 }}
@@ -35,7 +35,7 @@ export function ScrollProgress() {
       
       {/* Percentage indicator */}
       <motion.div
-        className="absolute -left-10 top-1/2 -translate-y-1/2 text-[10px] text-amber-600/80 dark:text-amber-400/70 font-medium"
+        className="absolute -left-10 top-1/2 -translate-y-1/2 text-[10px] text-neutral-600 dark:text-neutral-400 font-medium"
         initial={{ opacity: 0 }}
         animate={{ opacity: scrollProgress > 5 ? 1 : 0 }}
       >

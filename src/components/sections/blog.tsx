@@ -1,39 +1,39 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Calendar, Clock, ArrowRight, Sparkles } from "lucide-react";
+import { Calendar, Clock, ArrowRight } from "lucide-react";
 import { blogPosts } from "@/data";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { SECTION_REVEAL } from "@/lib";
+import { useRouteTransitioning } from "@/components/providers/page-transition";
 
 export function Blog() {
-  const featuredPosts = blogPosts.filter(p => p.featured).slice(0, 2);
   const recentPosts = blogPosts.slice(0, 4);
+  const { isRouteTransitioning } = useRouteTransitioning();
 
   return (
-    <section id="blog" className="py-28 bg-white dark:bg-neutral-900/50 relative overflow-hidden">
-      {/* Background accent */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-amber-400/5 dark:bg-amber-500/3 blur-[150px] rounded-full pointer-events-none" />
-
-      <div className="container px-6 mx-auto relative">
+    <section id="blog" className="py-28 bg-white dark:bg-neutral-900/50">
+      <div className="container px-6 mx-auto">
         {/* Header */}
-        <div className="mb-16 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <motion.div
+          variants={SECTION_REVEAL.container}
+          initial="hidden"
+          whileInView={isRouteTransitioning ? undefined : "visible"}
+          viewport={{ once: true }}
+          className="mb-16 flex flex-col md:flex-row md:items-end md:justify-between gap-6"
+        >
           <div>
             <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="flex items-center gap-3 mb-4"
+              variants={SECTION_REVEAL.heading}
+              className="mb-4"
             >
-              <Sparkles className="w-5 h-5 text-amber-500" />
-              <span className="text-sm text-amber-600 dark:text-amber-400/80 tracking-[0.2em] uppercase font-medium">
+              <span className="text-sm text-neutral-500 dark:text-neutral-400 tracking-[0.16em] uppercase font-medium">
                 Blog & Notes
               </span>
             </motion.div>
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              variants={SECTION_REVEAL.heading}
               className="text-4xl md:text-5xl font-bold font-heading text-neutral-900 dark:text-white tracking-tight"
             >
               Latest Writings
@@ -41,9 +41,7 @@ export function Blog() {
           </div>
           
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            variants={SECTION_REVEAL.heading}
           >
             <Link
               href="/blog"
@@ -53,24 +51,25 @@ export function Blog() {
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </motion.div>
-        </div>
+        </motion.div>
 
         {/* Blog Grid */}
         <div className="grid md:grid-cols-2 gap-6">
           {recentPosts.map((post, index) => (
             <motion.article
               key={post.slug}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              variants={SECTION_REVEAL.item}
+              initial="hidden"
+              whileInView={isRouteTransitioning ? undefined : "visible"}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ delay: index * 0.08 }}
             >
               <Link
                 href={`/blog/${post.slug}`}
                 className={`group block h-full p-6 rounded-2xl border transition-all duration-300 ${
                   post.featured
-                    ? "bg-gradient-to-br from-amber-500/5 via-orange-500/5 to-transparent border-amber-500/20 hover:border-amber-500/40 hover:shadow-lg hover:shadow-amber-500/5"
-                    : "glass hover:border-amber-400/30 dark:hover:border-amber-500/20"
+                    ? "bg-neutral-50 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
+                    : "glass hover:border-neutral-300 dark:hover:border-neutral-700"
                 }`}
               >
                 {/* Tags */}

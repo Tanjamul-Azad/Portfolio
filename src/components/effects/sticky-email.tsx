@@ -14,7 +14,7 @@ export function StickyEmail() {
       <div className="glass px-3 py-6 rounded-full flex flex-col items-center gap-4">
         <a
           href={`mailto:${siteConfig.contact.email}`}
-          className="text-neutral-500 dark:text-neutral-400 hover:text-amber-600 dark:hover:text-amber-400 text-xs tracking-[2px] transition-colors duration-300"
+          className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white text-xs tracking-[2px] transition-colors duration-300"
           style={{
             writingMode: "vertical-rl",
             textOrientation: "mixed",
@@ -22,7 +22,7 @@ export function StickyEmail() {
         >
           {siteConfig.contact.email}
         </a>
-        <div className="w-px h-12 bg-gradient-to-b from-amber-500/50 dark:from-amber-400/50 to-transparent" />
+        <div className="w-px h-12 bg-neutral-300 dark:bg-neutral-700" />
       </div>
     </motion.div>
   );

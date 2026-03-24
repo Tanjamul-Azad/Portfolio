@@ -128,7 +128,7 @@ export function AiChat() {
       {/* Chat Toggle Button */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 flex items-center justify-center transition-all duration-300 hover:scale-105"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-linear-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 flex items-center justify-center transition-all duration-300 hover:scale-105"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         aria-label="Toggle AI Chat"
@@ -166,14 +166,14 @@ export function AiChat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-48px)] h-[500px] max-h-[calc(100vh-150px)] glass rounded-2xl shadow-2xl shadow-black/20 dark:shadow-black/50 flex flex-col overflow-hidden"
+            className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-48px)] h-125 max-h-[calc(100vh-150px)] glass rounded-2xl shadow-2xl shadow-black/20 dark:shadow-black/50 flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-amber-500/90 to-orange-500/90 text-white backdrop-blur-sm">
+            <div className="flex items-center gap-3 px-4 py-3 bg-linear-to-r from-amber-500/90 to-orange-500/90 text-white backdrop-blur-sm">
               <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                 <Sparkles className="w-5 h-5" />
               </div>
-              <div className="flex-grow">
+              <div className="grow">
                 <h3 className="font-semibold text-sm">AI Assistant</h3>
                 <p className="text-xs text-white/80">Ask me about {siteConfig.author.name}</p>
               </div>
@@ -184,7 +184,7 @@ export function AiChat() {
             </div>
 
             {/* Messages */}
-            <div className="flex-grow overflow-y-auto p-4 space-y-4 bg-white/40 dark:bg-neutral-950/40 backdrop-blur-md">
+            <div className="grow overflow-y-auto p-4 space-y-4 bg-white/40 dark:bg-neutral-950/40 backdrop-blur-md">
               {messages.map((message) => (
                 <motion.div
                   key={message.id}
@@ -283,14 +283,14 @@ export function AiChat() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask me anything..."
-                  className="flex-grow px-4 py-2.5 rounded-full bg-white/50 dark:bg-neutral-800/50 text-neutral-900 dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 border border-neutral-200/50 dark:border-neutral-700/50 focus:border-amber-500/30 transition-all"
+                  className="grow px-4 py-2.5 rounded-full bg-white/50 dark:bg-neutral-800/50 text-neutral-900 dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 border border-neutral-200/50 dark:border-neutral-700/50 focus:border-amber-500/30 transition-all"
                   disabled={isLoading}
                 />
                 <Button
                   type="submit"
                   size="icon"
                   disabled={!input.trim() || isLoading}
-                  className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-10 h-10 rounded-full bg-linear-to-r from-amber-500 to-orange-500 text-white hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

@@ -79,7 +79,7 @@ export function ParticleBackground() {
 
       {/* Ambient Glow Orbs */}
       <motion.div
-        className={isDark ? "absolute w-[500px] h-[500px] rounded-full bg-amber-500/3 blur-[120px]" : "absolute w-[500px] h-[500px] rounded-full bg-amber-400/10 blur-[120px]"}
+        className={isDark ? "absolute w-[500px] h-125 rounded-full bg-amber-500/3 blur-[120px]" : "absolute w-[500px] h-125 rounded-full bg-amber-400/10 blur-[120px]"}
         animate={{
           x: ["-20%", "20%", "-20%"],
           y: ["-20%", "30%", "-20%"],
@@ -92,7 +92,7 @@ export function ParticleBackground() {
         style={{ top: "10%", left: "10%" }}
       />
       <motion.div
-        className={isDark ? "absolute w-[400px] h-[400px] rounded-full bg-orange-500/3 blur-[100px]" : "absolute w-[400px] h-[400px] rounded-full bg-orange-400/10 blur-[100px]"}
+        className={isDark ? "absolute w-100 h-100 rounded-full bg-orange-500/3 blur-[100px]" : "absolute w-100 h-100 rounded-full bg-orange-400/10 blur-[100px]"}
         animate={{
           x: ["20%", "-20%", "20%"],
           y: ["30%", "-10%", "30%"],

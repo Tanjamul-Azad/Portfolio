@@ -9,10 +9,17 @@ import {
 } from "@/components/ui/tooltip";
 import { techStack } from "@/data";
 import { TechOrbit } from "@/components/effects";
+import { CodeFlowPattern } from "@/components/ui/code-flow-pattern";
 
 export function TechStack() {
     return (
         <section className="py-24 relative border-y border-neutral-200 dark:border-neutral-800/50 bg-neutral-100/50 dark:bg-neutral-950/50 overflow-hidden">
+            <CodeFlowPattern
+                className="opacity-25 dark:opacity-20 text-amber-500 dark:text-amber-400"
+                numElements={35}
+                flowSpeed={12}
+                maxOpacity={0.2}
+            />
             <TechOrbit />
             <div className="container px-6 mx-auto relative z-10">
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
@@ -22,7 +29,7 @@ export function TechStack() {
                         viewport={{ once: true }}
                         className="lg:max-w-sm text-center lg:text-left"
                     >
-                        <span className="text-xs text-amber-600 dark:text-amber-400/70 tracking-[0.2em] uppercase mb-2 block">
+                        <span className="text-xs text-neutral-500 dark:text-neutral-400 tracking-[0.2em] uppercase mb-2 block">
                             Tech Stack
                         </span>
                         <h3 className="text-2xl font-semibold font-heading mb-3 text-neutral-900 dark:text-white">
@@ -48,7 +55,7 @@ export function TechStack() {
                                             whileInView={{ opacity: 1, scale: 1 }}
                                             viewport={{ once: true }}
                                             transition={{ delay: index * 0.05 }}
-                                            className="flex items-center gap-2 px-4 py-2.5 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-md rounded-full border border-neutral-200 dark:border-neutral-800/50 hover:border-amber-400/50 dark:hover:border-amber-500/30 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 transition-all duration-300 cursor-default group"
+                                            className="flex items-center gap-2 px-4 py-2.5 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-md rounded-full border border-neutral-200 dark:border-neutral-800/50 hover:border-amber-500/40 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 transition-all duration-300 cursor-default group"
                                         >
                                             <span className="text-lg group-hover:scale-110 transition-transform duration-300">{tech.icon}</span>
                                             <span className="font-medium text-sm text-neutral-600 dark:text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-neutral-200 transition-colors">

@@ -1,16 +1,18 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useState, useEffect } from "react";
 import type { ComponentProps } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, Points, PointMaterial } from "@react-three/drei";
+import { Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
 function Particles(props: Omit<ComponentProps<typeof Points>, "positions">) {
   const ref = useRef<THREE.Points>(null!);
 
   // Generate particles in a sphere manually to avoid NaN issues
-  const sphere = useMemo(() => {
+  const [sphere, setSphere] = useState<Float32Array | null>(null);
+
+  useEffect(() => {
     const count = 5000;
     const radius = 1.5;
     const points = new Float32Array(count * 3);
@@ -28,7 +30,8 @@ function Particles(props: Omit<ComponentProps<typeof Points>, "positions">) {
       points[i * 3 + 1] = y;
       points[i * 3 + 2] = z;
     }
-    return points;
+    const timer = setTimeout(() => setSphere(points), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   useFrame((state, delta) => {
@@ -37,6 +40,8 @@ function Particles(props: Omit<ComponentProps<typeof Points>, "positions">) {
       ref.current.rotation.y -= delta / 15;
     }
   });
+
+  if (!sphere) return null;
 
   return (
     <group rotation={[0, 0, Math.PI / 4]}>
@@ -50,36 +55,6 @@ function Particles(props: Omit<ComponentProps<typeof Points>, "positions">) {
         />
       </Points>
     </group>
-  );
-}
-
-function FloatingShape() {
-  const meshRef = useRef<THREE.Mesh>(null!);
-
-  useFrame((state) => {
-    const t = state.clock.getElapsedTime();
-    if (meshRef.current) {
-      meshRef.current.rotation.x = Math.cos(t / 4) / 2;
-      meshRef.current.rotation.y = Math.sin(t / 4) / 2;
-      meshRef.current.rotation.z = Math.sin(t / 1.5) / 2;
-      meshRef.current.position.y = Math.sin(t / 1.5) / 10;
-    }
-  });
-
-  return (
-    <Float speed={2} rotationIntensity={1.5} floatIntensity={2}>
-      <mesh ref={meshRef}>
-        <torusKnotGeometry args={[1, 0.3, 128, 16]} />
-        <meshStandardMaterial
-          color="#4338ca"
-          emissive="#4338ca"
-          emissiveIntensity={0.5}
-          roughness={0.3}
-          metalness={0.8}
-          wireframe
-        />
-      </mesh>
-    </Float>
   );
 }
 

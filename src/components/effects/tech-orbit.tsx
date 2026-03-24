@@ -52,7 +52,7 @@ function NeuralConnections() {
         return p;
     }, []);
 
-    const lineRef = useRef<any>(null);
+    const lineRef = useRef<THREE.Group>(null);
 
     useFrame((state) => {
         if(lineRef.current) {

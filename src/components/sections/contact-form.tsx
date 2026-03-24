@@ -135,10 +135,10 @@ export function ContactForm() {
         
         <Button
           type="submit"
-          className="group w-full rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-black font-semibold shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/40 hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] transition-all duration-300 relative overflow-hidden"
+          className="group w-full rounded-full bg-linear-to-r from-amber-400 to-orange-500 text-black font-semibold shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/40 hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] transition-all duration-300 relative overflow-hidden"
           disabled={form.formState.isSubmitting}
         >
-          <span className="absolute inset-0 bg-gradient-to-r from-amber-300 to-orange-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <span className="absolute inset-0 bg-linear-to-r from-amber-300 to-orange-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <span className="relative flex items-center justify-center">
             {form.formState.isSubmitting ? (
               <>

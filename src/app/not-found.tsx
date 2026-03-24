@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
@@ -10,8 +10,8 @@ export default function NotFound() {
     <main className="min-h-screen bg-neutral-50 dark:bg-black flex items-center justify-center px-6">
       {/* Ambient blobs */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-amber-100/40 dark:bg-amber-900/10 blur-[140px] rounded-full" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-neutral-200/50 dark:bg-neutral-900/30 blur-[120px] rounded-full" />
+        <div className="absolute top-[-20%] right-[-10%] w-150 h-150 bg-amber-100/40 dark:bg-amber-900/10 blur-[140px] rounded-full" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-125 h-125 bg-neutral-200/50 dark:bg-neutral-900/30 blur-[120px] rounded-full" />
       </div>
 
       <motion.div
@@ -20,9 +20,9 @@ export default function NotFound() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="relative text-center max-w-lg"
       >
+        <div className="absolute top-0 inset-x-20 h-px bg-linear-to-r from-transparent via-amber-500/70 to-transparent" />
         {/* Label */}
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <Sparkles className="w-4 h-4 text-amber-500" />
+        <div className="flex items-center justify-center mb-8">
           <span className="text-xs font-medium tracking-[0.25em] uppercase text-neutral-500 dark:text-neutral-400">
             Page Not Found
           </span>
@@ -30,7 +30,7 @@ export default function NotFound() {
 
         {/* 404 */}
         <h1 className="text-[clamp(6rem,20vw,14rem)] font-bold leading-none tracking-tighter text-neutral-900 dark:text-white select-none">
-          <span className="text-transparent bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text">
+          <span className="text-neutral-900 dark:text-white">
             404
           </span>
         </h1>
@@ -58,7 +58,7 @@ export default function NotFound() {
             variant="ghost"
             className="h-12 px-8 rounded-full text-sm font-medium hover:bg-neutral-100 dark:hover:bg-white/5 transition-all"
           >
-            <Link href="/#contact">Get in Touch</Link>
+            <Link href="/#contact" scroll={false}>Get in Touch</Link>
           </Button>
         </div>
       </motion.div>

@@ -32,8 +32,6 @@ export function CustomCursor() {
     const down = () => setVariant("click");
     const up = () => setVariant((v) => (v === "click" ? "default" : v));
 
-    let isDocumentEventAttached = false;
-
     function attachHoverListeners() {
       // Safely attach and remove listeners to avoid memory leaks
       const hoverElements = document.querySelectorAll("a, button, [role='button'], input, textarea, select");
@@ -61,7 +59,6 @@ export function CustomCursor() {
     // Delay attachment slightly to ensure DOM is ready
     const timeoutId = setTimeout(() => {
       attachHoverListeners();
-      isDocumentEventAttached = true;
     }, 100);
 
     const observer = new MutationObserver((mutations) => {
@@ -99,14 +96,25 @@ export function CustomCursor() {
     };
   }, [cursorX, cursorY]);
 
-  const dotStyles: Record<CursorVariant, React.CSSProperties> = {
+  const dotStyles: Record<CursorVariant, {
+    width: number;
+    height: number;
+    borderRadius: string | number;
+    background: string;
+    border: string;
+    opacity: number;
+  }> = {
     default: { width: 10,  height: 10, borderRadius: "50%", background: "#f59e0b", border: "none", opacity: 0.8 },
     hover:   { width: 36,  height: 36, borderRadius: "50%", background: "transparent", border: "1.5px solid #f59e0b", opacity: 1 },
     text:    { width: 2,   height: 24, borderRadius: 2, background: "#f59e0b", border: "none", opacity: 1 },
     click:   { width: 6,   height: 6,  borderRadius: "50%", background: "#f97316", border: "none", opacity: 1 },
   };
 
-  const ringStyles: Record<CursorVariant, React.CSSProperties> = {
+  const ringStyles: Record<CursorVariant, {
+    width: number;
+    height: number;
+    opacity: number;
+  }> = {
     default: { width: 26, height: 26, opacity: 0.35 },
     hover:   { width: 56, height: 56, opacity: 0.2 },
     text:    { width: 26, height: 26, opacity: 0 },
@@ -124,13 +132,13 @@ export function CustomCursor() {
         }
       `}} />
       <motion.div
-        className="hidden md:block fixed top-0 left-0 z-[9999] pointer-events-none"
+        className="hidden md:block fixed top-0 left-0 z-9999 pointer-events-none"
         style={{ x: dotX, y: dotY, translateX: "-50%", translateY: "-50%" }}
         animate={{ ...dotStyles[variant], opacity: visible ? dotStyles[variant].opacity : 0 }}
         transition={{ duration: 0.15, ease: "easeOut" }}
       />
       <motion.div
-        className="hidden md:block fixed top-0 left-0 z-[9998] pointer-events-none rounded-full border border-amber-500/50"
+        className="hidden md:block fixed top-0 left-0 z-9998 pointer-events-none rounded-full border border-amber-500/50"
         style={{ x: ringX, y: ringY, translateX: "-50%", translateY: "-50%" }}
         animate={{ ...ringStyles[variant], opacity: visible ? ringStyles[variant].opacity : 0 }}
         transition={{ duration: 0.2, ease: "easeOut" }}

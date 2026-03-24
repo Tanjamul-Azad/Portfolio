@@ -34,11 +34,52 @@
   /* Refined Animations */
   --animate-float: float 6s ease-in-out infinite;
   --animate-fade-in-up: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-marquee-slow: marquee-slow 50s linear infinite;
+  --animate-marquee-fast: marquee-fast 20s linear infinite;
 }
 
 @layer base {
   ::selection {
     @apply bg-neutral-900 text-white dark:bg-white dark:text-neutral-900;
+  }
+
+  /* Smooth scroll behavior for page-like sections */
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+  }
+
+  /* Keep scrolling natural and smooth across sections */
+  .scroll-container {
+    scroll-snap-type: none;
+  }
+
+  .scroll-section {
+    scroll-snap-align: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [role="button"]:focus-visible {
+    @apply outline-none ring-2 ring-amber-500/70 ring-offset-2 ring-offset-background;
   }
 }
 
@@ -162,6 +203,27 @@
     transform: scaleX(1);
     transform-origin: bottom left;
   }
+
+  /* Marquee animations */
+  .animate-marquee {
+    animation: var(--animate-marquee);
+  }
+
+  .animate-marquee-slow {
+    animation: var(--animate-marquee-slow);
+  }
+
+  .animate-marquee-fast {
+    animation: var(--animate-marquee-fast);
+  }
+
+  .pause {
+    animation-play-state: paused !important;
+  }
+
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-md focus:bg-neutral-900 focus:text-white dark:focus:bg-white dark:focus:text-neutral-900;
+  }
 }
 
 @keyframes float {
@@ -187,5 +249,32 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - 1rem));
+  }
+}
+
+@keyframes marquee-slow {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - 1rem));
+  }
+}
+
+@keyframes marquee-fast {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - 1rem));
   }
 }
