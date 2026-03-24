@@ -1,0 +1,18 @@
+Tanjamul Azad
+Full-Stack Developer | AI/ML Learner | NLP Researcher | CSE Undergrad
+Location: Bangladesh
+Email: i.m.tanjamul@gmail.com
+LinkedIn: https://linkedin.com/in/tanjamul
+GitHub: https://github.com/Tanjamul-Azad
+
+Professional Summary
+I build practical, user-focused web products with modern full-stack technologies and AI-assisted workflows.
+
+Core Areas
+- Full-stack web development
+- AI/ML learning and NLP exploration
+- Product-oriented engineering
+
+Note
+Replace this file with your final resume PDF when ready.
+Suggested path: public/resume.pdf

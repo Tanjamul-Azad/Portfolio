@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowUpRight, Github, ExternalLink, Layers, Lightbulb, Target, Trophy, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getProjectBySlug, projects } from "@/data";
+import { getProjectBySlug, projects } from "@/data/projects";
 import { Navbar, Footer } from "@/components/layout";
 import Link from "next/link";
 import Image from "next/image";

@@ -1,145 +1,149 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import {
   motion,
+  useReducedMotion,
   useScroll,
-  useTransform,
   useSpring,
-  useMotionValue,
-  useMotionTemplate,
+  useTransform,
 } from "framer-motion";
+import { BriefcaseBusiness, CalendarRange, CircleCheck } from "lucide-react";
 import { experiences } from "@/data";
 import type { Experience } from "@/types";
 import { MOTION_TOKENS } from "@/lib";
 import { useRouteTransitioning } from "@/components/providers/page-transition";
 
+function getYearsFromPeriod(period: string) {
+  const matches = period.match(/\d{4}/g);
+  if (!matches || matches.length === 0) return 0;
+
+  const start = Number(matches[0]);
+  const end = /present/i.test(period) ? new Date().getFullYear() : Number(matches[matches.length - 1]);
+
+  if (Number.isNaN(start) || Number.isNaN(end) || end < start) return 0;
+  return end - start + 1;
+}
+
 function ExperienceCard({
   exp,
   index,
-  side,
   isRouteTransitioning,
+  prefersReducedMotion,
 }: {
   exp: Experience;
   index: number;
-  side: "left" | "right";
   isRouteTransitioning: boolean;
+  prefersReducedMotion: boolean;
 }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const mouseXProgress = useMotionValue(0);
-  const mouseYProgress = useMotionValue(0);
-
-  const springCfg = { stiffness: 220, damping: 28 };
-  const rotateX = useSpring(useTransform(mouseY, [-80, 80], [7, -7]), springCfg);
-  const rotateY = useSpring(useTransform(mouseX, [-120, 120], [-7, 7]), springCfg);
-
-  function handleMove(e: React.MouseEvent<HTMLDivElement>) {
-    if (!cardRef.current) return;
-    const { left, top, width, height } = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - left;
-    const y = e.clientY - top;
-
-    mouseX.set(x - width / 2);
-    mouseY.set(y - height / 2);
-    mouseXProgress.set(x);
-    mouseYProgress.set(y);
-  }
-
-  function handleLeave() {
-    mouseX.set(0);
-    mouseY.set(0);
-  }
-
-  const background = useMotionTemplate`radial-gradient(400px circle at ${mouseXProgress}px ${mouseYProgress}px, rgba(245, 158, 11, 0.08), transparent 80%)`;
-
   return (
-    <motion.div
-      initial={{ opacity: 0, x: side === "left" ? -40 : 40, y: 20 }}
-      whileInView={isRouteTransitioning ? undefined : { opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: MOTION_TOKENS.duration.slow, delay: index * MOTION_TOKENS.stagger.regular, ease: MOTION_TOKENS.easing.premium }}
-      className={`flex-1 relative w-full ${side === "left" ? "md:pr-12 md:text-right" : "md:pl-12 text-left"}`}
+    <motion.article
+      initial={{ opacity: 0, y: 22 }}
+      whileInView={isRouteTransitioning ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{
+        duration: MOTION_TOKENS.duration.slow,
+        delay: index * MOTION_TOKENS.stagger.regular,
+        ease: MOTION_TOKENS.easing.premium,
+      }}
+      className="group relative pl-10 md:pl-12"
     >
-      {/* Desktop Connection line */}
-      <div className={`hidden md:block absolute top-18 w-12 h-px bg-linear-to-r ${side === "left" ? "right-0 from-transparent to-amber-500/30" : "left-0 from-amber-500/30 to-transparent"}`} />
-
-      {/* Mobile Connection line */}
-      <div className="md:hidden absolute top-18 -left-8 w-8 h-px bg-linear-to-r from-amber-500/30 to-transparent" />
+      <motion.div
+        className="absolute left-[0.4rem] top-9 h-3.5 w-3.5 rounded-full border-2 border-amber-500 bg-background shadow-[0_0_0_4px_rgba(245,158,11,0.16)]"
+        animate={prefersReducedMotion ? undefined : { boxShadow: ["0 0 0 4px rgba(245,158,11,0.12)", "0 0 0 8px rgba(245,158,11,0.08)", "0 0 0 4px rgba(245,158,11,0.12)"] }}
+        transition={prefersReducedMotion ? undefined : { duration: 2.8, repeat: Infinity, ease: "easeInOut", delay: index * 0.18 }}
+      />
 
       <motion.div
-        ref={cardRef}
-        onMouseMove={handleMove}
-        onMouseLeave={handleLeave}
-        style={{ perspective: 1000 }}
-        className="block w-full"
+        whileHover={prefersReducedMotion ? undefined : { y: -4 }}
+        transition={{ type: "spring", stiffness: 280, damping: 24 }}
+        className="rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-neutral-900 shadow-sm hover:shadow-md transition-shadow duration-300"
       >
-        <motion.div
-          style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-          className="relative w-full p-6 md:p-8 rounded-2xl bg-white/60 dark:bg-neutral-900/40 border border-neutral-200/60 dark:border-neutral-800/60 hover:border-amber-500/30 dark:hover:border-amber-400/30 transition-colors duration-300 shadow-sm hover:shadow-xl backdrop-blur-md overflow-hidden group"
-        >
-          {/* Spotlight Glow Effect on Hover */}
-          <motion.div
-            className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0 hidden md:block"
-            style={{ background }}
-          />
+        <div className="p-6 md:p-7">
+          <div className="mb-5 h-px w-0 bg-linear-to-r from-transparent via-amber-500/65 to-transparent transition-all duration-500 group-hover:w-full" />
 
-          <div className="relative z-10" style={{ transform: "translateZ(30px)" }}>
-            <div className={`flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2 ${side === "left" ? "md:flex-row-reverse" : ""}`}>
-              <span className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 text-xs font-mono tracking-widest uppercase">
-                {exp.period}
-              </span>
-              <div className={`w-8 h-px bg-amber-500/40 hidden md:block ${side === "left" ? "ml-auto" : "mr-auto"}`} />
-            </div>
-
-            <h3 className={`text-2xl font-bold font-heading text-neutral-900 dark:text-white mb-1 ${side === "left" ? "md:text-right" : "md:text-left"}`}>
-              {exp.role}
-            </h3>
-
-            <div className={`text-sm font-medium text-amber-600 dark:text-amber-500 mb-6 ${side === "left" ? "md:text-right" : "md:text-left"}`}>
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-neutral-600 dark:text-neutral-300">
+              <CalendarRange className="h-3.5 w-3.5" />
+              {exp.period}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-amber-700 dark:text-amber-300">
+              <BriefcaseBusiness className="h-3.5 w-3.5" />
               {exp.company}
-            </div>
+            </span>
+          </div>
 
-            <ul className="space-y-3 mb-6">
-              {exp.description.map((item, i) => (
-                <motion.li
-                  initial={{ opacity: 0, x: side === "left" ? 10 : -10 }}
-                  whileInView={isRouteTransitioning ? undefined : { opacity: 1, x: 0 }}
-                  transition={{ delay: MOTION_TOKENS.duration.regular + (i * MOTION_TOKENS.stagger.tight), duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
-                  viewport={{ once: true }}
-                  key={i}
-                  className={`text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed flex items-start gap-3 ${side === "left" ? "md:flex-row-reverse md:text-right" : ""}`}
+          <h3 className="text-xl md:text-2xl font-bold font-heading text-neutral-900 dark:text-white">
+            {exp.role}
+          </h3>
+
+          <ul className="mt-5 space-y-3">
+            {exp.description.map((item, i) => (
+              <motion.li
+                key={`${exp.id}-${i}`}
+                initial={{ opacity: 0, y: 8 }}
+                whileInView={isRouteTransitioning ? undefined : { opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{
+                  delay: MOTION_TOKENS.duration.quick + i * MOTION_TOKENS.stagger.tight,
+                  duration: MOTION_TOKENS.duration.medium,
+                  ease: MOTION_TOKENS.easing.premium,
+                }}
+                className="flex items-start gap-3 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300"
+              >
+                <motion.span
+                  whileHover={prefersReducedMotion ? undefined : { scale: 1.08 }}
+                  transition={{ duration: 0.2 }}
+                  className="shrink-0 mt-0.5"
                 >
-                  <span className="text-amber-500/80 mt-1 shrink-0 text-xs">♦</span>
-                  <span>{item}</span>
-                </motion.li>
-              ))}
-            </ul>
+                  <CircleCheck className="h-4 w-4 text-amber-500" />
+                </motion.span>
+                <span>{item}</span>
+              </motion.li>
+            ))}
+          </ul>
 
-            {exp.technologies && exp.technologies.length > 0 && (
-              <div className={`flex flex-wrap gap-2 pt-5 border-t border-neutral-200 dark:border-neutral-800/80 ${side === "left" ? "md:justify-end" : "justify-start"}`}>
+          {!!exp.technologies?.length && (
+            <div className="mt-6 pt-5 border-t border-neutral-200/80 dark:border-neutral-800/80">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400 mb-3">
+                Technologies
+              </p>
+              <div className="flex flex-wrap gap-2">
                 {exp.technologies.map((tech) => (
                   <motion.span
-                    key={tech}
-                    whileHover={{ y: -2, scale: 1.05 }}
-                    className="text-[11px] px-3 py-1 rounded-md bg-neutral-100 dark:bg-neutral-800/80 text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700/80 backdrop-blur-sm cursor-default"
+                    key={`${exp.id}-${tech}`}
+                    whileHover={prefersReducedMotion ? undefined : { y: -1.5 }}
+                    transition={{ duration: 0.18 }}
+                    className="text-[11px] px-3 py-1 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700"
                   >
                     {tech}
                   </motion.span>
                 ))}
               </div>
-            )}
-          </div>
-        </motion.div>
+            </div>
+          )}
+        </div>
       </motion.div>
-    </motion.div>
+    </motion.article>
   );
 }
 
 export function Experience() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = useReducedMotion() ?? false;
   const { isRouteTransitioning } = useRouteTransitioning();
+
+  const snapshotStats = useMemo(() => {
+    const roleCount = experiences.length;
+    const uniqueTechnologies = new Set(experiences.flatMap((exp) => exp.technologies ?? [])).size;
+    const totalYears = experiences.reduce((sum, exp) => sum + getYearsFromPeriod(exp.period), 0);
+
+    return [
+      { label: "Years", value: `${Math.max(1, totalYears)}+` },
+      { label: "Roles", value: `${roleCount}` },
+      { label: "Core Skills", value: `${uniqueTechnologies}+` },
+    ];
+  }, []);
 
   // Track scroll dynamically to draw the timeline
   const { scrollYProgress } = useScroll({
@@ -148,8 +152,9 @@ export function Experience() {
   });
 
   const pathHeight = useSpring(scrollYProgress, {
-    stiffness: 400,
-    damping: 90,
+    stiffness: 320,
+    damping: 70,
+    mass: 0.25,
   });
 
   const heightTransform = useTransform(pathHeight, [0, 1], ["0%", "100%"]);
@@ -160,15 +165,14 @@ export function Experience() {
       <div className="absolute top-1/2 left-1/2 w-150 h-150 bg-amber-500/5 blur-[120px] rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2" />
 
       <div className="container px-4 md:px-6 mx-auto relative z-10">
-        <div className="mb-20 md:mb-28 text-center max-w-2xl mx-auto">
+        <div className="mb-16 md:mb-20 text-center max-w-3xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={isRouteTransitioning ? undefined : { opacity: 1, scale: 1 }}
+            initial={{ opacity: 0 }}
+            whileInView={isRouteTransitioning ? undefined : { opacity: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-xs font-mono tracking-widest uppercase mb-6"
+            className="text-xs text-neutral-500 dark:text-neutral-400 tracking-[0.3em] uppercase mb-4 block"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-            Career
+            Project Work
           </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -177,59 +181,60 @@ export function Experience() {
             transition={{ duration: MOTION_TOKENS.duration.slow, ease: MOTION_TOKENS.easing.premium }}
             className="text-4xl md:text-5xl lg:text-6xl font-bold font-heading text-neutral-900 dark:text-white tracking-tight"
           >
-            My Experience
+            Project Experience
           </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={isRouteTransitioning ? undefined : { opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: MOTION_TOKENS.duration.quick, duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
+            className="mt-5 text-neutral-600 dark:text-neutral-400 leading-relaxed"
+          >
+            CV-aligned project timeline covering production full-stack delivery, NLP systems,
+            and AI + IoT implementations.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={isRouteTransitioning ? undefined : { opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: MOTION_TOKENS.duration.medium, delay: MOTION_TOKENS.duration.quick, ease: MOTION_TOKENS.easing.premium }}
+            className="mt-8 grid grid-cols-3 gap-3"
+          >
+            {snapshotStats.map((stat) => (
+              <motion.div
+                key={stat.label}
+                whileHover={prefersReducedMotion ? undefined : { y: -2 }}
+                transition={{ duration: 0.18 }}
+                className="rounded-xl border border-neutral-200/70 dark:border-neutral-800/80 bg-white/70 dark:bg-neutral-900/70 px-3 py-3 backdrop-blur-sm"
+              >
+                <div className="text-lg md:text-xl font-bold text-neutral-900 dark:text-white">{stat.value}</div>
+                <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400 mt-1">{stat.label}</div>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
 
-        <div className="max-w-5xl mx-auto relative" ref={containerRef}>
+        <div className="max-w-4xl mx-auto relative" ref={containerRef}>
           {/* Main Timeline Line */}
-          <div className="absolute left-6 md:left-1/2 top-4 bottom-4 w-0.5 -translate-x-1/2 bg-neutral-200 dark:bg-neutral-800">
+          <div className="absolute left-[0.72rem] top-3 bottom-3 w-px bg-neutral-300/80 dark:bg-neutral-700/80">
             <motion.div
               className="absolute top-0 left-0 w-full bg-linear-to-b from-amber-500 via-orange-500 to-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
               style={{ height: heightTransform }}
             />
           </div>
 
-          <div className="relative space-y-12 md:space-y-24">
-            {experiences.map((exp, index) => {
-              const isEven = index % 2 === 0;
-              return (
-                <div
-                  key={exp.id}
-                  className={`relative flex flex-col md:flex-row items-start md:items-center gap-0 md:gap-8 ${isEven ? "md:flex-row-reverse" : ""}`}
-                >
-                  {/* The Timeline Node */}
-                  <div className="absolute left-6 md:left-1/2 -translate-x-1/2 z-20 flex items-center justify-center top-18 md:top-auto">
-                    <motion.div
-                      initial={{ scale: 0.9 }}
-                      whileInView={isRouteTransitioning ? undefined : { scale: 1.05 }}
-                      viewport={{ once: true, amount: 0.6 }}
-                      transition={{ duration: 0.35, ease: "easeOut" }}
-                      className="w-5 h-5 rounded-full bg-neutral-50 dark:bg-black border-4 border-neutral-300 dark:border-neutral-700 flex items-center justify-center transition-colors duration-300"
-                    >
-                      <motion.div
-                        initial={{ opacity: 0.3, scale: 0.8 }}
-                        whileInView={isRouteTransitioning ? undefined : { opacity: 1, scale: 1 }}
-                        viewport={{ once: true, amount: 0.6 }}
-                        transition={{ duration: 0.35, ease: "easeOut", delay: 0.05 }}
-                        className="w-full h-full rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.8)] border border-amber-300"
-                      />
-                    </motion.div>
-                  </div>
-
-                  {/* Wrapper for side padding on mobile */}
-                  <div className="w-full flex md:contents pl-16 md:pl-0">
-                    <ExperienceCard
-                      exp={exp}
-                      index={index}
-                      side={isEven ? "left" : "right"}
-                      isRouteTransitioning={isRouteTransitioning}
-                    />
-                    <div className="flex-1 hidden md:block" />
-                  </div>
-                </div>
-              );
-            })}
+          <div className="relative space-y-6 md:space-y-8">
+            {experiences.map((exp, index) => (
+              <ExperienceCard
+                key={exp.id}
+                exp={exp}
+                index={index}
+                isRouteTransitioning={isRouteTransitioning}
+                prefersReducedMotion={prefersReducedMotion}
+              />
+            ))}
           </div>
         </div>
       </div>

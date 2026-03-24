@@ -104,6 +104,49 @@ pnpm start    # Start production server
 pnpm lint     # Run ESLint
 ```
 
+## Dev-Only Hydration Guard Checklist
+
+Use this quick checklist when building animated/theme-aware client components in App Router.
+
+- Keep first render deterministic:
+    no `Date.now()`, `Math.random()`, locale-formatted dates, or runtime-only values directly in initial JSX.
+- Avoid server/client render branching in markup:
+    do not conditionally render different class trees using `typeof window !== "undefined"` during first paint.
+- Prefer static Tailwind variants over runtime class switches:
+    use `dark:*` classes instead of building class strings from `resolvedTheme` for initial shell markup.
+- Move browser-only logic into `useEffect`:
+    pointer listeners, `window`, `document`, `localStorage`, viewport sizing, etc.
+- For motion-heavy UI:
+    keep base DOM shape identical and animate style/transform values after mount.
+- If a value must differ after mount:
+    render a stable fallback first, then update state in `useEffect`.
+- Keep IDs stable:
+    use React `useId()` for client components instead of random IDs.
+- Validate quickly in dev:
+    watch console for hydration warnings after hard refresh and route reload.
+
+### Safe Pattern (Theme + Client Effect)
+
+```tsx
+"use client";
+
+import { useEffect, useState } from "react";
+
+export function Example() {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    return (
+        <div className="bg-black dark:bg-neutral-950">
+            {mounted ? "Client-ready" : "Loading..."}
+        </div>
+    );
+}
+```
+
 ## Deployment
 
 ### Vercel (Recommended)

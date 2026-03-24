@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, MessageCircle, ArrowUpRight, Clock } from "lucide-react";
+import { Mail, MessageCircle, ArrowUpRight, Clock, Sparkles } from "lucide-react";
 import { ContactForm } from "./contact-form";
 import { siteConfig } from "@/config";
 import { NetworkPattern } from "@/components/ui/network-pattern";
@@ -65,9 +65,10 @@ export function Contact() {
             >
               <a
                 href={`mailto:${siteConfig.contact.email}`}
-                className="group flex items-center gap-4 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800/50 bg-white dark:bg-neutral-900/50 transition-all duration-300 ease-out hover:border-amber-400/60 dark:hover:border-amber-500/40 hover:shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1 active:translate-y-0"
+                className="group relative flex items-center gap-4 p-5 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/70 bg-white/85 dark:bg-neutral-900/70 backdrop-blur-sm transition-all duration-300 ease-out hover:border-amber-400/60 dark:hover:border-amber-500/40 hover:shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1 active:translate-y-0 overflow-hidden"
               >
-                <div className="w-12 h-12 rounded-xl bg-amber-500/15 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform duration-300">
+                <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-amber-500/75 to-transparent opacity-70 group-hover:opacity-100" />
+                <div className="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform duration-300">
                   <Mail className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
@@ -85,21 +86,33 @@ export function Contact() {
                 href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-center gap-4 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800/50 bg-white dark:bg-neutral-900/50 transition-all duration-300 ease-out hover:border-emerald-400/55 dark:hover:border-emerald-500/35 hover:shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1 active:translate-y-0"
+                className="group relative flex items-center gap-4 p-5 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/70 bg-white/85 dark:bg-neutral-900/70 backdrop-blur-sm transition-all duration-300 ease-out hover:border-amber-400/60 dark:hover:border-amber-500/40 hover:shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1 active:translate-y-0 overflow-hidden"
               >
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/12 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform duration-300">
+                <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-amber-500/75 to-transparent opacity-70 group-hover:opacity-100" />
+                <div className="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform duration-300">
                   <MessageCircle className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
                   <div className="text-xs text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-1">
                     WhatsApp
                   </div>
-                  <div className="text-neutral-900 dark:text-white font-medium group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                  <div className="text-neutral-900 dark:text-white font-medium group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                     Chat with me directly
                   </div>
                 </div>
-                <ArrowUpRight className="w-5 h-5 text-neutral-300 dark:text-neutral-600 group-hover:text-emerald-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
+                <ArrowUpRight className="w-5 h-5 text-neutral-300 dark:text-neutral-600 group-hover:text-amber-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
               </a>
+
+              <div className="group relative flex items-center gap-3 p-4 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/70 bg-white/85 dark:bg-neutral-900/70 backdrop-blur-sm overflow-hidden">
+                <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-amber-500/75 to-transparent opacity-70" />
+                <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-neutral-900 dark:text-white">Need a quick overview?</div>
+                  <div className="text-xs text-neutral-500 dark:text-neutral-400">Use the floating AI assistant on bottom-right.</div>
+                </div>
+              </div>
 
               {/* Response time notice */}
               <div className="flex items-center gap-2 mt-6 p-3 rounded-xl bg-amber-50 dark:bg-amber-500/5 border border-amber-200/50 dark:border-amber-500/20">

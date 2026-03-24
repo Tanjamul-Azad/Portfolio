@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Menu, Github, Linkedin, Facebook, X } from "lucide-react";
+import { Menu, Github, Linkedin, Facebook, X, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import InteractiveHoverButton from "@/components/ui/interactive-hover-button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { siteConfig, navLinks } from "@/config";
 import { cn } from "@/lib/utils";
@@ -14,6 +16,8 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("now");
+  const pathname = usePathname();
+  const isHome = pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -71,7 +75,7 @@ export function Navbar() {
           <div className="flex items-center gap-1">
             {navLinks.map((link) => {
               const isAnchorLink = link.href.startsWith('#');
-              const href = isAnchorLink ? `/${link.href}` : link.href;
+              const href = isAnchorLink ? (isHome ? link.href : `/${link.href}`) : link.href;
               const sectionId = link.href.replace("#", "");
               const isActive = isAnchorLink && activeSection === sectionId;
 
@@ -79,7 +83,7 @@ export function Navbar() {
                 <Link
                   key={link.name}
                   href={href}
-                  scroll={!isAnchorLink}
+                  scroll
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
                     "link-underline relative px-3 py-2 text-sm font-medium transition-colors duration-300",
@@ -116,16 +120,16 @@ export function Navbar() {
 
             <ThemeToggle />
 
-            <Button
-              asChild
-              variant="default"
-              size="sm"
-              className="ml-2 rounded-full px-5 font-medium bg-neutral-900 text-white dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-300 hover-lift"
-            >
-              <a href="/resume.pdf" download>
-                Resume
-              </a>
-            </Button>
+            <InteractiveHoverButton
+              text="Resume"
+              hoverIcon={<Download className="h-4 w-4" />}
+              hoverIconPosition="right"
+              showArrow={false}
+              href={siteConfig.links.resume}
+              download="Md. Tanzamul Azad - CV.pdf"
+              classes="ml-2 h-10 min-w-34 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black border-neutral-900 dark:border-white px-5 text-sm font-semibold"
+            />
+
           </div>
         </div>
 
@@ -161,8 +165,8 @@ export function Navbar() {
                       >
                         <SheetClose asChild>
                           <Link
-                            href={link.href.startsWith('#') ? `/${link.href}` : link.href}
-                            scroll={!link.href.startsWith('#')}
+                            href={link.href.startsWith('#') ? (isHome ? link.href : `/${link.href}`) : link.href}
+                            scroll
                             className="block text-2xl font-light tracking-tight hover:text-amber-500 transition-colors focus-visible:text-amber-500"
                           >
                             {link.name}
@@ -190,9 +194,16 @@ export function Navbar() {
                       </Link>
                     ))}
                   </div>
-                  <Button asChild className="w-full rounded-full py-6 text-lg">
-                    <a href="/resume.pdf" download>Download Resume</a>
-                  </Button>
+
+                  <InteractiveHoverButton
+                    text="Download Resume"
+                    hoverIcon={<Download className="h-4 w-4" />}
+                    hoverIconPosition="right"
+                    showArrow={false}
+                    href={siteConfig.links.resume}
+                    download="Md. Tanzamul Azad - CV.pdf"
+                    classes="w-full min-w-0 rounded-full py-6 text-lg bg-neutral-900 dark:bg-white text-white dark:text-black border-neutral-900 dark:border-white"
+                  />
                 </div>
               </div>
             </SheetContent>

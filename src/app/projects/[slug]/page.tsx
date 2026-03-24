@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getProjectBySlug } from "@/data";
+import { getProjectBySlug } from "@/data/projects";
 import { siteConfig } from "@/config";
 import ProjectCaseStudyClient from "./project-case-study-client";
 

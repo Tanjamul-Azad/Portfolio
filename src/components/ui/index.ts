@@ -51,3 +51,9 @@ export {
   TooltipProvider,
   TooltipTrigger,
 } from "./tooltip";
+export { TestimonialsColumn } from "./testimonials-columns-1";
+export { default as TestimonialsDemo } from "./demo";
+export { default as AIChatCard } from "./ai-chat";
+export { default as AIChatDemo } from "./ai-chat-demo";
+export { default as InteractiveHoverButton } from "./interactive-hover-button";
+export { default as InteractiveHoverButtonDemo } from "./interactive-hover-button-demo";

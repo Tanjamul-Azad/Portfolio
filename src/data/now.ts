@@ -4,27 +4,27 @@ export const nowItems: NowItem[] = [
   {
     category: "building",
     items: [
-      "Farm-Friend - AI-powered agriculture assistant",
-      "ConvoVerse - Real-time chat platform with AI features",
-      "Complete Legal Aid - Legal document automation system",
+      "Complete Legal Aid - production legal technology platform with AI drafting",
+      "ConvoVerse - LLM-based multi-agent social practice system",
+      "Care Companion - AI + IoT healthcare rover with real-time monitoring",
     ],
   },
   {
     category: "learning",
     items: [
-      "Next.js 15 & React Server Components",
-      "Spring Boot for enterprise backends",
-      "RAG pipelines & vector databases",
-      "System design patterns",
+      "Applied NLP pipelines with spaCy and fuzzy matching",
+      "Model training and evaluation with scikit-learn",
+      "Data-driven system design and deployment",
+      "Production backend patterns with Django and Flask",
     ],
   },
   {
     category: "looking",
     items: [
-      "Software Engineering Internship",
-      "Research Assistant positions",
-      "Freelance web development projects",
-      "Open source collaboration opportunities",
+      "Data Science internship roles",
+      "Software Engineering opportunities",
+      "NLP or AI research collaborations",
+      "Real-world, data-driven product challenges",
     ],
   },
 ];

@@ -9,7 +9,13 @@ import {
 } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config";
-import { ScrollProgress, StickyEmail, SmoothScroll } from "@/components/effects";
+import {
+  AiChat,
+  CinematicGridBackground,
+  ScrollProgress,
+  StickyEmail,
+  SmoothScroll,
+} from "@/components/effects";
 import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
@@ -113,11 +119,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <CinematicGridBackground />
           <RouteTransitionProvider>
             <HashScrollManager />
             <SmoothScroll />
             <ScrollProgress />
             <StickyEmail />
+            <AiChat />
             <div id="main-content" className="relative min-h-screen flex flex-col">
               <PageTransition>{children}</PageTransition>
             </div>

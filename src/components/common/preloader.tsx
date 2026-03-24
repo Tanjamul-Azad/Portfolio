@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { siteConfig } from "@/config";
 
@@ -12,6 +12,29 @@ export function Preloader({ onComplete }: PreloaderProps) {
   const [count, setCount] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [phase, setPhase] = useState<"counting" | "reveal" | "exit">("counting");
+  const measureNameRef = useRef<HTMLHeadingElement>(null);
+  const [nameWidth, setNameWidth] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!measureNameRef.current) return;
+
+    const updateWidth = () => {
+      if (!measureNameRef.current) return;
+      const rect = measureNameRef.current.getBoundingClientRect();
+      setNameWidth(Math.ceil(rect.width));
+    };
+
+    updateWidth();
+
+    const observer = new ResizeObserver(() => updateWidth());
+    observer.observe(measureNameRef.current);
+
+    window.addEventListener("resize", updateWidth);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateWidth);
+    };
+  }, []);
 
   useEffect(() => {
     let frame = 0;
@@ -48,21 +71,34 @@ export function Preloader({ onComplete }: PreloaderProps) {
   }, [onComplete]);
 
   const name = siteConfig.name.toUpperCase();
-
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          className="fixed inset-0 z-100 bg-black flex flex-col items-center justify-center overflow-hidden"
+          className="fixed inset-0 z-100 flex flex-col items-center justify-center overflow-hidden bg-black dark:bg-neutral-950"
           exit={{ clipPath: "inset(0 0 100% 0)" }}
           transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
         >
-          <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/20 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-b from-white/3 via-transparent to-black/10" />
+
+          <h1
+            ref={measureNameRef}
+            aria-hidden="true"
+            className="invisible absolute select-none text-[clamp(3rem,12vw,10rem)] font-bold font-heading tracking-[-0.02em] leading-none"
+          >
+            {name}
+          </h1>
 
           <div
-            className="absolute top-0 left-0 h-px bg-white transition-all duration-30 linear"
-            style={{ width: `${count}%` }}
-          />
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-16 md:translate-y-20"
+            style={{ width: nameWidth ? `${nameWidth}px` : "min(86vw, 1100px)" }}
+          >
+            <div className="h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
+            <div
+              className="absolute top-0 left-0 h-px bg-white transition-all duration-30 linear"
+              style={{ width: `${count}%` }}
+            />
+          </div>
 
           <motion.div
             className="absolute top-8 right-8 font-mono text-xs text-neutral-500 tabular-nums tracking-widest"
@@ -99,21 +135,6 @@ export function Preloader({ onComplete }: PreloaderProps) {
                   {name}
                 </h1>
               </motion.div>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {phase === "reveal" && (
-              <motion.p
-                key="role"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.4, delay: 0.35 }}
-                className="absolute bottom-12 font-mono text-xs text-neutral-500 tracking-[0.3em] uppercase text-center w-full px-4"
-              >
-                {siteConfig.author.role}
-              </motion.p>
             )}
           </AnimatePresence>
 

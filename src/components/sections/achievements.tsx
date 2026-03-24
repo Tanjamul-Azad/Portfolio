@@ -7,153 +7,98 @@ import { achievements } from "@/data";
 import type { Achievement } from "@/types";
 
 function AchievementCard({ achievement, index }: { achievement: Achievement; index: number }) {
-  const [isFlipped, setIsFlipped] = useState(false);
-
   const TypeIcon = {
     certification: Award,
     award: Trophy,
     achievement: Star,
   }[achievement.type];
 
+  const typeLabel = {
+    certification: "Certification",
+    award: "Award",
+    achievement: "Achievement",
+  }[achievement.type];
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 40, rotateX: 10 }}
-      whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+    <motion.article
+      layout
+      initial={{ opacity: 0, y: 26 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.7, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      className="h-[360px] perspective-1000 group"
-      onMouseEnter={() => setIsFlipped(true)}
-      onMouseLeave={() => setIsFlipped(false)}
-      onClick={() => setIsFlipped(!isFlipped)}
+      transition={{ duration: 0.55, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -6 }}
+      className="group h-full"
     >
-      <motion.div
-        className="relative w-full h-full cursor-pointer"
-        animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
-        style={{ transformStyle: "preserve-3d" }}
-      >
-        {/* Front of Card */}
-        <div
-          className="absolute inset-0 rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 flex flex-col overflow-hidden"
-          style={{ backfaceVisibility: "hidden" }}
-        >
-          {/* Accent border line */}
+      <div className="relative h-full rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 flex flex-col overflow-hidden transition-all duration-300 group-hover:border-amber-500/35 group-hover:shadow-xl group-hover:shadow-amber-500/10">
+        <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-amber-500/75 to-transparent opacity-70 group-hover:opacity-100" />
+
+        <div className="flex items-start justify-between gap-4 mb-5">
           <motion.div
-            className="absolute top-0 left-0 w-full h-[1px] bg-linear-to-r from-transparent via-amber-500/70 to-transparent"
-            initial={{ x: "-100%" }}
-            animate={{ x: "100%" }}
-            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-          />
+            whileHover={{ scale: 1.06 }}
+            transition={{ duration: 0.2 }}
+            className="w-11 h-11 rounded-xl bg-amber-500/15 border border-amber-500/25 flex items-center justify-center"
+          >
+            <TypeIcon className="w-5 h-5 text-amber-500" />
+          </motion.div>
 
-          {/* Icon & Type */}
-          <div className="flex items-start justify-between mb-6 relative">
-            <motion.div
-              className="relative"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 400 }}
-            >
-              <div className="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
-                <TypeIcon className="w-5 h-5 text-amber-500" />
-              </div>
-            </motion.div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-600 dark:text-amber-400 text-xs font-medium">
-              <TypeIcon className="w-3 h-3" />
-              <span className="capitalize">{achievement.type}</span>
-            </div>
-          </div>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-700 dark:text-amber-300 text-[11px] font-medium uppercase tracking-[0.14em]">
+            <TypeIcon className="w-3.5 h-3.5" />
+            {typeLabel}
+          </span>
+        </div>
 
-          {/* Title */}
-          <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2 leading-tight group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors duration-300">
-            {achievement.title}
-          </h3>
+        <h3 className="text-lg md:text-xl font-semibold text-neutral-900 dark:text-white leading-tight group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors duration-300">
+          {achievement.title}
+        </h3>
 
-          {/* Issuer & Date */}
-          <div className="flex items-center gap-2 text-sm mb-4">
-            <span className="text-neutral-500 dark:text-neutral-400">{achievement.issuer}</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-            <span className="text-amber-600 dark:text-amber-400 font-medium">{achievement.date}</span>
-          </div>
+        <div className="mt-3 flex items-center gap-2 text-sm">
+          <span className="text-neutral-600 dark:text-neutral-300 font-medium">{achievement.issuer}</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+          <span className="text-neutral-500 dark:text-neutral-400">{achievement.date}</span>
+        </div>
 
-          {/* Skills Preview */}
-          <div className="flex flex-wrap gap-1.5 mt-auto relative">
-            {achievement.skills.slice(0, 3).map((skill, i) => (
-              <motion.span
+        <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed line-clamp-3">
+          {achievement.description}
+        </p>
+
+        <div className="mt-5 pt-4 border-t border-neutral-200/80 dark:border-neutral-800/80">
+          <p className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400 mb-2">Skills</p>
+          <div className="flex flex-wrap gap-1.5">
+            {achievement.skills.slice(0, 4).map((skill) => (
+              <span
                 key={skill}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 + i * 0.1 }}
-                className="text-[10px] px-2.5 py-1 bg-neutral-200/80 dark:bg-neutral-800/80 text-neutral-600 dark:text-neutral-300 rounded-full border border-neutral-300/50 dark:border-neutral-700/50"
+                className="text-[10px] px-2.5 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700"
               >
                 {skill}
-              </motion.span>
+              </span>
             ))}
-            {achievement.skills.length > 3 && (
-              <span className="text-[10px] px-2.5 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-full border border-amber-500/25">
-                +{achievement.skills.length - 3}
+            {achievement.skills.length > 4 && (
+              <span className="text-[10px] px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-700 dark:text-amber-300">
+                +{achievement.skills.length - 4}
               </span>
             )}
           </div>
         </div>
 
-        {/* Back of Card */}
-        <div
-          className="absolute inset-0 rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 flex flex-col overflow-hidden"
-          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-        >
-          {/* Header */}
-          <div className="flex items-center gap-3 mb-4 pb-4 border-b border-neutral-200 dark:border-neutral-800 relative">
-            <div className="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
-              <TypeIcon className="w-5 h-5 text-amber-500" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-neutral-900 dark:text-white leading-tight">
-                {achievement.title}
-              </h3>
-              <p className="text-xs text-amber-600 dark:text-amber-400/80">{achievement.issuer} • {achievement.date}</p>
-            </div>
-          </div>
-
-          {/* Description */}
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4 grow">
-            {achievement.description}
-          </p>
-
-          {/* Skills */}
-          <div className="mb-4">
-            <p className="text-[10px] text-neutral-400 dark:text-neutral-500 uppercase tracking-widest mb-2 flex items-center gap-1">
-              <Star className="w-3 h-3 text-amber-500/70" />
-              Skills & Technologies
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {achievement.skills.map((skill) => (
-                <span
-                  key={skill}
-                  className="text-[10px] px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-700 dark:text-amber-300"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* CTA */}
-          {achievement.credentialUrl && (
-            <motion.a
-              href={achievement.credentialUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 py-3 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black font-semibold text-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-300"
-              onClick={(e) => e.stopPropagation()}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              View Credential
-              <ExternalLink className="w-3.5 h-3.5" />
-            </motion.a>
-          )}
-        </div>
-      </motion.div>
-    </motion.div>
+        {achievement.credentialUrl ? (
+          <motion.a
+            href={achievement.credentialUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black px-4 py-2.5 text-sm font-medium transition-colors hover:bg-neutral-800 dark:hover:bg-neutral-200"
+          >
+            Verify Credential
+            <ExternalLink className="w-3.5 h-3.5" />
+          </motion.a>
+        ) : (
+          <span className="mt-5 inline-flex items-center justify-center rounded-full border border-neutral-300 dark:border-neutral-700 px-4 py-2.5 text-xs uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400">
+            Internal Recognition
+          </span>
+        )}
+      </div>
+    </motion.article>
   );
 }
 
@@ -190,7 +135,7 @@ export function Achievements() {
             viewport={{ once: true }}
             className="text-4xl md:text-6xl font-bold font-heading mb-6 text-neutral-900 dark:text-white tracking-tight"
           >
-            Achievements & Certifications
+            Achievements & Awards
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -199,7 +144,7 @@ export function Achievements() {
             transition={{ delay: 0.1 }}
             className="text-neutral-500 dark:text-neutral-400 text-lg max-w-xl mx-auto leading-relaxed"
           >
-            Milestones that mark my journey of continuous learning and excellence.
+            CV-verified milestones from competitions, academics, and project-based recognition.
           </motion.p>
         </div>
 

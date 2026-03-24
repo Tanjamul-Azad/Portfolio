@@ -1,8 +1,7 @@
 "use client";
 
-import { useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import {
   motion,
   useReducedMotion,
@@ -11,8 +10,7 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { ArrowRight, Code2, Download, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import InteractiveHoverButton from "@/components/ui/interactive-hover-button";
 import { siteConfig } from "@/config";
 import { HERO_SEQUENCE, MOTION_TOKENS } from "@/lib";
 
@@ -46,6 +44,91 @@ function SplitText({
           {char === " " ? "\u00A0" : char}
         </motion.span>
       ))}
+    </span>
+  );
+}
+
+function TypewriterText({
+  text,
+  startDelay = 1800,
+  charInterval = 38,
+  loopDelay = 2200,
+  reducedMotion = false,
+}: {
+  text: string;
+  startDelay?: number;
+  charInterval?: number;
+  loopDelay?: number;
+  reducedMotion?: boolean;
+}) {
+  const [visibleCount, setVisibleCount] = useState(reducedMotion ? text.length : 0);
+
+  useEffect(() => {
+    if (reducedMotion) {
+      setVisibleCount(text.length);
+      return;
+    }
+
+    let timeoutId: number | undefined;
+    let isDisposed = false;
+
+    const startTypingCycle = (delay: number) => {
+      timeoutId = window.setTimeout(() => {
+        if (isDisposed) return;
+
+        setVisibleCount(0);
+        let index = 0;
+
+        const step = () => {
+          if (isDisposed) return;
+
+          index += 1;
+          setVisibleCount(Math.min(index, text.length));
+
+          if (index < text.length) {
+            timeoutId = window.setTimeout(step, charInterval);
+            return;
+          }
+
+          timeoutId = window.setTimeout(() => startTypingCycle(0), loopDelay);
+        };
+
+        timeoutId = window.setTimeout(step, charInterval);
+      }, delay);
+    };
+
+    startTypingCycle(startDelay);
+
+    return () => {
+      isDisposed = true;
+      if (timeoutId) window.clearTimeout(timeoutId);
+    };
+  }, [charInterval, loopDelay, reducedMotion, startDelay, text]);
+
+  const visibleText = text.slice(0, visibleCount);
+  const isComplete = visibleCount >= text.length;
+
+  return (
+    <span className="relative block">
+      {/* Reserve final multiline height so surrounding layout never shifts. */}
+      <span className="invisible">
+        {text}...
+      </span>
+      <span className="absolute inset-0">
+        {visibleText}
+        <motion.span
+          aria-hidden
+          className="inline-block"
+          initial={{ opacity: 0 }}
+          animate={isComplete ? { opacity: [1, 0.25, 1] } : { opacity: 0 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        >
+          ...
+        </motion.span>
+      </span>
+      <span className="sr-only" aria-live="polite">
+        {isComplete ? "typing complete" : "typing"}
+      </span>
     </span>
   );
 }
@@ -100,7 +183,9 @@ export function Hero() {
               className="flex items-center gap-3 mb-10"
             >
               <div className="flex items-center gap-2.5 px-4 py-2 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-black/70 backdrop-blur-md w-fit">
-                <span className="h-2 w-2 rounded-full bg-green-500" />
+                <span className="text-[10px] font-semibold tracking-[0.16em] text-green-600 dark:text-green-400 uppercase">
+                  OPEN
+                </span>
                 <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400">
                   Available for new projects
                 </span>
@@ -129,51 +214,41 @@ export function Hero() {
 
             <motion.p
               variants={HERO_SEQUENCE.item}
-              className="text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed mb-10 max-w-lg font-light"
+              className="mb-3 text-sm md:text-base font-medium tracking-[0.08em] uppercase text-neutral-500 dark:text-neutral-400"
             >
-              I help brands and founders turn complex ideas into{" "}
-              <span className="text-foreground font-medium">elegant</span>, scalable software
-              solutions. Focus on clarity, performance, and impact.
+              {siteConfig.author.name}
             </motion.p>
+
+            <motion.div
+              variants={HERO_SEQUENCE.item}
+              className="mb-10 text-sm md:text-base italic tracking-[0.04em] leading-relaxed text-neutral-700 dark:text-neutral-200 max-w-[34rem] min-h-[3.2rem] md:min-h-[3rem]"
+            >
+              <TypewriterText
+                text="Full-Stack Developer | ML Researcher | BSc CSE Undergrad (Data Science)"
+                startDelay={2200}
+                charInterval={44}
+                loopDelay={2800}
+                reducedMotion={prefersReducedMotion}
+              />
+            </motion.div>
 
             <motion.div
               variants={HERO_SEQUENCE.item}
               className="flex flex-wrap gap-4"
             >
-              <Button
-                asChild
-                size="lg"
-                className="h-14 px-8 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 text-sm font-semibold transition-all duration-300 group hover-lift"
-              >
-                <Link href="#projects">
-                  View Selected Work
-                  <ArrowRight className="ml-1.5 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
+              <InteractiveHoverButton
+                text="View Selected Work"
+                href="#projects"
+                aria-label="View Selected Work"
+                classes="h-14 px-8 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black text-sm font-semibold hover-lift"
+              />
 
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="h-14 px-8 rounded-full text-sm font-semibold border-neutral-300 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all duration-300 hover-lift"
-              >
-                <a href="/resume.pdf" download className="flex items-center gap-2">
-                  <Download className="w-4 h-4" />
-                  Resume
-                </a>
-              </Button>
-
-              <Button
-                asChild
-                variant="ghost"
-                size="lg"
-                className="h-14 px-8 rounded-full text-sm font-semibold hover:bg-neutral-100 dark:hover:bg-white/5 transition-all"
-              >
-                <Link href="#contact" className="flex items-center group">
-                  Contact Me
-                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
+              <InteractiveHoverButton
+                text="Start a Project"
+                href="#contact"
+                aria-label="Start a Project"
+                classes="h-14 px-8 rounded-full text-sm font-semibold border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black text-neutral-900 dark:text-white hover-lift"
+              />
             </motion.div>
 
             <div className="mt-8" />
@@ -185,52 +260,19 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             className="block order-1 lg:order-2 justify-self-center lg:justify-self-end"
-            ref={imageWrapRef}
-            onMouseMove={handleMouseMove}
-            onMouseEnter={() => setImageHover(true)}
-            onMouseLeave={() => {
-              setImageHover(false);
-              mouseX.set(0);
-              mouseY.set(0);
-            }}
           >
             <motion.div
+              ref={imageWrapRef}
+              onMouseMove={handleMouseMove}
+              onMouseEnter={() => setImageHover(true)}
+              onMouseLeave={() => {
+                setImageHover(false);
+                mouseX.set(0);
+                mouseY.set(0);
+              }}
               style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: 800 }}
               className="relative w-70 h-95 sm:w-85 sm:h-115 lg:w-125 lg:h-170 mx-auto lg:mx-0"
             >
-              <motion.div
-                className="absolute -top-5 -right-4 z-30 px-4 py-2 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-bold shadow-lg transform-[translateZ(50px)]"
-                animate={{ y: [0, -7, 0] }}
-                transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-              >
-                Available for new projects
-              </motion.div>
-
-              <motion.div
-                className="hidden md:flex absolute -bottom-3 -left-2 z-30 items-center gap-2 px-4 py-3 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-xl transform-[translateZ(50px)]"
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 0.7 }}
-              >
-                <MapPin className="w-3.5 h-3.5 text-neutral-600 dark:text-neutral-300 shrink-0" />
-                <div>
-                  <div className="text-[10px] text-neutral-500">Focused on</div>
-                  <div className="text-xs font-semibold text-neutral-900 dark:text-white leading-none mt-0.5">
-                    Product quality
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                className="hidden md:flex absolute top-[45%] -left-6 z-30 items-center gap-2 px-3 py-2 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-lg transform-[translateZ(35px)]"
-                animate={{ x: [0, -5, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              >
-                <Code2 className="w-3.5 h-3.5 text-amber-500" />
-                <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
-                  Performance
-                </span>
-              </motion.div>
-
               <div className="absolute inset-0 border border-neutral-200 dark:border-neutral-800 rounded-2xl translate-x-3 translate-y-3 opacity-40" />
               <div className="absolute inset-0 border border-neutral-300/60 dark:border-neutral-700/60 rounded-2xl -translate-x-2 -translate-y-2 opacity-40" />
 
@@ -249,6 +291,7 @@ export function Hero() {
                 <div className="absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_0_80px_rgba(0,0,0,0.6)]" />
               </div>
             </motion.div>
+
           </motion.div>
         </div>
       </div>

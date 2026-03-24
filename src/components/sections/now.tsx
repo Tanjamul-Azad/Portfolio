@@ -58,33 +58,38 @@ export function Now() {
                 key={item.category}
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -10, scale: 1.015 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.45, delay: categoryIndex * 0.08 }}
                 className="group relative"
               >
-                <div className="h-full p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 transition-colors duration-200">
-                  <div className="w-12 h-12 mb-5 rounded-lg bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center">
-                    <Icon className="w-6 h-6 text-white dark:text-neutral-900" />
-                  </div>
+                <div className="spotlight-surface h-full p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 transition-all duration-300 hover:border-amber-400/45 dark:hover:border-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/12 dark:hover:shadow-black/40">
+                  <div className="absolute inset-x-6 top-0 h-px bg-linear-to-r from-transparent via-amber-500/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                  <h3 className="text-xl font-semibold mb-4 text-neutral-900 dark:text-white">
-                    {config.title}
-                  </h3>
+                  <div className="spotlight-content">
+                    <div className="w-12 h-12 mb-5 rounded-lg bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3">
+                      <Icon className="w-6 h-6 text-white dark:text-neutral-900" />
+                    </div>
 
-                  <div className="space-y-3">
-                    {item.items.map((text, idx) => (
-                      <motion.div
-                        key={idx}
-                        initial={{ opacity: 0, y: 8 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: categoryIndex * 0.08 + idx * 0.04 }}
-                        className="flex items-start gap-3 text-neutral-700 dark:text-neutral-300"
-                      >
-                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-neutral-500" />
-                        <p className="text-sm leading-relaxed flex-1">{text}</p>
-                      </motion.div>
-                    ))}
+                    <h3 className="text-xl font-semibold mb-4 text-neutral-900 dark:text-white">
+                      {config.title}
+                    </h3>
+
+                    <div className="space-y-3">
+                      {item.items.map((text, idx) => (
+                        <motion.div
+                          key={idx}
+                          initial={{ opacity: 0, y: 8 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: categoryIndex * 0.08 + idx * 0.04 }}
+                          className="flex items-start gap-3 text-neutral-700 dark:text-neutral-300 transition-transform duration-300 group-hover:translate-x-0.5"
+                        >
+                          <span className="mt-1 h-1.5 w-1.5 rounded-full bg-neutral-500 transition-colors duration-300 group-hover:bg-amber-500" />
+                          <p className="text-sm leading-relaxed flex-1">{text}</p>
+                        </motion.div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </motion.div>

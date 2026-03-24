@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, ExternalLink, Github, FileText, Search } from "lucide-react";
-import { projects } from "@/data";
+import { projects } from "@/data/projects";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
