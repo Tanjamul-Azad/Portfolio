@@ -273,34 +273,8 @@ export function Projects() {
                     </div>
                   </div>
 
-                  {/* Project image/preview */}
-                  <div className="aspect-4/3 relative bg-neutral-100 dark:bg-neutral-900">
-                    {/* Actual screenshot — visible when file exists, hidden on 404 */}
-                    {activeProject?.image && !failedImages[activeProject.id] && (
-                      <>
-                        <AnimatePresence>
-                          {!loadedImages[activeProject.id] && (
-                            <motion.div
-                              initial={{ opacity: 1 }}
-                              animate={{ opacity: 1 }}
-                              exit={{ opacity: 0 }}
-                              transition={{ duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
-                              className="absolute inset-0 animate-pulse bg-neutral-200/70 dark:bg-neutral-800/70"
-                            />
-                          )}
-                        </AnimatePresence>
-                        <Image
-                          src={activeProject.image}
-                          alt={activeProject.title}
-                          fill
-                          sizes="(min-width: 1024px) 50vw, 100vw"
-                          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${loadedImages[activeProject.id] ? "opacity-100" : "opacity-0"}`}
-                          onLoad={() => markImageLoaded(activeProject.id)}
-                          onError={() => markImageFailed(activeProject.id)}
-                          priority={activeProject.featured}
-                        />
-                      </>
-                    )}
+                  {/* Project image/preview container */}
+                  <div className="aspect-4/3 relative bg-neutral-100 dark:bg-neutral-900 border-t border-neutral-200/50 dark:border-neutral-700/50">
                     {/* Placeholder with project branding */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
                       {/* Decorative grid */}
@@ -319,12 +293,38 @@ export function Projects() {
                         transition={{ delay: MOTION_TOKENS.duration.regular, duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
                         className="relative z-10 text-center"
                       >
-                        {/* Large project initial/logo */}
-                        <div className="w-24 h-24 mx-auto mb-6 rounded-2xl bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center">
-                          <span className="text-4xl font-bold text-white dark:text-neutral-900">
-                            {activeProject?.title.substring(0, 1)}
-                          </span>
-                        </div>
+                        {/* Large project thumbnail or initial */}
+                        {activeProject?.image && !failedImages[activeProject.id] ? (
+                          <div className="w-56 h-36 mx-auto mb-6 rounded-2xl overflow-hidden relative shadow-lg ring-1 ring-black/5 dark:ring-white/10 bg-neutral-200 dark:bg-neutral-800">
+                            <AnimatePresence>
+                              {!loadedImages[activeProject.id] && (
+                                <motion.div
+                                  initial={{ opacity: 1 }}
+                                  animate={{ opacity: 1 }}
+                                  exit={{ opacity: 0 }}
+                                  transition={{ duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
+                                  className="absolute inset-0 animate-pulse bg-neutral-300/50 dark:bg-neutral-700/50"
+                                />
+                              )}
+                            </AnimatePresence>
+                            <Image
+                              src={activeProject.image}
+                              alt={activeProject.title}
+                              fill
+                              sizes="(min-width: 1024px) 224px, 100vw"
+                              className={`object-cover transition-opacity duration-500 ${loadedImages[activeProject.id] ? "opacity-100 scale-100" : "opacity-0 scale-105"}`}
+                              onLoad={() => markImageLoaded(activeProject.id)}
+                              onError={() => markImageFailed(activeProject.id)}
+                              priority={activeProject.featured}
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-24 h-24 mx-auto mb-6 rounded-2xl bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center ring-1 ring-black/5 dark:ring-white/10 shadow-lg">
+                            <span className="text-4xl font-bold text-white dark:text-neutral-900">
+                              {activeProject?.title.substring(0, 1)}
+                            </span>
+                          </div>
+                        )}
 
                         <h4 className="text-2xl font-bold text-neutral-800 dark:text-white mb-3">
                           {activeProject?.title}
@@ -464,13 +464,15 @@ export function Projects() {
                         />
                       </>
                     )}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-xl bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center transition-transform">
-                        <span className="text-2xl font-bold text-white dark:text-neutral-900">
-                          {project.title.substring(0, 1)}
-                        </span>
+                    {(!project.image || failedImages[project.id]) && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-xl bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center transition-transform">
+                          <span className="text-2xl font-bold text-white dark:text-neutral-900">
+                            {project.title.substring(0, 1)}
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </Link>
 
