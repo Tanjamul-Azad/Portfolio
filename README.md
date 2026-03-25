@@ -195,6 +195,7 @@ DATABASE_URL=
 
 # Email (for contact form)
 RESEND_API_KEY=
+RESEND_FROM_EMAIL=Portfolio Contact <onboarding@resend.dev>
 
 # Analytics
 NEXT_PUBLIC_GA_ID=

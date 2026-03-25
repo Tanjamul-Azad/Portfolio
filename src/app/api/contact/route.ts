@@ -15,6 +15,23 @@ const contactSchema = z.object({
 const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const MAX_REQUESTS = 3; // 3 requests per minute
+const DEFAULT_RESEND_FROM = "Portfolio Contact <onboarding@resend.dev>";
+
+function resolveFromAddress(rawValue?: string): string {
+  const candidate = rawValue?.trim();
+
+  if (!candidate) {
+    return DEFAULT_RESEND_FROM;
+  }
+
+  const lowerCandidate = candidate.toLowerCase();
+  // Resend free tier rejects unverified personal domains such as Gmail.
+  if (lowerCandidate.includes("@gmail.com")) {
+    return DEFAULT_RESEND_FROM;
+  }
+
+  return candidate;
+}
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
@@ -79,7 +96,7 @@ export async function POST(request: NextRequest) {
 
     if (resendApiKey) {
       const resend = new Resend(resendApiKey);
-      const fromAddress = process.env.RESEND_FROM_EMAIL || "Portfolio Contact <onboarding@resend.dev>";
+      const fromAddress = resolveFromAddress(process.env.RESEND_FROM_EMAIL);
 
       await resend.emails.send({
         from: fromAddress,

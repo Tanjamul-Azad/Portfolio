@@ -12,6 +12,7 @@ import { siteConfig } from "@/config";
 import {
   AiChat,
   CinematicGridBackground,
+  CustomCursor,
   ScrollProgress,
   StickyEmail,
   SmoothScroll,
@@ -120,6 +121,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <CinematicGridBackground />
+          <CustomCursor />
           <RouteTransitionProvider>
             <HashScrollManager />
             <SmoothScroll />

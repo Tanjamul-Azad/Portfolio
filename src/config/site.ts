@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "Tanjamul",
-  title: "Md. Tanzamul Azad | Full-Stack Developer, ML Researcher & CSE Undergrad",
+  title: "Md. Tanjamul Azad | Full-Stack Developer, ML Researcher & CSE Undergrad",
   description:
     "CSE undergraduate (Data Science major) at United International University, building ML-driven applications, AI + IoT systems, and production-grade full-stack platforms.",
   url: "https://tanjamul.dev",
