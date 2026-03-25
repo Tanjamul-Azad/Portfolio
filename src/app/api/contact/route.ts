@@ -150,6 +150,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!sendResult.data?.id) {
+      console.error("Contact form resend missing message id:", sendResult);
+      return NextResponse.json(
+        { error: "Email service did not confirm delivery. Please try again." },
+        { status: 502 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
       message: "Message received successfully",
