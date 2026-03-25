@@ -94,31 +94,15 @@ export async function POST(request: NextRequest) {
 
     const resendApiKey = process.env.RESEND_API_KEY;
 
-    if (resendApiKey) {
-      const resend = new Resend(resendApiKey);
-      const fromAddress = resolveFromAddress(process.env.RESEND_FROM_EMAIL);
+    if (!resendApiKey) {
+      if (process.env.NODE_ENV === "production") {
+        return NextResponse.json(
+          { error: "Email service is not configured. Please try again later." },
+          { status: 500 }
+        );
+      }
 
-      await resend.emails.send({
-        from: fromAddress,
-        to: siteConfig.contact.email,
-        replyTo: email,
-        subject: `New message from ${name} via Portfolio`,
-        html: `
-          <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;border:1px solid #e5e7eb;border-radius:8px;">
-            <h2 style="margin-top:0;color:#111827;">New Portfolio Contact</h2>
-            <table style="width:100%;border-collapse:collapse;">
-              <tr><td style="padding:8px 0;color:#6b7280;width:80px;">Name</td><td style="padding:8px 0;font-weight:600;color:#111827;">${name}</td></tr>
-              <tr><td style="padding:8px 0;color:#6b7280;">Email</td><td style="padding:8px 0;"><a href="mailto:${email}" style="color:#f59e0b;">${email}</a></td></tr>
-            </table>
-            <div style="margin-top:16px;padding:16px;background:#f9fafb;border-radius:6px;">
-              <p style="margin:0;color:#374151;white-space:pre-wrap;">${message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
-            </div>
-            <p style="margin-top:16px;font-size:12px;color:#9ca3af;">Sent from ${siteConfig.url} · IP: ${ip}</p>
-          </div>
-        `,
-      });
-    } else {
-      // Fallback: log to console during development
+      // Local development fallback when API key is intentionally absent.
       console.log("[Contact Form] No RESEND_API_KEY set. Message received:", {
         name,
         email,
@@ -126,7 +110,35 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString(),
         ip,
       });
+
+      return NextResponse.json({
+        success: true,
+        message: "Message received in development mode",
+      });
     }
+
+    const resend = new Resend(resendApiKey);
+    const fromAddress = resolveFromAddress(process.env.RESEND_FROM_EMAIL);
+
+    await resend.emails.send({
+      from: fromAddress,
+      to: siteConfig.contact.email,
+      replyTo: email,
+      subject: `New message from ${name} via Portfolio`,
+      html: `
+        <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;border:1px solid #e5e7eb;border-radius:8px;">
+          <h2 style="margin-top:0;color:#111827;">New Portfolio Contact</h2>
+          <table style="width:100%;border-collapse:collapse;">
+            <tr><td style="padding:8px 0;color:#6b7280;width:80px;">Name</td><td style="padding:8px 0;font-weight:600;color:#111827;">${name}</td></tr>
+            <tr><td style="padding:8px 0;color:#6b7280;">Email</td><td style="padding:8px 0;"><a href="mailto:${email}" style="color:#f59e0b;">${email}</a></td></tr>
+          </table>
+          <div style="margin-top:16px;padding:16px;background:#f9fafb;border-radius:6px;">
+            <p style="margin:0;color:#374151;white-space:pre-wrap;">${message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
+          </div>
+          <p style="margin-top:16px;font-size:12px;color:#9ca3af;">Sent from ${siteConfig.url} · IP: ${ip}</p>
+        </div>
+      `,
+    });
 
     return NextResponse.json({
       success: true,
