@@ -7,6 +7,8 @@ import { achievements } from "@/data/achievements";
 import { nowItems } from "@/data/now";
 import { siteConfig } from "@/config";
 
+export const runtime = "nodejs";
+
 function buildPortfolioContext(): string {
   const featuredProjects = projects.filter((p) => p.featured);
   const projectsList = featuredProjects

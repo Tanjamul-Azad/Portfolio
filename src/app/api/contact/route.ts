@@ -3,6 +3,8 @@ import { z } from "zod";
 import { Resend } from "resend";
 import { siteConfig } from "@/config";
 
+export const runtime = "nodejs";
+
 // Server-side validation schema
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -120,7 +122,7 @@ export async function POST(request: NextRequest) {
     const resend = new Resend(resendApiKey);
     const fromAddress = resolveFromAddress(process.env.RESEND_FROM_EMAIL);
 
-    await resend.emails.send({
+    const sendResult = await resend.emails.send({
       from: fromAddress,
       to: siteConfig.contact.email,
       replyTo: email,
@@ -139,6 +141,14 @@ export async function POST(request: NextRequest) {
         </div>
       `,
     });
+
+    if (sendResult.error) {
+      console.error("Contact form resend error:", sendResult.error);
+      return NextResponse.json(
+        { error: "Email could not be delivered. Please try again." },
+        { status: 502 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
