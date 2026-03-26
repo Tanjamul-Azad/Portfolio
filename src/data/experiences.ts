@@ -49,6 +49,18 @@ export const experiences: Experience[] = [
     ],
     technologies: ["Python", "Flask", "OpenCV", "MobileNetSSD", "Raspberry Pi 4", "Arduino"],
   },
+  {
+    id: "5",
+    company: "Independent Tutoring",
+    role: "Academic Tutor",
+    period: "Ongoing",
+    description: [
+      "Mentored and guided students in Classes 6 through 12, fostering a strong foundational understanding of core science and mathematics subjects.",
+      "Developed customized and adaptable lesson plans tailored to individual student learning paces and academic goals.",
+      "Cultivated critical problem-solving skills, resulting in consistent and measurable improvements in students' examination results."
+    ],
+    technologies: ["Mentorship", "Teaching", "Curriculum Planning", "Communication"],
+  },
 ];
 
 export const getExperiences = () => experiences;
