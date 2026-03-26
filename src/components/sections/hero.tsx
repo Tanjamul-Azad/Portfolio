@@ -277,15 +277,15 @@ export function Hero() {
               <div className="absolute inset-0 border border-neutral-300/60 dark:border-neutral-700/60 rounded-2xl -translate-x-2 -translate-y-2 opacity-40" />
 
               <div className="relative h-full w-full overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-900">
-                <Image
-                  src="/images/profile.jpg"
-                  alt={siteConfig.name}
-                  fill
-                  className="object-cover transition-all duration-700 ease-out"
+                <video
+                  src="/PROFILE%20VIDEO/profile%20vid.mp4"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  className="w-full h-full object-cover transition-all duration-700 ease-out"
                   style={{ filter: imageHover ? "grayscale(0)" : "grayscale(0.25)" }}
-                  priority
-                  unoptimized
-                  sizes="(max-width: 640px) 280px, (max-width: 1024px) 340px, 500px"
                 />
 
                 <div className="absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_0_80px_rgba(0,0,0,0.6)]" />
