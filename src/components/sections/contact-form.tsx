@@ -88,7 +88,7 @@ export function ContactForm() {
               <FormLabel className="text-neutral-600 dark:text-neutral-300">Name</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="John Doe"
+                  placeholder="Your name"
                   {...field}
                   className="bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-amber-500/50 focus:ring-amber-500/20"
                 />
@@ -105,7 +105,7 @@ export function ContactForm() {
               <FormLabel className="text-neutral-600 dark:text-neutral-300">Email</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="john@example.com"
+                  placeholder="Your email"
                   type="email"
                   {...field}
                   className="bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-amber-500/50 focus:ring-amber-500/20"
@@ -123,7 +123,7 @@ export function ContactForm() {
               <FormLabel className="text-neutral-600 dark:text-neutral-300">Message</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Tell me about your project..."
+                  placeholder="Tell me how I can help"
                   className="min-h-[100px] resize-none bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-amber-500/50 focus:ring-amber-500/20"
                   {...field}
                 />

@@ -17,7 +17,7 @@ const contactSchema = z.object({
 const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const MAX_REQUESTS = 3; // 3 requests per minute
-const DEFAULT_RESEND_FROM = "Portfolio Contact <onboarding@resend.dev>";
+const DEFAULT_RESEND_FROM = "onboarding@resend.dev";
 
 function resolveFromAddress(rawValue?: string): string {
   const candidate = rawValue?.trim();
