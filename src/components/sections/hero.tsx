@@ -167,7 +167,7 @@ export function Hero() {
     <section
       ref={sectionRef}
       id="hero"
-      className="scroll-section relative min-h-svh flex items-center justify-center overflow-hidden bg-white dark:bg-black"
+      className="dark scroll-section relative z-10 min-h-svh flex items-center justify-center overflow-hidden bg-black"
     >
       <div className="container max-w-7xl px-6 relative z-10 pt-24 pb-12">
         <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-12 lg:gap-12 items-center">
@@ -271,7 +271,7 @@ export function Hero() {
                 mouseY.set(0);
               }}
               style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: 800 }}
-              className="relative w-70 h-95 sm:w-85 sm:h-115 lg:w-125 lg:h-170 mx-auto lg:mx-0"
+              className="relative w-[90vw] sm:w-[500px] lg:w-[640px] aspect-video mx-auto lg:mx-0"
             >
               <div className="absolute inset-0 border border-neutral-200 dark:border-neutral-800 rounded-2xl translate-x-3 translate-y-3 opacity-40" />
               <div className="absolute inset-0 border border-neutral-300/60 dark:border-neutral-700/60 rounded-2xl -translate-x-2 -translate-y-2 opacity-40" />
