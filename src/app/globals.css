@@ -88,7 +88,7 @@
   --radius: 0.5rem;
 
   /* Light Mode - Crisp, slightly warm */
-  --background: oklch(0.99 0 0);
+  --background: #FFFFFF;
   --foreground: oklch(0.15 0.01 20);
   /* Soft black */
 
@@ -111,7 +111,7 @@
 
 .dark {
   /* Dark Mode - Deep, rich charcoal, not pure black */
-  --background: oklch(0.12 0.01 260);
+  --background: #000000;
   --foreground: oklch(0.98 0 0);
 
   --primary: oklch(0.98 0 0);
@@ -157,14 +157,7 @@
     background-size: 4px 4px;
   }
 
-  .hero-grid {
-    background-image:
-      linear-gradient(to right, rgba(115, 115, 115, 0.08) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(115, 115, 115, 0.08) 1px, transparent 1px);
-    background-size: 64px 64px;
-    mask-image: radial-gradient(circle at center, black 45%, transparent 85%);
-    -webkit-mask-image: radial-gradient(circle at center, black 45%, transparent 85%);
-  }
+
 
   /* Typography Utilities */
   .display-heading {
