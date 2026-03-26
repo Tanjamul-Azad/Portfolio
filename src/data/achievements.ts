@@ -45,19 +45,7 @@ export const achievements: Achievement[] = [
       "Achieved 3rd place in a national-level junior competition, demonstrating strong quantitative problem-solving skills.",
     skills: ["Mathematics", "Physics", "Analytical Thinking"],
   },
-  {
-    id: "5",
-    title: "Perfect GPA in SSC and HSC",
-    issuer: "National Public Examinations",
-    date: "2018 - 2020",
-    type: "achievement",
-    icon: "📘",
-    description:
-      "Maintained GPA 5.00/5.00 in both SSC (2018) and HSC (2020).",
-    skills: ["Academic Excellence", "Consistency", "Discipline"],
-  },
 ];
-
 export function getAchievementsByType(type: Achievement["type"]) {
   return achievements.filter((a) => a.type === type);
 }
