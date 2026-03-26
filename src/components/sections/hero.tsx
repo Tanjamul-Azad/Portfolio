@@ -167,7 +167,7 @@ export function Hero() {
     <section
       ref={sectionRef}
       id="hero"
-      className="dark scroll-section relative z-10 min-h-svh flex items-center justify-center overflow-hidden bg-black"
+      className="scroll-section relative z-10 min-h-svh flex items-center justify-center overflow-hidden bg-white dark:bg-[#000000]"
     >
       <div className="container max-w-7xl px-6 relative z-10 pt-24 pb-12">
         <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-12 lg:gap-12 items-center">
@@ -262,21 +262,9 @@ export function Hero() {
             className="block order-1 lg:order-2 justify-self-center lg:justify-self-end"
           >
             <motion.div
-              ref={imageWrapRef}
-              onMouseMove={handleMouseMove}
-              onMouseEnter={() => setImageHover(true)}
-              onMouseLeave={() => {
-                setImageHover(false);
-                mouseX.set(0);
-                mouseY.set(0);
-              }}
-              style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: 800 }}
-              className="relative w-[90vw] sm:w-[500px] lg:w-[640px] aspect-video mx-auto lg:mx-0"
+              className="relative w-72 h-96 sm:w-96 sm:h-[34rem] lg:w-[34rem] lg:h-[44rem] xl:w-[38rem] xl:h-[50rem] mx-auto lg:ml-auto lg:-mr-12 xl:-mr-24"
             >
-              <div className="absolute inset-0 border border-neutral-200 dark:border-neutral-800 rounded-2xl translate-x-3 translate-y-3 opacity-40" />
-              <div className="absolute inset-0 border border-neutral-300/60 dark:border-neutral-700/60 rounded-2xl -translate-x-2 -translate-y-2 opacity-40" />
-
-              <div className="relative h-full w-full overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-900">
+              <div className="relative h-full w-full overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-900 shadow-2xl">
                 <video
                   src="/PROFILE%20VIDEO/profile%20vid.mp4"
                   autoPlay
@@ -284,8 +272,7 @@ export function Hero() {
                   loop
                   playsInline
                   preload="auto"
-                  className="w-full h-full object-cover transition-all duration-700 ease-out"
-                  style={{ filter: imageHover ? "grayscale(0)" : "grayscale(0.25)" }}
+                  className="w-full h-full object-cover"
                 />
 
                 <div className="absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_0_80px_rgba(0,0,0,0.6)]" />
