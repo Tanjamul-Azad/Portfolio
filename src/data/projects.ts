@@ -10,7 +10,8 @@ export const projects: Project[] = [
     role: "Frontend Lead & Full-Stack Contributor",
     impact:
       "Developed AI-powered auto-drafting API flow that reduced lawyer document drafting time from approximately 45 minutes to under 3 minutes (about 15x reduction).",
-    image: "/images/projects/complete-legal-aid.jpg",
+    image: "/images/NEW IMG/Complete_legal_aid.png",
+    color: "#3b82f6",
     tags: [
       "React 19",
       "TypeScript",
@@ -93,7 +94,8 @@ export const projects: Project[] = [
     role: "Solo Developer",
     impact:
       "Improved ingredient recognition accuracy by approximately 70% on noisy and varied user inputs through NLP normalization and typo-tolerant matching.",
-    image: "/images/projects/chefmate.jpg",
+    image: "/images/NEW IMG/chefmate.png",
+    color: "#f97316",
     tags: ["Python", "Flask", "spaCy", "scikit-learn", "FuzzyWuzzy", "Pandas"],
     sourceUrl: "https://github.com/Tanjamul-Azad/ChefMate",
     featured: true,
@@ -166,7 +168,8 @@ export const projects: Project[] = [
     role: "System Designer & Frontend Developer",
     impact:
       "Designed a multi-agent LLM flow with adaptive pacing, rewind-and-retry mechanics, and reflective feedback for social practice.",
-    image: "/images/projects/convoverse.jpg",
+    image: "/images/NEW IMG/ConvoVerse.png",
+    color: "#8b5cf6",
     tags: ["TypeScript", "React", "Next.js", "LLM APIs", "HCI"],
     sourceUrl: "https://github.com/Tanjamul-Azad/ConvoVerse",
     featured: true,

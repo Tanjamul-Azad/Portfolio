@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMotionTemplate, useScroll } from "framer-motion";
 import { ArrowUpRight, ExternalLink, Github, FileText, Search } from "lucide-react";
 import { projects } from "@/data/projects";
 import Image from "next/image";
@@ -10,6 +10,149 @@ import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/lib/telemetry";
 import { MOTION_TOKENS } from "@/lib";
 import { useRouteTransitioning } from "@/components/providers/page-transition";
+  
+function MagneticWrapper({ children, className }: { children: React.ReactNode, className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return;
+    const { left, top, width, height } = ref.current.getBoundingClientRect();
+    const x = e.clientX - (left + width / 2);
+    const y = e.clientY - (top + height / 2);
+    setPosition({ x: x * 0.2, y: y * 0.2 });
+  };
+
+  const handleMouseLeave = () => {
+    setPosition({ x: 0, y: 0 });
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      animate={{ x: position.x, y: position.y }}
+      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function MobileProjectCard({ project, index, isRouteTransitioning, failedImages, loadedImages, markImageLoaded, markImageFailed }: any) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  });
+  
+  // Parallax effect: image moves contrary to scroll direction slightly
+  const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50, rotateX: 10 }}
+      whileInView={isRouteTransitioning ? undefined : { opacity: 1, y: 0, rotateX: 0 }}
+      transition={{ duration: 0.8, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+      viewport={{ once: true, margin: "-50px" }}
+      style={{ perspective: "1000px" }}
+    >
+      <div className="group rounded-3xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 bg-white dark:bg-neutral-900 shadow-xl">
+        {/* Image area */}
+        <Link href={`/projects/${project.slug}`} className="block relative focus:outline-none">
+          <div className="aspect-[4/3] relative bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
+            {project.image && !failedImages[project.id] ? (
+              <>
+                <AnimatePresence>
+                  {!loadedImages[project.id] && (
+                    <motion.div
+                      initial={{ opacity: 1 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
+                      className="absolute inset-0 z-0 animate-pulse bg-neutral-200/70 dark:bg-neutral-800/70"
+                    />
+                  )}
+                </AnimatePresence>
+                <motion.div style={{ y }} className="absolute inset-0 w-full h-[130%] -top-[15%]">
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className={`object-cover h-full w-full z-0 transition-transform duration-700 ease-out group-hover:scale-105 ${loadedImages[project.id] ? "opacity-100" : "opacity-0"}`}
+                    onLoad={() => markImageLoaded(project.id)}
+                    onError={() => markImageFailed(project.id)}
+                  />
+                </motion.div>
+              </>
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-neutral-900 dark:bg-neutral-100 z-0">
+                <span className="text-6xl font-bold text-neutral-300 dark:text-neutral-700">
+                  {project.title.substring(0, 1)}
+                </span>
+              </div>
+            )}
+            
+            {/* Inner Shadow Gradient */}
+            <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/5 dark:ring-white/10" />
+          </div>
+        </Link>
+
+        {/* Content Area */}
+        <div className="p-6">
+          <Link href={`/projects/${project.slug}`} className="block focus:outline-none w-fit">
+            <h3 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2 flex items-center gap-2 group-hover:text-amber-500 transition-colors">
+              {project.title}
+              <ArrowUpRight className="w-5 h-5 text-neutral-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+            </h3>
+          </Link>
+
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-5 line-clamp-3">
+            {project.description}
+          </p>
+
+          <div className="flex flex-wrap gap-2 mb-6">
+            {project.tags.slice(0, 3).map((tag: string) => (
+              <span
+                key={tag}
+                className="text-[10px] font-medium tracking-wide uppercase px-2.5 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 rounded-full border border-neutral-200 dark:border-neutral-700"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-3 pt-4 border-t border-neutral-100 dark:border-neutral-800">
+            {project.liveUrl && project.liveUrl !== '#' && (
+              <Button asChild size="sm" className="flex-1 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 font-medium hover:bg-neutral-800 dark:hover:bg-neutral-200 active:scale-[0.98] transition-all duration-200">
+                <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("projects_open_live_demo", { project_slug: project.slug, source: "mobile_card" })}>
+                  <ExternalLink className="w-3.5 h-3.5 mr-1.5" /> Live Demo
+                </a>
+              </Button>
+            )}
+            <Button asChild size="sm" variant="outline" className="flex-1 rounded-full border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 font-medium active:scale-[0.98] transition-all duration-200">
+              <Link href={`/projects/${project.slug}`} onClick={() => trackEvent("projects_open_case_study", { project_slug: project.slug, source: "mobile_card" })}>
+                <FileText className="w-3.5 h-3.5 mr-1.5" /> Case Study
+              </Link>
+            </Button>
+            {project.sourceUrl && project.sourceUrl !== '#' && (
+              <Button asChild size="icon" variant="ghost" className="rounded-full w-9 h-9 shrink-0 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-95 transition-all duration-200">
+                <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("projects_open_source", { project_slug: project.slug, source: "mobile_card" })}>
+                  <Github className="w-4 h-4" />
+                </a>
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
 export function Projects() {
   const { isRouteTransitioning } = useRouteTransitioning();
@@ -20,6 +163,39 @@ export function Projects() {
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
   const searchInputRef = useRef<HTMLInputElement>(null);
   const projectLinkRefs = useRef<Array<HTMLAnchorElement | null>>([]);
+  const previewRef = useRef<HTMLDivElement>(null);
+
+  // 3D Tilt Effect State
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+
+  const springConfig = { damping: 20, stiffness: 200, mass: 0.5 };
+  const springX = useSpring(mouseX, springConfig);
+  const springY = useSpring(mouseY, springConfig);
+
+  const rotateX = useTransform(springY, [0, 1], [6, -6]); // more pronounced tilt
+  const rotateY = useTransform(springX, [0, 1], [-6, 6]);
+
+  const glareX = useTransform(springX, [0, 1], [0, 100]);
+  const glareY = useTransform(springY, [0, 1], [0, 100]);
+  const glareBackground = useMotionTemplate`radial-gradient(circle 400px at ${glareX}% ${glareY}%, rgba(255,255,255,0.15), transparent)`;
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!previewRef.current) return;
+    const rect = previewRef.current.getBoundingClientRect();
+    
+    // Calculate 0 to 1 mapping based on mouse position within the element
+    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+    
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0.5);
+    mouseY.set(0.5);
+  };
 
   const allTags = [
     "All",
@@ -192,9 +368,9 @@ export function Projects() {
                       source: "desktop_list",
                     })
                   }
-                  className={`block py-6 cursor-pointer transition-all duration-500 ${hoveredProject === project.id
-                    ? "opacity-100"
-                    : "opacity-40 hover:opacity-70"
+                  className={`block py-6 cursor-pointer transition-all duration-700 ease-out ${hoveredProject === project.id
+                    ? "opacity-100 translate-x-4 blur-none grayscale-0"
+                    : "opacity-30 -translate-x-2 blur-[2px] grayscale-[50%]"
                     }`}
                 >
                   <div className="flex items-start gap-4">
@@ -246,7 +422,7 @@ export function Projects() {
           </div>
 
           {/* Right Side - Project Preview Image */}
-          <div className="hidden lg:block sticky top-32">
+          <div className="hidden lg:block sticky top-32" style={{ perspective: "1500px" }}>
             {activeProject ? (
               <AnimatePresence mode="wait">
               <motion.div
@@ -257,165 +433,152 @@ export function Projects() {
                 transition={{ duration: MOTION_TOKENS.duration.slow, ease: MOTION_TOKENS.easing.premium }}
                 className="relative"
               >
+                {/* Ambient Backlight */}
+                <div 
+                  className="absolute inset-0 blur-[80px] opacity-20 dark:opacity-30 transition-colors duration-1000 -z-10 rounded-full scale-105"
+                  style={{ backgroundColor: activeProject?.color || "var(--theme-primary, #6366f1)" }}
+                />
+
                 {/* Image container */}
-                <div className="relative rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm">
-                  {/* Browser-like header */}
-                  <div className="flex items-center gap-2 px-4 py-3 bg-white/40 dark:bg-neutral-800/20 border-b border-neutral-200/50 dark:border-neutral-700/50 backdrop-blur-sm">
-                    <div className="flex gap-1.5">
-                      <div className="w-3 h-3 rounded-full bg-red-400/80" />
-                      <div className="w-3 h-3 rounded-full bg-yellow-400/80" />
-                      <div className="w-3 h-3 rounded-full bg-green-400/80" />
-                    </div>
-                    <div className="grow flex justify-center">
-                      <div className="px-4 py-1 bg-white dark:bg-neutral-900 rounded-md text-xs text-neutral-400 font-mono">
-                        {activeProject?.title.toLowerCase().replace(/\s+/g, '-')}.app
-                      </div>
-                    </div>
-                  </div>
+                <motion.div 
+                  ref={previewRef}
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={handleMouseLeave}
+                  style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+                  className="relative rounded-2xl overflow-hidden shadow-2xl group border border-neutral-200 dark:border-neutral-800"
+                >
+                  {/* Dynamic Glare */}
+                  <motion.div
+                    className="absolute inset-0 z-30 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 mix-blend-overlay"
+                    style={{ background: glareBackground }}
+                  />
 
                   {/* Project image/preview container */}
-                  <div className="aspect-4/3 relative bg-neutral-100 dark:bg-neutral-900 border-t border-neutral-200/50 dark:border-neutral-700/50">
-                    {/* Placeholder with project branding */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
-                      {/* Decorative grid */}
-                      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
-                        style={{
-                          backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-                          backgroundSize: '40px 40px'
-                        }}
-                      />
-
-                      {/* Project showcase */}
-                      <motion.div
-                        key={activeProject?.id + '-content'}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: MOTION_TOKENS.duration.regular, duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
-                        className="relative z-10 text-center"
-                      >
-                        {/* Large project thumbnail or initial */}
-                        {activeProject?.image && !failedImages[activeProject.id] ? (
-                          <div className="w-56 h-36 mx-auto mb-6 rounded-2xl overflow-hidden relative shadow-lg ring-1 ring-black/5 dark:ring-white/10 bg-neutral-200 dark:bg-neutral-800">
-                            <AnimatePresence>
-                              {!loadedImages[activeProject.id] && (
-                                <motion.div
-                                  initial={{ opacity: 1 }}
-                                  animate={{ opacity: 1 }}
-                                  exit={{ opacity: 0 }}
-                                  transition={{ duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
-                                  className="absolute inset-0 animate-pulse bg-neutral-300/50 dark:bg-neutral-700/50"
-                                />
-                              )}
-                            </AnimatePresence>
-                            <Image
-                              src={activeProject.image}
-                              alt={activeProject.title}
-                              fill
-                              sizes="(min-width: 1024px) 224px, 100vw"
-                              className={`object-cover transition-opacity duration-500 ${loadedImages[activeProject.id] ? "opacity-100 scale-100" : "opacity-0 scale-105"}`}
-                              onLoad={() => markImageLoaded(activeProject.id)}
-                              onError={() => markImageFailed(activeProject.id)}
-                              priority={activeProject.featured}
+                  <div className="aspect-4/3 relative bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
+                    {/* Full bleed image */}
+                    {activeProject?.image && !failedImages[activeProject.id] ? (
+                      <>
+                        <AnimatePresence>
+                          {!loadedImages[activeProject.id] && (
+                            <motion.div
+                              initial={{ opacity: 1 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              transition={{ duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
+                              className="absolute inset-0 z-0 animate-pulse bg-neutral-300/50 dark:bg-neutral-700/50"
                             />
-                          </div>
-                        ) : (
-                          <div className="w-24 h-24 mx-auto mb-6 rounded-2xl bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center ring-1 ring-black/5 dark:ring-white/10 shadow-lg">
-                            <span className="text-4xl font-bold text-white dark:text-neutral-900">
-                              {activeProject?.title.substring(0, 1)}
-                            </span>
-                          </div>
-                        )}
-
-                        <h4 className="text-2xl font-bold text-neutral-800 dark:text-white mb-3">
-                          {activeProject?.title}
-                        </h4>
-                        <p className="text-sm text-neutral-500 dark:text-neutral-400 max-w-sm mx-auto mb-4">
-                          {activeProject?.description}
-                        </p>
-
-                        {/* Role badge */}
-                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-sm font-medium">
-                          <span className="w-2 h-2 rounded-full bg-neutral-500" />
-                          {activeProject?.role}
-                        </span>
-
-                        {/* Impact stat */}
-                        <p className="mt-4 text-xs text-neutral-400 dark:text-neutral-500 italic">
-                          "{activeProject?.impact}"
-                        </p>
-
-                        {/* Action buttons */}
-                        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-                          {activeProject?.liveUrl && activeProject.liveUrl !== '#' && (
-                            <Button
-                              asChild
-                              size="sm"
-                              className="group rounded-full bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 font-medium hover:bg-neutral-800 dark:hover:bg-neutral-200 active:scale-[0.98] transition-all duration-200"
-                            >
-                              <a
-                                href={activeProject.liveUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={() =>
-                                  trackEvent("projects_open_live_demo", {
-                                    project_slug: activeProject.slug,
-                                    source: "desktop_preview",
-                                  })
-                                }
-                              >
-                                <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
-                                Live Demo
-                              </a>
-                            </Button>
                           )}
-                          <Button
-                            asChild
-                            size="sm"
-                            variant="outline"
-                            className="group rounded-full border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 font-medium active:scale-[0.98] transition-all duration-200"
-                          >
-                            <Link
-                              href={`/projects/${activeProject?.slug}`}
-                              onClick={() =>
-                                trackEvent("projects_open_case_study", {
-                                  project_slug: activeProject.slug,
-                                  source: "desktop_preview",
-                                })
-                              }
-                            >
-                              <FileText className="w-3.5 h-3.5 mr-1.5" />
-                              Case Study
-                            </Link>
-                          </Button>
-                          {activeProject?.sourceUrl && activeProject.sourceUrl !== '#' && (
+                        </AnimatePresence>
+                        <Image
+                          src={activeProject.image}
+                          alt={activeProject.title}
+                          fill
+                          sizes="(min-width: 1024px) 50vw, 100vw"
+                          className={`object-cover z-0 transition-transform duration-700 ease-out group-hover:scale-105 ${loadedImages[activeProject.id] ? "opacity-100" : "opacity-0"}`}
+                          onLoad={() => markImageLoaded(activeProject.id)}
+                          onError={() => markImageFailed(activeProject.id)}
+                          priority={activeProject.featured}
+                        />
+                      </>
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center bg-neutral-900 dark:bg-neutral-100 z-0">
+                        <span className="text-6xl font-bold text-white dark:text-neutral-900">
+                          {activeProject?.title.substring(0, 1)}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Faded shades at borders */}
+                    <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out" />
+                    <div className="absolute inset-0 z-10 ring-1 ring-inset ring-black/10 dark:ring-white/10 pointer-events-none" />
+
+                    {/* Content overlaid at the bottom */}
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={activeProject?.id + '-actions'}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
+                        className="absolute inset-0 z-20 flex flex-col items-center justify-center p-8 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      >
+                        {/* Action buttons */}
+                        <div className="flex flex-wrap items-center justify-center gap-4 translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out" style={{ transform: "translateZ(30px)" }}>
+                          {activeProject?.liveUrl && activeProject.liveUrl !== '#' && (
+                            <MagneticWrapper>
+                              <Button
+                                asChild
+                                size="default"
+                                className="rounded-full bg-white text-black font-semibold hover:bg-neutral-200 active:scale-[0.98] transition-all duration-200 shadow-[0_0_30px_rgba(255,255,255,0.3)] px-6 h-12"
+                              >
+                                <a
+                                  href={activeProject.liveUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={() =>
+                                    trackEvent("projects_open_live_demo", {
+                                      project_slug: activeProject.slug,
+                                      source: "desktop_preview",
+                                    })
+                                  }
+                                >
+                                  <ExternalLink className="w-4 h-4 mr-2" />
+                                  Live Demo
+                                </a>
+                              </Button>
+                            </MagneticWrapper>
+                          )}
+                          <MagneticWrapper>
                             <Button
                               asChild
-                              size="icon"
-                              variant="ghost"
-                              className="group rounded-full w-8 h-8 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-95 transition-all duration-200"
+                              size="default"
+                              variant="outline"
+                              className="rounded-full bg-black/60 hover:text-white border-white/20 text-white hover:bg-black/90 font-semibold active:scale-[0.98] transition-all duration-200 shadow-2xl backdrop-blur-xl px-6 h-12"
                             >
-                              <a
-                                href={activeProject.sourceUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="View Source"
+                              <Link
+                                href={`/projects/${activeProject?.slug}`}
                                 onClick={() =>
-                                  trackEvent("projects_open_source", {
+                                  trackEvent("projects_open_case_study", {
                                     project_slug: activeProject.slug,
                                     source: "desktop_preview",
                                   })
                                 }
                               >
-                                <Github className="w-4 h-4" />
-                              </a>
+                                <FileText className="w-4 h-4 mr-2" />
+                                Case Study
+                              </Link>
                             </Button>
+                          </MagneticWrapper>
+                          {activeProject?.sourceUrl && activeProject.sourceUrl !== '#' && (
+                            <MagneticWrapper>
+                              <Button
+                                asChild
+                                size="icon"
+                                variant="ghost"
+                                className="rounded-full w-12 h-12 bg-black/60 text-white hover:text-white hover:bg-black/90 active:scale-95 transition-all duration-200 shadow-2xl backdrop-blur-xl"
+                              >
+                                <a
+                                  href={activeProject.sourceUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title="View Source"
+                                  onClick={() =>
+                                    trackEvent("projects_open_source", {
+                                      project_slug: activeProject.slug,
+                                      source: "desktop_preview",
+                                    })
+                                  }
+                                >
+                                  <Github className="w-5 h-5" />
+                                </a>
+                              </Button>
+                            </MagneticWrapper>
                           )}
                         </div>
                       </motion.div>
-                    </div>
-
+                    </AnimatePresence>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
               </AnimatePresence>
             ) : (
@@ -429,145 +592,16 @@ export function Projects() {
         {/* Mobile Project Cards */}
         <div className="lg:hidden mt-12 space-y-6">
           {filteredProjects.map((project, index) => (
-            <motion.div
+            <MobileProjectCard 
               key={project.id + '-mobile'}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={isRouteTransitioning ? undefined : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
-            >
-              <div className="rounded-2xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 bg-white dark:bg-neutral-900 shadow-lg">
-                {/* Image area - clickable to case study */}
-                <Link href={`/projects/${project.slug}`} className="block">
-                  <div className="aspect-video relative bg-neutral-100 dark:bg-neutral-900 group overflow-hidden">
-                    {project.image && !failedImages[project.id] && (
-                      <>
-                        <AnimatePresence>
-                          {!loadedImages[project.id] && (
-                            <motion.div
-                              initial={{ opacity: 1 }}
-                              animate={{ opacity: 1 }}
-                              exit={{ opacity: 0 }}
-                              transition={{ duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
-                              className="absolute inset-0 animate-pulse bg-neutral-200/70 dark:bg-neutral-800/70"
-                            />
-                          )}
-                        </AnimatePresence>
-                        <Image
-                          src={project.image}
-                          alt={project.title}
-                          fill
-                          sizes="(max-width: 1024px) 100vw, 50vw"
-                          className={`absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 ${loadedImages[project.id] ? "opacity-100" : "opacity-0"}`}
-                          onLoad={() => markImageLoaded(project.id)}
-                          onError={() => markImageFailed(project.id)}
-                        />
-                      </>
-                    )}
-                    {(!project.image || failedImages[project.id]) && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 rounded-xl bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center transition-transform">
-                          <span className="text-2xl font-bold text-white dark:text-neutral-900">
-                            {project.title.substring(0, 1)}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </Link>
-
-                {/* Content */}
-                <div className="p-5">
-                  <Link href={`/projects/${project.slug}`} className="block group">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-xl font-bold text-neutral-900 dark:text-white group-hover:text-neutral-700 dark:group-hover:text-neutral-200 transition-colors">
-                        {project.title}
-                      </h3>
-                      <ArrowUpRight className="w-5 h-5 text-neutral-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                    </div>
-                  </Link>
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.tags.slice(0, 3).map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-xs px-2 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 rounded-md"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  {/* Action buttons for mobile */}
-                  <div className="flex items-center gap-2 pt-3 border-t border-neutral-100 dark:border-neutral-800">
-                    {project.liveUrl && project.liveUrl !== '#' && (
-                      <Button
-                        asChild
-                        size="sm"
-                        className="group flex-1 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 text-xs font-medium hover:bg-neutral-800 dark:hover:bg-neutral-200 active:scale-[0.97] transition-all duration-200"
-                      >
-                        <a
-                          href={project.liveUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={() =>
-                            trackEvent("projects_open_live_demo", {
-                              project_slug: project.slug,
-                              source: "mobile_card",
-                            })
-                          }
-                        >
-                          <ExternalLink className="w-3 h-3 mr-1" />
-                          Live Demo
-                        </a>
-                      </Button>
-                    )}
-                    <Button
-                      asChild
-                      size="sm"
-                      variant="outline"
-                      className="group flex-1 rounded-full border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-xs font-medium active:scale-[0.97] transition-all duration-200"
-                    >
-                      <Link
-                        href={`/projects/${project.slug}`}
-                        onClick={() =>
-                          trackEvent("projects_open_case_study", {
-                            project_slug: project.slug,
-                            source: "mobile_card",
-                          })
-                        }
-                      >
-                        <FileText className="w-3 h-3 mr-1" />
-                        Case Study
-                      </Link>
-                    </Button>
-                    {project.sourceUrl && project.sourceUrl !== '#' && (
-                      <Button
-                        asChild
-                        size="icon"
-                        variant="ghost"
-                        className="group rounded-full w-8 h-8 shrink-0 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-95 transition-all duration-200"
-                      >
-                        <a
-                          href={project.sourceUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={() =>
-                            trackEvent("projects_open_source", {
-                              project_slug: project.slug,
-                              source: "mobile_card",
-                            })
-                          }
-                        >
-                          <Github className="w-4 h-4" />
-                        </a>
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+              project={project}
+              index={index}
+              isRouteTransitioning={isRouteTransitioning}
+              failedImages={failedImages}
+              loadedImages={loadedImages}
+              markImageLoaded={markImageLoaded}
+              markImageFailed={markImageFailed}
+            />
           ))}
 
           {filteredProjects.length === 0 && (

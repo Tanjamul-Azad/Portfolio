@@ -6,6 +6,7 @@ export interface Project {
   role: string;
   impact: string;
   image: string;
+  color?: string;
   tags: string[];
   liveUrl?: string;
   sourceUrl?: string;
