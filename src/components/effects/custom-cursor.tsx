@@ -12,11 +12,11 @@ export function CustomCursor() {
   const cursorX = useMotionValue(-200);
   const cursorY = useMotionValue(-200);
 
-  const dotX = useSpring(cursorX, { stiffness: 600, damping: 40, mass: 0.2 });
-  const dotY = useSpring(cursorY, { stiffness: 600, damping: 40, mass: 0.2 });
+  const dotX = useSpring(cursorX, { stiffness: 950, damping: 50, mass: 0.1 });
+  const dotY = useSpring(cursorY, { stiffness: 950, damping: 50, mass: 0.1 });
 
-  const ringX = useSpring(cursorX, { stiffness: 120, damping: 18, mass: 0.6 });
-  const ringY = useSpring(cursorY, { stiffness: 120, damping: 18, mass: 0.6 });
+  const ringX = useSpring(cursorX, { stiffness: 450, damping: 35, mass: 0.4 });
+  const ringY = useSpring(cursorY, { stiffness: 450, damping: 35, mass: 0.4 });
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -135,13 +135,13 @@ export function CustomCursor() {
         className="hidden md:block fixed top-0 left-0 z-9999 pointer-events-none"
         style={{ x: dotX, y: dotY, translateX: "-50%", translateY: "-50%" }}
         animate={{ ...dotStyles[variant], opacity: visible ? dotStyles[variant].opacity : 0 }}
-        transition={{ duration: 0.15, ease: "easeOut" }}
+        transition={{ duration: 0.08, ease: "linear" }}
       />
       <motion.div
         className="hidden md:block fixed top-0 left-0 z-9998 pointer-events-none rounded-full border border-amber-500/50"
         style={{ x: ringX, y: ringY, translateX: "-50%", translateY: "-50%" }}
         animate={{ ...ringStyles[variant], opacity: visible ? ringStyles[variant].opacity : 0 }}
-        transition={{ duration: 0.2, ease: "easeOut" }}
+        transition={{ duration: 0.12, ease: "linear" }}
       />
     </>
   );

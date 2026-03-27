@@ -6,82 +6,102 @@ export const projects: Project[] = [
     slug: "complete-legal-aid",
     title: "Complete Legal Aid",
     description:
-      "Legal technology platform with role-based dashboards, real-time communication, and AI-powered legal drafting support.",
-    role: "Frontend Lead & Full-Stack Contributor",
+      "Full-stack legal technology platform connecting citizens with verified lawyers through AI-powered assistance, encrypted document management, and multi-modal consultation booking.",
+    role: "Full-Stack Developer & AI Integration Lead",
     impact:
-      "Developed AI-powered auto-drafting API flow that reduced lawyer document drafting time from approximately 45 minutes to under 3 minutes (about 15x reduction).",
-    image: "/images/NEW IMG/Complete_legal_aid.png",
+      "Built a complete legal-tech ecosystem serving three user roles with bilingual AI legal assistant (Bangla/English), encrypted evidence vault, and real-time consultation booking that streamlines access to legal services in Bangladesh.",
+    image: "/images/projects/Complete_legal_aid.png",
     color: "#3b82f6",
     tags: [
       "React 19",
       "TypeScript",
-      "Vite",
-      "Django",
+      "Django REST",
+      "MySQL",
+      "Gemma 3",
       "WebSocket",
       "Tailwind CSS",
-      "Firebase",
-      "GCP",
+      "JWT Auth",
     ],
     liveUrl: "https://completelegalaid.systems/",
     sourceUrl: "https://github.com/Tanjamul-Azad/Complete-Legal-Aid",
     featured: true,
     overview:
-      "Complete Legal Aid is a production legal technology platform where citizens, lawyers, and admins work in one system. It includes role-based dashboards, real-time communication, booking flow, AI-assisted drafting, and analytics views.",
+      "Complete Legal Aid is a production-ready legal technology platform that bridges the gap between citizens seeking legal help and verified legal professionals in Bangladesh. It features role-based dashboards for Citizens, Lawyers, and Admins, with AI-powered legal assistance, secure document management, real-time booking systems, and comprehensive case tracking.",
     problem:
-      "Legal support workflows were fragmented across channels, making collaboration, drafting, and case communication slower and harder to manage.",
+      "Bangladesh's legal sector lacks digital infrastructure, creating barriers to justice through limited lawyer accessibility, absence of verified professional directories, no secure document sharing, and zero AI-assisted legal guidance for preliminary queries.",
     solution:
-      "Built and shipped a complete frontend for three user roles, integrated real-time chat with Django Channels and WebSocket, and connected AI document drafting APIs with practical in-product flows.",
+      "Built a full-stack platform with verified lawyer directory (10+ specializations), fine-tuned Gemma 3 AI model for Bangladesh Constitution, military-grade encrypted evidence vault, multi-modal consultation booking (video/phone/in-person), emergency legal reporting, and comprehensive admin oversight tools.",
     architecture:
-      "React 19 + TypeScript + Vite frontend, Django backend, real-time communication through Django Channels/WebSocket, Firebase Cloud Messaging for notifications, and GCP-backed deployment services.",
+      "React 19 + TypeScript + Vite frontend, Django 4.2 + Django REST Framework backend, MySQL database with UUID-based security, Django Channels for WebSocket real-time features, fine-tuned Gemma 3 (270M) with LoRA for authenticated users, Gemini API fallback for guests, and JWT + Google OAuth 2.0 authentication.",
     features: [
       {
-        title: "Role-Based Dashboards",
+        title: "Verified Lawyer Directory",
         description:
-          "Built dedicated workflows for Citizen, Lawyer, and Admin users with clear permissions and task-oriented UI.",
+          "Comprehensive search and filtering by specialization, location, language, rating, and fees. Rigorous verification including bar council number validation and admin approval.",
       },
       {
-        title: "Real-Time Chat System",
+        title: "Bilingual AI Legal Assistant",
         description:
-          "Implemented end-to-end real-time messaging with attachments, read receipts, and live push notifications.",
+          "Fine-tuned Gemma 3 model trained on Bangladesh Constitution with LoRA adapters. Supports Bangla and English with streaming responses, context-aware conversations, and legal citation.",
       },
       {
-        title: "Authentication and Access",
+        title: "Encrypted Evidence Vault",
         description:
-          "Implemented JWT and Google OAuth 2.0 flows with token refresh and 2FA support.",
+          "Military-grade document encryption with unique keys per file, token-based sharing with expiration, access count tracking, and full audit trail for secure evidence management.",
       },
       {
-        title: "AI Auto-Drafting",
+        title: "Multi-Modal Consultation Booking",
         description:
-          "Integrated AI drafting APIs that cut document drafting time from roughly 45 minutes to under 3 minutes.",
+          "Real-time booking system supporting video calls, phone consultations, and in-person chamber visits with availability management, status tracking, and instant notifications.",
+      },
+      {
+        title: "Case Management System",
+        description:
+          "End-to-end case tracking with priority levels, status workflows (Submitted → In Review → Hearing → Resolved), timeline milestones, court details, and hearing reminders.",
+      },
+      {
+        title: "Emergency Legal Reporting",
+        description:
+          "Anonymous emergency reporting for domestic violence, police misconduct, harassment, and other urgent situations with direct routing to CLA responders and secure documentation.",
       },
     ],
     challenges: [
       {
-        challenge: "Coordinating real-time communication and file workflows across three user roles",
+        challenge: "AI model latency affecting user experience with fine-tuned Gemma 3",
         learned:
-          "Designed robust UI state and messaging flows that kept conversations, attachments, and notifications synchronized reliably.",
+          "Implemented singleton pattern with lazy loading, streaming responses for real-time interaction, and Gemini API fallback for instant guest user responses. Reduced perceived latency significantly.",
       },
       {
-        challenge: "Balancing complex legal workflows with simple UX",
+        challenge: "Balancing document security with lawyer-client sharing accessibility",
         learned:
-          "Used task-first interface design to keep advanced capability available without overwhelming first-time users.",
+          "Designed token-based sharing system with time expiration, revocation capabilities, and access tracking. Maintains military-grade encryption while enabling seamless controlled access.",
+      },
+      {
+        challenge: "Real-time updates across multi-role platform (Citizens, Lawyers, Admins)",
+        learned:
+          "Leveraged Django Channels with WebSocket for instant booking notifications, case updates, and chat messages. Built robust state management to keep all roles synchronized.",
       },
     ],
     results: [
       {
-        metric: "Drafting Speed",
-        value: "15x",
-        description: "Reduced legal drafting from about 45 minutes to under 3 minutes",
+        metric: "AI Models",
+        value: "Dual AI",
+        description: "Fine-tuned Gemma 3 for authenticated users, Gemini API for guests",
       },
       {
         metric: "User Roles",
         value: "3",
-        description: "Citizen, Lawyer, and Admin workflows delivered in one platform",
+        description: "Citizen, Lawyer, and Admin with distinct workflows and permissions",
       },
       {
-        metric: "System Scope",
-        value: "Production",
-        description: "Live deployment with real-time features and AI integration",
+        metric: "Security",
+        value: "Military-Grade",
+        description: "End-to-end encryption, UUID-based IDs, JWT auth, token-based sharing",
+      },
+      {
+        metric: "Specializations",
+        value: "10+",
+        description: "Family, Criminal, Property, Corporate, Tax, IP, Labor, Constitutional, Environmental law",
       },
     ],
   },
@@ -94,7 +114,7 @@ export const projects: Project[] = [
     role: "Solo Developer",
     impact:
       "Improved ingredient recognition accuracy by approximately 70% on noisy and varied user inputs through NLP normalization and typo-tolerant matching.",
-    image: "/images/NEW IMG/chefmate.png",
+    image: "/images/projects/chefmate.png",
     color: "#f97316",
     tags: ["Python", "Flask", "spaCy", "scikit-learn", "FuzzyWuzzy", "Pandas"],
     sourceUrl: "https://github.com/Tanjamul-Azad/ChefMate",
@@ -168,7 +188,7 @@ export const projects: Project[] = [
     role: "System Designer & Frontend Developer",
     impact:
       "Designed a multi-agent LLM flow with adaptive pacing, rewind-and-retry mechanics, and reflective feedback for social practice.",
-    image: "/images/NEW IMG/ConvoVerse.png",
+    image: "/images/projects/ConvoVerse.png",
     color: "#8b5cf6",
     tags: ["TypeScript", "React", "Next.js", "LLM APIs", "HCI"],
     sourceUrl: "https://github.com/Tanjamul-Azad/ConvoVerse",
@@ -242,7 +262,7 @@ export const projects: Project[] = [
     role: "Software Developer & Team Lead",
     impact:
       "Coded all software modules independently and integrated MobileNetSSD with OpenCV, achieving real-time human detection at about 60 FPS on Raspberry Pi 4.",
-    image: "/images/projects/care-companion.jpg",
+    image: "/images/projects/care-companion.png",
     tags: ["Python", "Flask", "OpenCV", "MobileNetSSD", "Raspberry Pi 4", "Arduino"],
     sourceUrl: "https://github.com/Tanjamul-Azad/Silicon-Squad-",
     featured: false,
@@ -306,9 +326,148 @@ export const projects: Project[] = [
       },
     ],
   },
+  {
+    id: "5",
+    slug: "skillex",
+    title: "SkillEx",
+    description:
+      "Peer skill-exchange platform where users can learn and teach skills through mutual exchange — no money required.",
+    role: "Full-Stack Developer",
+    impact:
+      "Designed and built a full monorepo architecture with semantic skill-matching powered by Gemini Embedding API, enabling relevant peer connections for skill exchange.",
+    image: "/images/projects/SkilllEX.png",
+    color: "#10b981",
+    tags: ["React 19", "TypeScript", "Vite", "Spring Boot 3", "Java 21", "Spring Data JPA", "Flyway", "JWT", "Gemini API"],
+    sourceUrl: "https://github.com/Tanjamul-Azad",
+    featured: false,
+    overview:
+      "SkillEx is an Advanced OOP course project and personal initiative — a platform that lets people exchange skills peer-to-peer without monetary transactions. It uses semantic AI matching to connect users based on what they can offer and what they want to learn.",
+    problem:
+      "Access to quality skill learning is often gated by cost. Many people have valuable knowledge to share but no structured platform for mutual skill exchange.",
+    solution:
+      "Built a full-stack monorepo with a React 19 frontend and Spring Boot 3 backend. Integrated Gemini Embedding API for semantic skill matching to surface relevant connections.",
+    architecture:
+      "React 19 + Vite + TypeScript frontend with feature-first vertical slices and TanStack Query; Spring Boot 3 + Java 21 backend with clean service/repository separation, Flyway SQL migrations, and JWT authentication.",
+    features: [
+      {
+        title: "Semantic Skill Matching",
+        description: "Uses Gemini Embedding API to match users based on skills offered and skills wanted — going beyond keyword search.",
+      },
+      {
+        title: "JWT Authentication",
+        description: "Secure token-based auth with refresh flow and CORS configuration.",
+      },
+      {
+        title: "Flyway Migrations",
+        description: "Database schema managed through versioned SQL migrations for reliable deployments.",
+      },
+      {
+        title: "Feature-First Frontend",
+        description: "Frontend organised into vertical feature slices with a shared ApiClient singleton for consistent HTTP communication.",
+      },
+    ],
+    results: [
+      { metric: "Stack", value: "Full Monorepo", description: "React 19 frontend + Spring Boot 3 backend in a single managed repo" },
+      { metric: "Matching", value: "AI-Powered", description: "Gemini Embedding API for semantic skill matching" },
+      { metric: "Architecture", value: "Clean OOP", description: "Built as Advanced OOP capstone with proper layering" },
+    ],
+  },
+  {
+    id: "6",
+    slug: "unishare",
+    title: "UniShare",
+    description:
+      "Real-time full-stack web application for university communities to share resources, connect, and collaborate.",
+    role: "Full-Stack Developer",
+    impact:
+      "Delivered a live, responsive university community platform with real-time WebSocket messaging, push notifications, and a fully interactive dashboard — end to end.",
+    image: "/images/projects/UniShare.png",
+    color: "#6366f1",
+    tags: ["React 19", "TypeScript", "Vite", "Tailwind CSS", "Socket.IO", "TanStack Query"],
+    sourceUrl: "https://github.com/Tanjamul-Azad",
+    featured: false,
+    overview:
+      "UniShare is a community platform built for university students — a single space for sharing academic resources, finding study groups, communicating in real time, and managing listings.",
+    problem:
+      "University students lacked a unified digital space to share resources, collaborate, and communicate — scattered across generic platforms not designed for academic communities.",
+    solution:
+      "Built a modern full-stack web app with real-time messaging via Socket.IO, a responsive dashboard, and smooth client-side state management through TanStack React Query.",
+    architecture:
+      "React 19 + Vite + TypeScript SPA with Tailwind CSS for styling, Socket.IO for WebSocket-based real-time features, and TanStack React Query for intelligent server-state caching.",
+    features: [
+      {
+        title: "Real-Time Messaging",
+        description: "Live chat and push notifications powered by Socket.IO WebSocket integration.",
+      },
+      {
+        title: "Interactive Dashboard",
+        description: "Track listings, groups, saved items, and account settings from a single responsive view.",
+      },
+      {
+        title: "Optimised State Management",
+        description: "TanStack React Query handles server-state caching, background syncing, and optimistic updates.",
+      },
+      {
+        title: "Fully Responsive UI",
+        description: "Mobile-first fluid layout built with Tailwind CSS for seamless experience across devices.",
+      },
+    ],
+    results: [
+      { metric: "Real-Time", value: "WebSocket", description: "Socket.IO for live chat and push notifications" },
+      { metric: "UI", value: "Fully Responsive", description: "Mobile-first with Tailwind CSS" },
+      { metric: "State", value: "TanStack Query", description: "Intelligent caching and background sync" },
+    ],
+  },
+  {
+    id: "7",
+    slug: "integrated-healthcare",
+    title: "Integrated Healthcare Management System",
+    description:
+      "A multi-role web system connecting patients, doctors, and blood banks to streamline medical workflows and records.",
+    role: "Full-Stack Developer",
+    impact:
+      "Unified patient care, doctor management, and blood bank coordination into a single system — eliminating fragmented paper and multi-channel workflows.",
+    image: "/images/projects/Integrated_healthcare.png",
+    color: "#ef4444",
+    tags: ["PHP", "MySQL", "HTML", "CSS"],
+    sourceUrl: "https://github.com/Tanjamul-Azad",
+    featured: false,
+    overview:
+      "A PHP/MySQL web application that brings patients, doctors, and blood banks onto one platform. Manages appointments, medical records, prescriptions, and blood availability.",
+    problem:
+      "Healthcare management in smaller clinics was fragmented — paper records, separate contact for blood requests, and no unified patient history for doctors.",
+    solution:
+      "Built a structured multi-role web system in PHP with MySQL backend covering patient registration, doctor dashboards, medical records, prescriptions, and blood bank inventory.",
+    architecture:
+      "PHP server-side rendering with MySQL for relational data, modular page structure covering all three user roles (Patient, Doctor, Admin/Blood Bank).",
+    features: [
+      {
+        title: "Multi-Role Access",
+        description: "Separate workflows for patients, doctors, and blood bank administrators.",
+      },
+      {
+        title: "Medical Records & Prescriptions",
+        description: "Full history of patient visits, diagnoses, and prescriptions stored and accessible per role.",
+      },
+      {
+        title: "Blood Bank Coordination",
+        description: "Tracks blood group availability and connects patients with the blood bank module.",
+      },
+      {
+        title: "Doctor Management",
+        description: "Doctor profiles, availability, and patient assignment managed from the admin view.",
+      },
+    ],
+    results: [
+      { metric: "Roles", value: "3", description: "Patient, Doctor, and Blood Bank/Admin roles" },
+      { metric: "Stack", value: "PHP + MySQL", description: "Full server-rendered web application" },
+      { metric: "Scope", value: "End-to-End", description: "Records, prescriptions, blood bank, and appointments" },
+    ],
+  },
 ];
 
 export const getFeaturedProjects = () => projects.filter((p) => p.featured);
 export const getProjectById = (id: string) => projects.find((p) => p.id === id);
 export const getProjectBySlug = (slug: string) => projects.find((p) => p.slug === slug);
 export const getAllProjectSlugs = () => projects.map((p) => p.slug);
+

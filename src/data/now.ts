@@ -4,31 +4,30 @@ export const nowItems: NowItem[] = [
   {
     category: "building",
     items: [
-      "Complete Legal Aid - production legal technology platform with AI drafting",
-      "ConvoVerse - LLM-based multi-agent social practice system",
-      "Care Companion - AI + IoT healthcare rover with real-time monitoring",
+      "Complete Legal Aid — Currently implementing proper security using BlockChain",
+      "SkillEx — peer skill-exchange platform (React 19 + Spring Boot 3, AOOP project)",
+      "UniShare — real-time university community platform (React 19 + Socket.IO)",
     ],
   },
   {
     category: "learning",
     items: [
-      "Applied NLP pipelines with spaCy and fuzzy matching",
-      "Model training and evaluation with scikit-learn",
-      "Data-driven system design and deployment",
-      "Production backend patterns with Django and Flask",
+      "Ongoing Final Year Design Project",
+      "Green Computing: Federated Learning Based Intrusion Detection for IoT",
+      "ML Research: Conflict-Aware Hallucination Detection in Multi-Document Summarization"
+
     ],
   },
   {
     category: "looking",
     items: [
-      "Data Science internship roles",
-      "Software Engineering opportunities",
-      "NLP or AI research collaborations",
-      "Real-world, data-driven product challenges",
+      "AI/ML internship or research collaboration",
+      "Software Engineering (part-time / internship / freelance)",
+      "Open-source or data-driven product challenges",
     ],
   },
 ];
 
 export const getNowItems = () => nowItems;
-export const getNowByCategory = (category: NowItem["category"]) => 
+export const getNowByCategory = (category: NowItem["category"]) =>
   nowItems.find((item) => item.category === category);

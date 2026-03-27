@@ -36,6 +36,11 @@ export function Preloader({ onComplete }: PreloaderProps) {
     };
   }, []);
 
+  const onCompleteRef = useRef(onComplete);
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
   useEffect(() => {
     let frame = 0;
     const total = 60;
@@ -58,7 +63,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
           setPhase("exit");
           timeouts.push(setTimeout(() => {
             setIsVisible(false);
-            timeouts.push(setTimeout(onComplete, 900));
+            timeouts.push(setTimeout(() => onCompleteRef.current(), 900));
           }, 750));
         }, 650));
       }
@@ -68,7 +73,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
       clearInterval(timer);
       timeouts.forEach(clearTimeout);
     };
-  }, [onComplete]);
+  }, []);
 
   const name = siteConfig.name.toUpperCase();
   return (

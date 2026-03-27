@@ -1,6 +1,7 @@
 import { siteConfig } from "./site";
 
 export const navLinks = [
+  { name: "About", href: "#about" },
   { name: "Now", href: "#now" },
   { name: "Projects", href: "#projects" },
   { name: "Experience", href: "#experience" },

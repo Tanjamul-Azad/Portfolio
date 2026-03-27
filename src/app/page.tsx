@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Preloader } from "@/components/common";
 import { Navbar, Footer } from "@/components/layout";
 import {
   Hero,
+  About,
   TechStack,
   Projects,
   Experience,
@@ -20,6 +21,19 @@ import { MOTION_TOKENS } from "@/lib";
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
+  // Skip preloader if already loaded in this session
+  useEffect(() => {
+    const hasLoaded = sessionStorage.getItem("portfolio_loaded");
+    if (hasLoaded) {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const handleComplete = () => {
+    setIsLoading(false);
+    sessionStorage.setItem("portfolio_loaded", "true");
+  };
+
   return (
     <main className="scroll-container bg-background min-h-screen overflow-x-hidden">
       <AnimatePresence mode="wait" initial={false}>
@@ -31,7 +45,7 @@ export default function Home() {
             exit={{ opacity: 0 }}
             transition={{ duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
           >
-            <Preloader onComplete={() => setIsLoading(false)} />
+            <Preloader onComplete={handleComplete} />
           </motion.div>
         ) : (
           <motion.div
@@ -42,6 +56,7 @@ export default function Home() {
           >
             <Navbar />
             <Hero />
+            <About />
             <Now />
             <TechStack />
             <Projects />

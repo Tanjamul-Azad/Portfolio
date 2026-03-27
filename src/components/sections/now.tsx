@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Rocket, BookOpen, Search } from "lucide-react";
+import { Rocket, Microscope, Search } from "lucide-react";
 import { nowItems } from "@/data";
 
 const categoryConfig = {
@@ -10,8 +10,8 @@ const categoryConfig = {
     title: "Currently Building",
   },
   learning: {
-    icon: BookOpen,
-    title: "Currently Learning",
+    icon: Microscope,
+    title: "Active Research",
   },
   looking: {
     icon: Search,

@@ -50,7 +50,7 @@ export interface Experience {
 export interface TechItem {
   name: string;
   icon: string;
-  category: "frontend" | "backend" | "database" | "tools" | "cloud";
+  category: "language" | "frontend" | "backend" | "ai" | "database" | "cloud" | "tools" | "design";
   description: string;
 }
 

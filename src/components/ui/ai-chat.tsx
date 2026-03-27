@@ -79,7 +79,10 @@ export default function AIChatCard({ className }: { className?: string }) {
           <h2 className="text-lg font-semibold font-heading text-foreground">AI Assistant</h2>
         </div>
 
-        <div className="flex-1 px-4 py-3 overflow-y-auto space-y-3 text-sm flex flex-col relative z-10">
+        <div 
+          className="flex-1 px-4 py-3 overflow-y-auto space-y-3 text-sm flex flex-col relative z-10"
+          data-lenis-prevent
+        >
           {messages.map((msg, i) => (
             <motion.div
               key={i}

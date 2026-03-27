@@ -1,96 +1,44 @@
 import type { TechItem } from "@/types";
 
 export const techStack: TechItem[] = [
-  {
-    name: "TypeScript",
-    icon: "📘",
-    category: "frontend",
-    description: "Typed frontend development",
-  },
-  {
-    name: "React",
-    icon: "⚛️",
-    category: "frontend",
-    description: "Component-driven UI",
-  },
-  {
-    name: "Next.js",
-    icon: "▲",
-    category: "frontend",
-    description: "App routing and SSR",
-  },
-  {
-    name: "Vite",
-    icon: "⚡",
-    category: "frontend",
-    description: "Frontend build tooling",
-  },
-  {
-    name: "Tailwind CSS",
-    icon: "🌊",
-    category: "frontend",
-    description: "Utility-first styling",
-  },
-  {
-    name: "Django",
-    icon: "🎯",
-    category: "backend",
-    description: "Backend APIs and auth",
-  },
-  {
-    name: "Flask",
-    icon: "🧪",
-    category: "backend",
-    description: "Lightweight Python services",
-  },
-  {
-    name: "Spring Boot",
-    icon: "☕",
-    category: "backend",
-    description: "Java backend development",
-  },
-  {
-    name: "MySQL",
-    icon: "🐬",
-    category: "database",
-    description: "Relational data storage",
-  },
-  {
-    name: "Firebase",
-    icon: "🔥",
-    category: "cloud",
-    description: "Auth and notifications",
-  },
-  {
-    name: "Google Cloud Platform",
-    icon: "☁️",
-    category: "cloud",
-    description: "Deployment and cloud services",
-  },
-  {
-    name: "scikit-learn",
-    icon: "🤖",
-    category: "tools",
-    description: "ML modeling",
-  },
-  {
-    name: "spaCy",
-    icon: "🧠",
-    category: "tools",
-    description: "NLP processing",
-  },
-  {
-    name: "OpenCV",
-    icon: "📷",
-    category: "tools",
-    description: "Computer vision",
-  },
-  {
-    name: "Docker",
-    icon: "🐳",
-    category: "tools",
-    description: "Containerized workflows",
-  },
+  // ── Languages ───────────────────────────────────────────────────────────
+  { name: "Python",          icon: "🐍", category: "language",  description: "Primary language for AI/ML and backend scripting" },
+  { name: "TypeScript",      icon: "📘", category: "language",  description: "Typed superset of JavaScript for robust frontend & backend" },
+  { name: "JavaScript",      icon: "⚡", category: "language",  description: "Core language for web development" },
+  { name: "Java",            icon: "☕", category: "language",  description: "Used in Spring Boot backend development" },
+  { name: "PHP",             icon: "🐘", category: "language",  description: "Server-side scripting for web systems" },
+  { name: "C / C++",         icon: "⚙️", category: "language",  description: "Systems programming and algorithmic problem solving" },
+
+  // ── Frontend ─────────────────────────────────────────────────────────────
+  { name: "React",           icon: "⚛️", category: "frontend",  description: "Component-driven UI development" },
+  { name: "Next.js",         icon: "▲",  category: "frontend",  description: "App routing, SSR, and full-stack React" },
+  { name: "Vite",            icon: "🚀", category: "frontend",  description: "Blazing-fast frontend build tooling" },
+  { name: "Tailwind CSS",    icon: "🌊", category: "frontend",  description: "Utility-first responsive styling" },
+
+  // ── Backend ──────────────────────────────────────────────────────────────
+  { name: "Django",          icon: "🎯", category: "backend",   description: "Production Python web framework and REST APIs" },
+  { name: "Flask",           icon: "🧪", category: "backend",   description: "Lightweight Python microservices" },
+  { name: "Spring Boot",     icon: "🌿", category: "backend",   description: "Java enterprise backend development" },
+
+  // ── AI / ML ──────────────────────────────────────────────────────────────
+  { name: "scikit-learn",    icon: "🤖", category: "ai",        description: "Classical ML modelling and pipelines" },
+  { name: "spaCy",           icon: "🧠", category: "ai",        description: "Industrial-strength NLP processing" },
+  { name: "OpenCV",          icon: "📷", category: "ai",        description: "Computer vision and image processing" },
+  { name: "TensorFlow",      icon: "🔶", category: "ai",        description: "Deep learning framework (actively learning)" },
+  { name: "PyTorch",         icon: "🔥", category: "ai",        description: "Neural network research framework (actively learning)" },
+
+  // ── Database & Cloud ──────────────────────────────────────────────────────
+  { name: "MySQL",           icon: "🐬", category: "database",  description: "Relational data storage and querying" },
+  { name: "Firebase",        icon: "🔶", category: "cloud",     description: "Auth, Firestore, and push notifications" },
+  { name: "Google Cloud",    icon: "☁️", category: "cloud",     description: "Cloud deployment and infrastructure" },
+  { name: "Docker",          icon: "🐳", category: "tools",     description: "Containerised development and deployment" },
+
+  // ── Design & Productivity ─────────────────────────────────────────────────
+  { name: "Figma",           icon: "🎨", category: "design",    description: "UI/UX design and prototyping (specialised)" },
+  { name: "Adobe Suite",     icon: "✏️", category: "design",    description: "Illustrator, Photoshop, and creative tools" },
+  { name: "Git / GitHub",    icon: "🌐", category: "tools",     description: "Version control and collaboration" },
+  { name: "Postman",         icon: "📮", category: "tools",     description: "API development and testing" },
+  { name: "Notion",          icon: "📓", category: "tools",     description: "Project management and documentation" },
 ];
 
 export const getTechByCategory = (category: TechItem["category"]) =>

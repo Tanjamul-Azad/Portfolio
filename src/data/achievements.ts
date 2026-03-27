@@ -20,7 +20,7 @@ export const achievements: Achievement[] = [
     type: "award",
     icon: "🥉",
     description:
-      "Recognized in Software Engineering category for development work on Complete Legal Aid.",
+      "Recognised in Software Engineering category for full-stack development of Complete Legal Aid.",
     skills: ["Software Engineering", "Team Delivery", "Full-Stack Development"],
   },
   {
@@ -31,21 +31,33 @@ export const achievements: Achievement[] = [
     type: "award",
     icon: "🏅",
     description:
-      "Recognized for AI + IoT innovation with the Care Companion smart healthcare rover.",
+      "Recognised for AI + IoT innovation with the Care Companion smart healthcare rover.",
     skills: ["AI", "IoT", "Embedded Systems", "Innovation"],
   },
   {
     id: "4",
+    title: "50% Merit Scholarship — Every Trimester",
+    issuer: "United International University",
+    date: "2022 – Present",
+    type: "achievement",
+    icon: "🎓",
+    description:
+      "Awarded a 50% tuition merit scholarship each and every trimester throughout the BSc CSE programme, reflecting sustained academic excellence.",
+    skills: ["Academic Excellence", "Data Science", "Consistency"],
+  },
+  {
+    id: "5",
     title: "3rd Place, Math & Physics Olympiad (Junior)",
     issuer: "BdMOC",
     date: "2016",
     type: "achievement",
     icon: "🥉",
     description:
-      "Achieved 3rd place in a national-level junior competition, demonstrating strong quantitative problem-solving skills.",
+      "Achieved 3rd place at national level, demonstrating strong quantitative and analytical problem-solving from an early age.",
     skills: ["Mathematics", "Physics", "Analytical Thinking"],
   },
 ];
+
 export function getAchievementsByType(type: Achievement["type"]) {
   return achievements.filter((a) => a.type === type);
 }

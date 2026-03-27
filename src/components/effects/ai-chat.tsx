@@ -12,12 +12,7 @@ interface Message {
   content: string;
 }
 
-const SUGGESTED_QUESTIONS = [
-  "What's your tech stack?",
-  "Tell me about your projects",
-  "Are you available for hire?",
-  "What are you building now?",
-];
+// Suggested questions removed for clean professional UI
 
 export function AiChat() {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,9 +20,10 @@ export function AiChat() {
     {
       id: "welcome",
       role: "assistant",
-      content: `Hi! 👋 I'm ${siteConfig.author.name}'s AI assistant. Ask me anything about his skills, projects, or how to work with him!`,
+      content: `Assalamu Alaikum! 👋 I'm your AI assistant. Ask me anything about ${siteConfig.author.name}'s skills, projects, or research!`,
     },
   ]);
+  const [showHint, setShowHint] = useState(true);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -42,8 +38,9 @@ export function AiChat() {
   }, [messages]);
 
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
+    if (isOpen) {
+      if (inputRef.current) inputRef.current.focus();
+      setShowHint(false);
     }
   }, [isOpen]);
 
@@ -125,38 +122,54 @@ export function AiChat() {
 
   return (
     <>
-      {/* Chat Toggle Button */}
-      <motion.button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/90 dark:bg-neutral-900/90 text-amber-600 dark:text-amber-400 shadow-lg shadow-neutral-900/10 dark:shadow-black/30 backdrop-blur-xl flex items-center justify-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        aria-label="Toggle AI Chat"
-      >
-        <AnimatePresence mode="wait">
-          {isOpen ? (
+      {/* Chat Toggle Button with Hint Bubble */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <AnimatePresence>
+          {showHint && !isOpen && (
             <motion.div
-              key="close"
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              initial={{ opacity: 0, scale: 0.8, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 10 }}
+              className="absolute bottom-16 right-0 mb-2 whitespace-nowrap px-4 py-2 rounded-xl bg-neutral-900 dark:bg-neutral-800 text-white text-xs font-medium shadow-xl border border-neutral-800 dark:border-neutral-700 pointer-events-none"
             >
-              <X className="w-6 h-6" />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="chat"
-              initial={{ rotate: 90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: -90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <MessageCircle className="w-6 h-6" />
+              Ask here to know more
+              <div className="absolute -bottom-1 right-6 w-2 h-2 bg-neutral-900 dark:bg-neutral-800 rotate-45 border-r border-b border-neutral-800 dark:border-neutral-700" />
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.button>
+
+        <motion.button
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-14 h-14 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/90 dark:bg-neutral-900/90 text-amber-600 dark:text-amber-400 shadow-lg shadow-neutral-900/10 dark:shadow-black/30 backdrop-blur-xl flex items-center justify-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          aria-label="Toggle AI Chat"
+        >
+          <AnimatePresence mode="wait">
+            {isOpen ? (
+              <motion.div
+                key="close"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <X className="w-6 h-6" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="chat"
+                initial={{ rotate: 90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: -90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <MessageCircle className="w-6 h-6" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.button>
+      </div>
 
       {/* Chat Window */}
       <AnimatePresence>
@@ -253,23 +266,7 @@ export function AiChat() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Suggested Questions */}
-            {messages.length <= 2 && !isLoading && (
-              <div className="px-4 py-2 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
-                <p className="text-xs text-neutral-500 mb-2">Suggested questions:</p>
-                <div className="flex flex-wrap gap-2">
-                  {SUGGESTED_QUESTIONS.map((question) => (
-                    <button
-                      key={question}
-                      onClick={() => sendMessage(question)}
-                      className="text-xs px-3 py-1.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-amber-100 dark:hover:bg-amber-500/20 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
-                    >
-                      {question}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Suggested Questions Area Removed */}
 
             {/* Input */}
             <form
