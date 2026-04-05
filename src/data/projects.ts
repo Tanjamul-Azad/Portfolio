@@ -471,3 +471,16 @@ export const getProjectById = (id: string) => projects.find((p) => p.id === id);
 export const getProjectBySlug = (slug: string) => projects.find((p) => p.slug === slug);
 export const getAllProjectSlugs = () => projects.map((p) => p.slug);
 
+const HOME_PINNED_PROJECT_SLUGS = [
+  "complete-legal-aid",
+  "skillex",
+  "convoverse",
+  "care-companion",
+  "unishare",
+] as const;
+
+export const getPinnedProjects = () =>
+  HOME_PINNED_PROJECT_SLUGS.map((slug) => projects.find((project) => project.slug === slug)).filter(
+    (project): project is Project => Boolean(project)
+  );
+

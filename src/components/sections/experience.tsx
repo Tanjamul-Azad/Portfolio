@@ -160,7 +160,7 @@ export function Experience() {
   const heightTransform = useTransform(pathHeight, [0, 1], ["0%", "100%"]);
 
   return (
-    <section id="experience" className="py-24 md:py-32 bg-neutral-50 dark:bg-neutral-950 relative overflow-hidden">
+    <section id="experience" className="scroll-section py-24 md:py-32 relative overflow-hidden">
       {/* Background aesthetic glow */}
       <div className="absolute top-1/2 left-1/2 w-150 h-150 bg-amber-500/5 blur-[120px] rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2" />
 

@@ -21,7 +21,7 @@ const categoryConfig = {
 
 export function Now() {
   return (
-    <section id="now" className="scroll-section py-24 bg-white dark:bg-neutral-950 border-y border-neutral-200 dark:border-neutral-800">
+    <section id="now" className="scroll-section relative py-24 overflow-hidden">
       <div className="container max-w-5xl px-6 mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

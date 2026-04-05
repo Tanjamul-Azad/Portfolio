@@ -13,7 +13,7 @@ export function Blog() {
   const { isRouteTransitioning } = useRouteTransitioning();
 
   return (
-    <section id="blog" className="py-28 bg-white dark:bg-neutral-900/50">
+    <section id="blog" className="scroll-section py-28 relative overflow-hidden">
       <div className="container px-6 mx-auto">
         {/* Header */}
         <motion.div

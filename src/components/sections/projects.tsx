@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMotionTemplate, useScroll } from "framer-motion";
-import { ArrowUpRight, ExternalLink, Github, FileText, Search } from "lucide-react";
-import { projects } from "@/data/projects";
+import { ArrowUpRight, ExternalLink, Github, FileText } from "lucide-react";
+import { getPinnedProjects, projects as allProjects } from "@/data/projects";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -63,7 +63,7 @@ function MobileProjectCard({ project, index, isRouteTransitioning, failedImages,
       <div className="group rounded-3xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 bg-white dark:bg-neutral-900 shadow-xl">
         {/* Image area */}
         <Link href={`/projects/${project.slug}`} className="block relative focus:outline-none">
-          <div className="aspect-[4/3] relative bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
+          <div className="aspect-4/3 relative bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
             {project.image && !failedImages[project.id] ? (
               <>
                 <AnimatePresence>
@@ -156,12 +156,12 @@ function MobileProjectCard({ project, index, isRouteTransitioning, failedImages,
 
 export function Projects() {
   const { isRouteTransitioning } = useRouteTransitioning();
-  const [hoveredProject, setHoveredProject] = useState<string | null>(projects[0]?.id || null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeTag, setActiveTag] = useState<string>("All");
+  const pinnedProjects = useMemo(() => getPinnedProjects(), []);
+  const totalProjects = allProjects.length;
+
+  const [hoveredProject, setHoveredProject] = useState<string | null>(pinnedProjects[0]?.id || null);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const projectLinkRefs = useRef<Array<HTMLAnchorElement | null>>([]);
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -197,21 +197,7 @@ export function Projects() {
     mouseY.set(0.5);
   };
 
-  const allTags = [
-    "All",
-    ...Array.from(new Set(projects.flatMap((project) => project.tags))).slice(0, 8),
-  ];
-
-  const filteredProjects = projects.filter((project) => {
-    const matchesSearch =
-      searchTerm.trim().length === 0 ||
-      project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-
-    const matchesTag = activeTag === "All" || project.tags.includes(activeTag);
-    return matchesSearch && matchesTag;
-  });
+  const filteredProjects = pinnedProjects;
 
   const activeProject =
     filteredProjects.length === 0
@@ -229,22 +215,6 @@ export function Projects() {
       setHoveredProject(filteredProjects[0].id);
     }
   }, [filteredProjects, hoveredProject]);
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "/") return;
-      const target = event.target as HTMLElement | null;
-      const tag = target?.tagName?.toLowerCase();
-      if (tag === "input" || tag === "textarea" || target?.isContentEditable) return;
-
-      event.preventDefault();
-      searchInputRef.current?.focus();
-      trackEvent("projects_search_shortcut", { key: "/" });
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
 
   const markImageFailed = (projectId: string) => {
     setFailedImages((prev) => ({ ...prev, [projectId]: true }));
@@ -269,7 +239,7 @@ export function Projects() {
   };
 
   return (
-    <section id="projects" className="scroll-section py-28 relative bg-neutral-50 dark:bg-neutral-950 overflow-hidden min-h-screen flex items-center">
+    <section id="projects" className="scroll-section py-28 relative overflow-hidden min-h-screen flex items-center">
 
       <div className="container px-6 mx-auto relative">
         {/* Header */}
@@ -280,52 +250,23 @@ export function Projects() {
             viewport={{ once: true }}
             className="text-sm text-neutral-500 dark:text-neutral-400 tracking-[0.16em] uppercase font-medium"
           >
-            Selected Projects
+            Pinned Projects
           </motion.span>
 
-          <div className="mt-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="relative w-full lg:max-w-sm">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-              <input
-                ref={searchInputRef}
-                type="text"
-                value={searchTerm}
-                onChange={(e) => {
-                  const nextValue = e.target.value;
-                  setSearchTerm(nextValue);
-                  trackEvent("projects_search_changed", {
-                    query_length: nextValue.length,
-                  });
-                }}
-                placeholder="Search projects or tech stack"
-                className="w-full rounded-full border border-neutral-300/70 bg-white/80 py-2.5 pl-10 pr-4 text-sm text-neutral-800 placeholder:text-neutral-400 backdrop-blur dark:border-neutral-700 dark:bg-neutral-900/80 dark:text-neutral-200"
-                aria-label="Search projects"
-              />
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {allTags.map((tag) => {
-                const isActive = tag === activeTag;
-                return (
-                  <button
-                    key={tag}
-                    type="button"
-                    aria-pressed={isActive}
-                    onClick={() => {
-                      setActiveTag(tag);
-                      trackEvent("projects_filter_tag", { tag });
-                    }}
-                    className={`rounded-full px-3 py-2 min-h-10 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-amber-500/70 ${
-                      isActive
-                        ? "bg-amber-500 text-black"
-                        : "bg-white/80 text-neutral-600 hover:bg-neutral-100 dark:bg-neutral-900/80 dark:text-neutral-300 dark:hover:bg-neutral-800"
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                );
-              })}
-            </div>
+          <div className="mt-6 flex justify-start lg:justify-end">
+            <Button
+              asChild
+              size="default"
+              className="rounded-full h-11 px-6 text-sm font-semibold bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 shadow-sm"
+            >
+              <Link
+                href="/projects"
+                onClick={() => trackEvent("projects_open_all_projects", { source: "homepage_section" })}
+              >
+                View all {totalProjects} projects
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </div>
         </div>
 
@@ -370,7 +311,7 @@ export function Projects() {
                   }
                   className={`block py-6 cursor-pointer transition-all duration-700 ease-out ${hoveredProject === project.id
                     ? "opacity-100 translate-x-4 blur-none grayscale-0"
-                    : "opacity-30 -translate-x-2 blur-[2px] grayscale-[50%]"
+                    : "opacity-30 -translate-x-2 blur-[2px] grayscale-50"
                     }`}
                 >
                   <div className="flex items-start gap-4">
@@ -489,7 +430,7 @@ export function Projects() {
                     )}
 
                     {/* Faded shades at borders */}
-                    <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out" />
+                    <div className="absolute inset-0 z-10 bg-linear-to-t from-black/80 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out" />
                     <div className="absolute inset-0 z-10 ring-1 ring-inset ring-black/10 dark:ring-white/10 pointer-events-none" />
 
                     {/* Content overlaid at the bottom */}

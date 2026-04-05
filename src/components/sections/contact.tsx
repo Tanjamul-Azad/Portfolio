@@ -8,7 +8,7 @@ import { NetworkPattern } from "@/components/ui/network-pattern";
 
 export function Contact() {
   return (
-    <section id="contact" className="scroll-section py-32 relative overflow-hidden bg-neutral-50 dark:bg-black min-h-screen flex items-center">
+    <section id="contact" className="scroll-section py-32 relative overflow-hidden min-h-screen flex items-center">
       {/* Network connection pattern */}
       <NetworkPattern
         className="opacity-50 dark:opacity-30"

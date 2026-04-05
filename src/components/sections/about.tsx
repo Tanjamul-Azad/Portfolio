@@ -30,7 +30,7 @@ export function About() {
   return (
     <section
       id="about"
-      className="scroll-section relative py-28 bg-white dark:bg-[#000000] border-b border-neutral-200 dark:border-neutral-800"
+      className="scroll-section relative py-28 overflow-hidden"
     >
       <motion.div
         variants={container}

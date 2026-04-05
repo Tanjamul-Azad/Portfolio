@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Preloader } from "@/components/common";
 import { Navbar, Footer } from "@/components/layout";
@@ -17,6 +17,20 @@ import {
   Contact,
 } from "@/components/sections";
 import { MOTION_TOKENS } from "@/lib";
+
+function SectionStage({ children }: { children: ReactNode }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 36, scale: 0.992 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className="relative"
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -35,7 +49,7 @@ export default function Home() {
   };
 
   return (
-    <main className="scroll-container bg-background min-h-screen overflow-x-hidden">
+    <main className="scroll-container relative min-h-screen overflow-x-hidden">
       <AnimatePresence mode="wait" initial={false}>
         {isLoading ? (
           <motion.div
@@ -53,19 +67,40 @@ export default function Home() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: MOTION_TOKENS.duration.slow, ease: MOTION_TOKENS.easing.premium }}
+            className="relative z-10"
           >
             <Navbar />
             <Hero />
-            <About />
-            <Now />
-            <TechStack />
-            <Projects />
-            <Experience />
-            <Achievements />
-            <Testimonials />
-            <Blog />
-            <Contact />
-            <Footer />
+            <SectionStage>
+              <About />
+            </SectionStage>
+            <SectionStage>
+              <Now />
+            </SectionStage>
+            <SectionStage>
+              <TechStack />
+            </SectionStage>
+            <SectionStage>
+              <Projects />
+            </SectionStage>
+            <SectionStage>
+              <Experience />
+            </SectionStage>
+            <SectionStage>
+              <Achievements />
+            </SectionStage>
+            <SectionStage>
+              <Testimonials />
+            </SectionStage>
+            <SectionStage>
+              <Blog />
+            </SectionStage>
+            <SectionStage>
+              <Contact />
+            </SectionStage>
+            <SectionStage>
+              <Footer />
+            </SectionStage>
           </motion.div>
         )}
       </AnimatePresence>

@@ -117,7 +117,7 @@ export function Achievements() {
   ];
 
   return (
-    <section id="achievements" className="py-28 relative bg-neutral-100 dark:bg-black overflow-hidden">
+    <section id="achievements" className="scroll-section py-28 relative overflow-hidden">
       <div className="container px-6 mx-auto relative">
         {/* Header */}
         <div className="mb-16 text-center">

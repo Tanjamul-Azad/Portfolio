@@ -10,6 +10,7 @@ export interface Project {
   tags: string[];
   liveUrl?: string;
   sourceUrl?: string;
+  videoUrl?: string;
   featured?: boolean;
   // Case study details
   overview?: string;

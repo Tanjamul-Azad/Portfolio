@@ -18,7 +18,7 @@ export function Testimonials() {
   const hasTestimonials = testimonialItems.length > 0;
 
   return (
-    <section id="testimonials" className="py-28 relative bg-neutral-50 dark:bg-black overflow-hidden">
+    <section id="testimonials" className="scroll-section py-28 relative overflow-hidden">
       <div className="container px-6 mx-auto relative">
         {/* Header */}
         <motion.div

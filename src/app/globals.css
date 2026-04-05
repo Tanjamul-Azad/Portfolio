@@ -46,7 +46,7 @@
 
   /* Smooth scroll behavior for page-like sections */
   html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
     scroll-padding-top: 80px;
   }
 
@@ -139,6 +139,11 @@
   body {
     @apply bg-background text-foreground antialiased selection:bg-neutral-900 selection:text-white dark:selection:bg-white dark:selection:text-neutral-900;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+    background-image: none;
+  }
+
+  .dark body {
+    background-image: none;
   }
 }
 
