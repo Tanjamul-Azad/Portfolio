@@ -30,17 +30,17 @@ export function About() {
   return (
     <section
       id="about"
-      className="scroll-section relative py-28 overflow-hidden"
+      className="scroll-section relative py-20 md:py-28 overflow-hidden"
     >
       <motion.div
         variants={container}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
-        className="container max-w-3xl px-6 mx-auto"
+        className="container max-w-3xl px-4 sm:px-6 mx-auto"
       >
         {/* Section header */}
-        <div className="text-center mb-16 space-y-3">
+        <div className="text-center mb-12 md:mb-16 space-y-3">
           <motion.span
             variants={item}
             className="block text-sm text-neutral-500 dark:text-neutral-400 tracking-[0.16em] uppercase font-medium"
@@ -49,7 +49,7 @@ export function About() {
           </motion.span>
           <motion.h2
             variants={item}
-            className="text-4xl md:text-5xl font-bold font-heading text-neutral-900 dark:text-white tracking-tight"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold font-heading text-neutral-900 dark:text-white tracking-tight"
           >
             About Me
           </motion.h2>

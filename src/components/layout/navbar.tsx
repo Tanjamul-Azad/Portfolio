@@ -62,10 +62,10 @@ export function Navbar() {
           : "bg-transparent py-4"
       )}
     >
-      <div className="container mx-auto px-6 flex items-center justify-between">
+      <div className="container mx-auto px-4 sm:px-6 flex items-center justify-between">
         <Link
           href="/"
-          className="text-xl font-bold font-heading tracking-tight text-neutral-900 dark:text-white"
+          className="text-lg sm:text-xl font-bold font-heading tracking-tight text-neutral-900 dark:text-white"
         >
           {siteConfig.name}
         </Link>
@@ -143,7 +143,7 @@ export function Navbar() {
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent className="bg-white/95 dark:bg-neutral-950/95 backdrop-blur-xl border-neutral-200 dark:border-neutral-800 w-full sm:w-80">
+            <SheetContent className="bg-white/95 dark:bg-neutral-950/95 backdrop-blur-xl border-neutral-200 dark:border-neutral-800 w-[88vw] max-w-sm sm:w-80">
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between pb-6 border-b border-neutral-100 dark:border-neutral-900">
                   <span className="text-lg font-bold font-heading">Menu</span>
@@ -167,7 +167,7 @@ export function Navbar() {
                           <Link
                             href={link.href.startsWith('#') ? (isHome ? link.href : `/${link.href}`) : link.href}
                             scroll
-                            className="block text-2xl font-light tracking-tight hover:text-amber-500 transition-colors focus-visible:text-amber-500"
+                            className="block text-xl sm:text-2xl font-light tracking-tight hover:text-amber-500 transition-colors focus-visible:text-amber-500"
                           >
                             {link.name}
                           </Link>
@@ -202,7 +202,7 @@ export function Navbar() {
                     showArrow={false}
                     href={siteConfig.links.resume}
                     download="Md. Tanzamul Azad - CV.pdf"
-                    classes="w-full min-w-0 rounded-full py-6 text-lg bg-neutral-900 dark:bg-white text-white dark:text-black border-neutral-900 dark:border-white"
+                    classes="w-full min-w-0 rounded-full py-5 text-base sm:text-lg bg-neutral-900 dark:bg-white text-white dark:text-black border-neutral-900 dark:border-white"
                   />
                 </div>
               </div>

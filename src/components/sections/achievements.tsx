@@ -117,10 +117,10 @@ export function Achievements() {
   ];
 
   return (
-    <section id="achievements" className="scroll-section py-28 relative overflow-hidden">
-      <div className="container px-6 mx-auto relative">
+    <section id="achievements" className="scroll-section py-20 md:py-28 relative overflow-hidden">
+      <div className="container px-4 sm:px-6 mx-auto relative">
         {/* Header */}
-        <div className="mb-16 text-center">
+        <div className="mb-12 md:mb-16 text-center">
           <motion.span
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -133,7 +133,7 @@ export function Achievements() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-4xl md:text-6xl font-bold font-heading mb-6 text-neutral-900 dark:text-white tracking-tight"
+            className="text-3xl sm:text-4xl md:text-6xl font-bold font-heading mb-6 text-neutral-900 dark:text-white tracking-tight"
           >
             Achievements & Awards
           </motion.h2>
@@ -142,7 +142,7 @@ export function Achievements() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-neutral-500 dark:text-neutral-400 text-lg max-w-xl mx-auto leading-relaxed"
+            className="text-neutral-500 dark:text-neutral-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed"
           >
             CV-verified milestones from competitions, academics, and project-based recognition.
           </motion.p>
@@ -161,7 +161,7 @@ export function Achievements() {
               <button
                 key={f.value}
                 onClick={() => setFilter(f.value)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+                className={`flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${
                   filter === f.value
                     ? "bg-amber-500 text-black"
                     : "bg-white/50 dark:bg-neutral-900/50 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white border border-neutral-200 dark:border-neutral-800"
@@ -192,7 +192,7 @@ export function Achievements() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-20 grid grid-cols-3 gap-4 max-w-2xl mx-auto"
+          className="mt-16 md:mt-20 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-2xl mx-auto"
         >
           {[
             {

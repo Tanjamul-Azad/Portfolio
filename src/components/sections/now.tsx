@@ -21,19 +21,19 @@ const categoryConfig = {
 
 export function Now() {
   return (
-    <section id="now" className="scroll-section relative py-24 overflow-hidden">
-      <div className="container max-w-5xl px-6 mx-auto">
+    <section id="now" className="scroll-section relative py-20 md:py-24 overflow-hidden">
+      <div className="container max-w-5xl px-4 sm:px-6 mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-14"
+          className="text-center mb-10 md:mb-14"
         >
           <span className="text-sm text-neutral-500 dark:text-neutral-400 tracking-[0.16em] uppercase font-medium">
             What I'm Focused On
           </span>
-          <h2 className="mt-4 text-4xl md:text-5xl font-bold font-heading text-neutral-900 dark:text-white tracking-tight">
+          <h2 className="mt-4 text-3xl sm:text-4xl md:text-5xl font-bold font-heading text-neutral-900 dark:text-white tracking-tight">
             Current Priorities
           </h2>
 
@@ -42,13 +42,13 @@ export function Now() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="mt-4 text-lg text-neutral-600 dark:text-neutral-400"
+            className="mt-4 text-base sm:text-lg text-neutral-600 dark:text-neutral-400"
           >
             A concise snapshot of what I am building, learning, and open to.
           </motion.p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {nowItems.map((item, categoryIndex) => {
             const config = categoryConfig[item.category];
             const Icon = config.icon;
@@ -63,7 +63,7 @@ export function Now() {
                 transition={{ duration: 0.45, delay: categoryIndex * 0.08 }}
                 className="group relative"
               >
-                <div className="spotlight-surface h-full p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 transition-all duration-300 hover:border-amber-400/45 dark:hover:border-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/12 dark:hover:shadow-black/40">
+                <div className="spotlight-surface h-full p-5 sm:p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 transition-all duration-300 hover:border-amber-400/45 dark:hover:border-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/12 dark:hover:shadow-black/40">
                   <div className="absolute inset-x-6 top-0 h-px bg-linear-to-r from-transparent via-amber-500/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                   <div className="spotlight-content">

@@ -6,7 +6,7 @@ import { siteConfig } from "@/config";
 export function StickyEmail() {
   return (
     <motion.div
-      className="fixed bottom-32 left-8 hidden xl:block z-40"
+      className="fixed hidden xl:block z-40 bottom-[max(8rem,env(safe-area-inset-bottom))] left-[max(2rem,env(safe-area-inset-left))]"
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 2, duration: 0.5 }}

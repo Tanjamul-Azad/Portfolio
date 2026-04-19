@@ -171,8 +171,8 @@ export function Hero() {
     >
       <div className="absolute inset-0 z-0 bg-white dark:bg-black transition-colors duration-500" />
 
-      <div className="container max-w-7xl px-6 relative z-10 pt-24 pb-12">
-        <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-12 lg:gap-12 items-center">
+      <div className="container max-w-7xl px-4 sm:px-6 relative z-10 pt-24 pb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-10 sm:gap-12 items-center">
           <motion.div
             style={{ opacity: heroOpacity, y: heroY }}
             className="max-w-150 order-2 lg:order-1"
@@ -194,7 +194,7 @@ export function Hero() {
               </div>
             </motion.div>
 
-            <h1 className="display-heading text-[clamp(3.2rem,7.5vw,6.5rem)] leading-[0.92] mb-6 text-neutral-900 dark:text-white transition-colors duration-300">
+            <h1 className="display-heading text-[clamp(2.25rem,11vw,6.5rem)] leading-[0.92] mb-6 text-neutral-900 dark:text-white transition-colors duration-300">
               <div>
                 <SplitText text="Crafting" delay={0.16} reducedMotion={prefersReducedMotion} />
               </div>
@@ -242,14 +242,14 @@ export function Hero() {
                 text="View Selected Work"
                 href="#projects"
                 aria-label="View Selected Work"
-                classes="h-14 px-8 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black text-sm font-semibold hover-lift"
+                classes="h-12 sm:h-14 px-6 sm:px-8 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black text-xs sm:text-sm font-semibold hover-lift"
               />
 
               <InteractiveHoverButton
                 text="Start a Project"
                 href="#contact"
                 aria-label="Start a Project"
-                classes="h-14 px-8 rounded-full text-sm font-semibold border-neutral-300 text-neutral-800 dark:border-white/35 dark:text-white bg-transparent hover-lift"
+                classes="h-12 sm:h-14 px-6 sm:px-8 rounded-full text-xs sm:text-sm font-semibold border-neutral-300 text-neutral-800 dark:border-white/35 dark:text-white bg-transparent hover-lift"
               />
             </motion.div>
 
@@ -264,7 +264,7 @@ export function Hero() {
             className="block order-1 lg:order-2 justify-self-center lg:justify-self-end"
           >
             <motion.div
-              className="relative w-72 h-96 sm:w-96 sm:h-[34rem] lg:w-[34rem] lg:h-[44rem] xl:w-[38rem] xl:h-[50rem] mx-auto lg:ml-auto lg:-mr-12 xl:-mr-24"
+              className="relative w-56 h-72 sm:w-72 sm:h-96 md:w-96 md:h-[34rem] lg:w-[34rem] lg:h-[44rem] xl:w-[38rem] xl:h-[50rem] mx-auto lg:ml-auto lg:-mr-12 xl:-mr-24"
             >
               <div className="relative h-full w-full overflow-hidden rounded-2xl bg-neutral-200 dark:bg-neutral-900 shadow-xl dark:shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transition-colors duration-300">
                 <video
@@ -289,7 +289,7 @@ export function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: prefersReducedMotion ? 0 : 1 }}
         transition={{ delay: MOTION_TOKENS.duration.slow }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-2 pointer-events-none"
       >
         <motion.div
           className="w-px h-10 bg-neutral-500/70 dark:bg-neutral-400/70"

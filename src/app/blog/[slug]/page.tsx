@@ -41,8 +41,8 @@ export default function BlogPost() {
       <Navbar />
       
       {/* Hero */}
-      <article className="pt-32 pb-20">
-        <div className="container px-6 mx-auto">
+      <article className="pt-24 sm:pt-28 md:pt-32 pb-14 sm:pb-20">
+        <div className="container px-4 sm:px-6 mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -76,16 +76,16 @@ export default function BlogPost() {
 
               <motion.h1 
                 variants={fadeInUp}
-                className="text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-6 leading-tight"
+                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-6 leading-tight"
               >
                 {post.title}
               </motion.h1>
 
               <motion.div 
                 variants={fadeInUp}
-                className="flex items-center justify-between flex-wrap gap-4 pb-8 border-b border-neutral-200 dark:border-neutral-800"
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-8 border-b border-neutral-200 dark:border-neutral-800"
               >
-                <div className="flex items-center gap-6 text-sm text-neutral-500">
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-neutral-500">
                   <span className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
                     {new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
@@ -124,14 +124,14 @@ export default function BlogPost() {
               {/* Content */}
               <motion.div 
                 variants={fadeInUp}
-                className="prose prose-lg dark:prose-invert prose-neutral max-w-none mt-12
+                className="prose prose-base sm:prose-lg dark:prose-invert prose-neutral max-w-none mt-10 sm:mt-12
                   prose-headings:font-bold prose-headings:text-neutral-900 dark:prose-headings:text-white
                   prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl
                   prose-p:text-neutral-600 dark:prose-p:text-neutral-300 prose-p:leading-relaxed
                   prose-a:text-amber-500 prose-a:no-underline hover:prose-a:underline
                   prose-strong:text-neutral-900 dark:prose-strong:text-white
                   prose-code:text-amber-600 dark:prose-code:text-amber-400 prose-code:bg-neutral-100 dark:prose-code:bg-neutral-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-                  prose-pre:bg-neutral-900 dark:prose-pre:bg-neutral-950 prose-pre:border prose-pre:border-neutral-800
+                  prose-pre:bg-neutral-900 dark:prose-pre:bg-neutral-950 prose-pre:border prose-pre:border-neutral-800 prose-pre:overflow-x-auto
                   prose-blockquote:border-l-amber-500 prose-blockquote:bg-amber-500/5 prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:rounded-r
                   prose-li:text-neutral-600 dark:prose-li:text-neutral-300
                   prose-hr:border-neutral-200 dark:prose-hr:border-neutral-800"
@@ -145,7 +145,7 @@ export default function BlogPost() {
 
       {/* More Posts */}
       <section className="py-16 bg-white dark:bg-neutral-900/50">
-        <div className="container px-6 mx-auto">
+        <div className="container px-4 sm:px-6 mx-auto">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-sm text-neutral-500 uppercase tracking-widest mb-8">More Posts</h2>
             <div className="grid md:grid-cols-2 gap-4">

@@ -145,10 +145,10 @@ export default function ProjectsPage() {
     <main className="min-h-screen bg-neutral-50 dark:bg-black">
       <Navbar />
 
-      <section className="relative overflow-hidden pb-20 pt-32">
+      <section className="relative overflow-hidden pb-16 sm:pb-20 pt-24 sm:pt-28 md:pt-32">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-size-[60px_60px] dark:bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)]" />
 
-        <div className="container relative mx-auto px-6">
+        <div className="container relative mx-auto px-4 sm:px-6">
           <motion.div
             variants={staggerContainer}
             initial="hidden"
@@ -157,14 +157,14 @@ export default function ProjectsPage() {
           >
             <motion.h1
               variants={fadeInUp}
-              className="mb-6 text-4xl font-bold text-neutral-900 dark:text-white md:text-5xl lg:text-6xl"
+              className="mb-6 text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-white md:text-5xl lg:text-6xl"
             >
               All Projects
             </motion.h1>
 
             <motion.p
               variants={fadeInUp}
-              className="mb-8 text-xl leading-relaxed text-neutral-600 dark:text-neutral-300"
+              className="mb-8 text-base sm:text-lg md:text-xl leading-relaxed text-neutral-600 dark:text-neutral-300"
             >
               Browse every shipped build in a scalable gallery view. Open any card for the case study, then use compact actions below for live preview, source code, and demo video.
             </motion.p>
@@ -232,23 +232,23 @@ export default function ProjectsPage() {
           </motion.div>
 
           {paginatedProjects.length > 0 ? (
-            <div className="mt-12 grid gap-7 md:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-10 sm:mt-12 grid gap-4 max-[360px]:gap-3 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
               {paginatedProjects.map((project, index) => (
               <motion.article
                 key={project.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, delay: index * 0.05 }}
-                className="group relative overflow-hidden rounded-2xl border border-neutral-200/80 bg-white/95 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/40 hover:shadow-xl hover:shadow-neutral-900/10 dark:border-neutral-800/90 dark:bg-neutral-950/90 dark:hover:shadow-black/40"
+                className="group relative overflow-hidden rounded-xl max-[360px]:rounded-lg sm:rounded-2xl border border-neutral-200/80 bg-white/95 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/40 hover:shadow-xl hover:shadow-neutral-900/10 dark:border-neutral-800/90 dark:bg-neutral-950/90 dark:hover:shadow-black/40"
               >
                 <div className="relative">
                   {pinnedSlugs.has(project.slug) && (
-                    <span className="absolute left-3 top-3 z-20 rounded-full border border-amber-500/30 bg-amber-500/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300">
+                    <span className="absolute left-3 top-3 z-20 rounded-full border border-amber-500/30 bg-amber-500/15 px-2.5 max-[360px]:px-2 py-1 max-[360px]:py-0.5 text-[10px] max-[360px]:text-[9px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300">
                       Pinned
                     </span>
                   )}
 
-                  <Link href={`/projects/${project.slug}`} className="block aspect-16/10 relative overflow-hidden">
+                  <Link href={`/projects/${project.slug}`} className="block aspect-[16/9] max-[360px]:aspect-[2/1] sm:aspect-16/10 relative overflow-hidden">
                     <Image
                       src={project.image}
                       alt={project.title}
@@ -260,36 +260,36 @@ export default function ProjectsPage() {
                     <div className="absolute inset-0 bg-linear-to-t from-black/55 via-black/10 to-transparent opacity-75 transition-opacity group-hover:opacity-90" />
                     <div className="absolute inset-0 ring-1 ring-inset ring-black/10 dark:ring-white/10" />
 
-                    <span className="absolute right-3 top-3 rounded-full border border-white/40 bg-black/35 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white backdrop-blur-sm">
+                    <span className="absolute right-3 top-3 rounded-full border border-white/40 bg-black/35 px-2.5 max-[360px]:px-2 py-1 max-[360px]:py-0.5 text-[10px] max-[360px]:text-[9px] font-semibold uppercase tracking-wide text-white backdrop-blur-sm">
                       Case Study
                     </span>
                   </Link>
                 </div>
 
-                <div className="p-5">
-                  <div className="mb-3 flex flex-wrap gap-1.5">
-                    {project.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-[10px] uppercase tracking-wider">
+                <div className="p-4 max-[360px]:p-3 sm:p-5">
+                  <div className="mb-3 max-[360px]:mb-2.5 flex flex-wrap gap-1.5 max-[360px]:gap-1">
+                    {project.tags.slice(0, 3).map((tag, tagIndex) => (
+                      <Badge key={tag} variant="secondary" className={`text-[10px] max-[360px]:text-[9px] uppercase tracking-wider ${tagIndex === 2 ? "max-[360px]:hidden" : ""}`}>
                         {tag}
                       </Badge>
                     ))}
                   </div>
 
-                  <h3 className="mb-2 text-xl font-bold text-neutral-900 transition-colors group-hover:text-amber-500 dark:text-white">
+                  <h3 className="mb-2 text-lg max-[360px]:text-base sm:text-xl font-bold text-neutral-900 transition-colors group-hover:text-amber-500 dark:text-white">
                     <Link href={`/projects/${project.slug}`} className="inline-flex items-center gap-1.5">
                       {project.title}
                       <ArrowUpRight className="h-4 w-4" />
                     </Link>
                   </h3>
 
-                  <p className="mb-4 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
+                  <p className="mb-4 max-[360px]:mb-3 line-clamp-2 text-sm max-[360px]:text-xs text-neutral-600 dark:text-neutral-400">
                     {project.description}
                   </p>
 
-                  <div className="border-t border-neutral-200/80 pt-4 dark:border-neutral-800/90">
-                    <div className="flex flex-wrap items-center gap-2">
+                  <div className="border-t border-neutral-200/80 pt-3 max-[360px]:pt-2.5 sm:pt-4 dark:border-neutral-800/90">
+                    <div className="flex flex-wrap items-center gap-1.5 max-[360px]:gap-1 sm:gap-2">
                       {project.liveUrl && project.liveUrl !== "#" && (
-                        <Button asChild size="xs" variant="outline" className="rounded-full">
+                        <Button asChild size="xs" variant="outline" className="rounded-full max-[360px]:h-8 max-[360px]:px-2.5 max-[360px]:text-[11px]">
                           <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="h-3 w-3" />
                             Live Preview
@@ -298,7 +298,7 @@ export default function ProjectsPage() {
                       )}
 
                       {project.sourceUrl && project.sourceUrl !== "#" && (
-                        <Button asChild size="xs" variant="outline" className="rounded-full">
+                        <Button asChild size="xs" variant="outline" className="rounded-full max-[360px]:h-8 max-[360px]:px-2.5 max-[360px]:text-[11px]">
                           <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer">
                             <Github className="h-3 w-3" />
                             Source Code
@@ -307,7 +307,7 @@ export default function ProjectsPage() {
                       )}
 
                       {project.videoUrl && project.videoUrl !== "#" && (
-                        <Button asChild size="xs" variant="outline" className="rounded-full">
+                        <Button asChild size="xs" variant="outline" className="rounded-full max-[360px]:h-8 max-[360px]:px-2.5 max-[360px]:text-[11px]">
                           <a href={project.videoUrl} target="_blank" rel="noopener noreferrer">
                             <Video className="h-3 w-3" />
                             Video

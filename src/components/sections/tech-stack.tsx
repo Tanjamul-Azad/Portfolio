@@ -104,7 +104,7 @@ function TechCard({ tech, index }: { tech: Tech; index: number }) {
       className="group flex flex-col items-center justify-center gap-3 p-3"
     >
       <motion.div
-        className={`relative flex h-16 w-16 items-center justify-center rounded-2xl border backdrop-blur-sm transition-all duration-300 sm:h-[4.5rem] sm:w-[4.5rem] ${
+        className={`relative flex h-14 w-14 items-center justify-center rounded-2xl border backdrop-blur-sm transition-all duration-300 sm:h-16 sm:w-16 ${
           isWhite ? "bg-slate-900" : "bg-white/80 dark:bg-neutral-900/80"
         }`}
         style={{
@@ -124,7 +124,7 @@ function TechCard({ tech, index }: { tech: Tech; index: number }) {
           alt={tech.name}
           width={48}
           height={48}
-          className={`h-10 w-10 object-contain transition-transform duration-300 group-hover:scale-110 sm:h-12 sm:w-12 ${
+          className={`h-8 w-8 object-contain transition-transform duration-300 group-hover:scale-110 sm:h-10 sm:w-10 ${
             isWhite ? "invert-0" : ""
           }`}
           draggable={false}
@@ -153,7 +153,7 @@ export function TechStack() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.18 }}
       transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-      className="py-24 relative border-y border-neutral-200 dark:border-neutral-800/50 bg-neutral-100/50 dark:bg-neutral-950/50 overflow-hidden"
+      className="py-20 md:py-24 relative border-y border-neutral-200 dark:border-neutral-800/50 bg-neutral-100/50 dark:bg-neutral-950/50 overflow-hidden"
     >
       <CodeFlowPattern
         className="opacity-25 dark:opacity-20 text-amber-500 dark:text-amber-400"
@@ -162,7 +162,7 @@ export function TechStack() {
         maxOpacity={0.2}
       />
 
-      <div className="container relative z-10 mx-auto px-6">
+      <div className="container relative z-10 mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 22 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -174,7 +174,7 @@ export function TechStack() {
             Tech Stack
           </span>
 
-          <h3 className="font-heading text-3xl font-semibold text-neutral-900 dark:text-white md:text-4xl">
+          <h3 className="font-heading text-2xl sm:text-3xl font-semibold text-neutral-900 dark:text-white md:text-4xl">
             Tools I Work With
           </h3>
 
@@ -201,7 +201,7 @@ export function TechStack() {
                     key={category}
                     type="button"
                     onClick={() => setActiveCategory(category)}
-                    className="relative rounded-xl px-4 py-2.5 text-sm font-medium outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-amber-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-neutral-900 md:px-5"
+                    className="relative rounded-xl px-3 sm:px-4 md:px-5 py-2.5 text-xs sm:text-sm font-medium outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-amber-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-neutral-900"
                   >
                     {isActive && (
                       <motion.span
@@ -224,7 +224,7 @@ export function TechStack() {
             </div>
           </div>
 
-          <div className="relative z-10 min-h-[340px] overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="relative z-10 min-h-[280px] sm:min-h-[340px] overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeCategory}

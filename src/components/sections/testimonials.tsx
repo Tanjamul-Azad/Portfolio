@@ -18,8 +18,8 @@ export function Testimonials() {
   const hasTestimonials = testimonialItems.length > 0;
 
   return (
-    <section id="testimonials" className="scroll-section py-28 relative overflow-hidden">
-      <div className="container px-6 mx-auto relative">
+    <section id="testimonials" className="scroll-section py-20 md:py-28 relative overflow-hidden">
+      <div className="container px-4 sm:px-6 mx-auto relative">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -33,13 +33,13 @@ export function Testimonials() {
           </motion.span>
 
           <motion.h2
-            className="text-4xl md:text-6xl font-bold font-heading mb-6 text-neutral-900 dark:text-white tracking-tight"
+            className="text-3xl sm:text-4xl md:text-6xl font-bold font-heading mb-6 text-neutral-900 dark:text-white tracking-tight"
           >
             References & Validation
           </motion.h2>
 
           <motion.p
-            className="text-neutral-500 dark:text-neutral-400 text-lg max-w-xl mx-auto leading-relaxed"
+            className="text-neutral-500 dark:text-neutral-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed"
           >
             Professional references and recommendation letters can be shared on request.
           </motion.p>
@@ -47,7 +47,7 @@ export function Testimonials() {
 
         {/* Animated Columns */}
         {hasTestimonials ? (
-          <div className="flex justify-center gap-6 mt-10 mask-[linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-185 overflow-hidden">
+          <div className="flex justify-center gap-4 sm:gap-6 mt-10 sm:mask-[linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] sm:max-h-185 sm:overflow-hidden">
             <TestimonialsColumn testimonials={firstColumn} duration={15} />
             <TestimonialsColumn
               testimonials={secondColumn}

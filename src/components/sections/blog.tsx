@@ -13,8 +13,8 @@ export function Blog() {
   const { isRouteTransitioning } = useRouteTransitioning();
 
   return (
-    <section id="blog" className="scroll-section py-28 relative overflow-hidden">
-      <div className="container px-6 mx-auto">
+    <section id="blog" className="scroll-section py-20 md:py-28 relative overflow-hidden">
+      <div className="container px-4 sm:px-6 mx-auto">
         {/* Header */}
         <motion.div
           variants={SECTION_REVEAL.container}
@@ -34,7 +34,7 @@ export function Blog() {
             </motion.div>
             <motion.h2
               variants={SECTION_REVEAL.heading}
-              className="text-4xl md:text-5xl font-bold font-heading text-neutral-900 dark:text-white tracking-tight"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold font-heading text-neutral-900 dark:text-white tracking-tight"
             >
               Latest Writings
             </motion.h2>
@@ -54,7 +54,7 @@ export function Blog() {
         </motion.div>
 
         {/* Blog Grid */}
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
           {recentPosts.map((post, index) => (
             <motion.article
               key={post.slug}
@@ -66,7 +66,7 @@ export function Blog() {
             >
               <Link
                 href={`/blog/${post.slug}`}
-                className={`group block h-full p-6 rounded-2xl border transition-all duration-300 ${
+                className={`group block h-full p-4 sm:p-6 rounded-2xl border transition-all duration-300 ${
                   post.featured
                     ? "bg-neutral-50 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
                     : "glass hover:border-neutral-300 dark:hover:border-neutral-700"
@@ -105,7 +105,7 @@ export function Blog() {
                 </p>
 
                 {/* Meta */}
-                <div className="flex items-center gap-4 text-xs text-neutral-500 dark:text-neutral-500">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-neutral-500 dark:text-neutral-500">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5" />
                     {new Date(post.date).toLocaleDateString("en-US", {

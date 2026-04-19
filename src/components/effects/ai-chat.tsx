@@ -123,14 +123,14 @@ export function AiChat() {
   return (
     <>
       {/* Chat Toggle Button with Hint Bubble */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-50">
         <AnimatePresence>
           {showHint && !isOpen && (
             <motion.div
               initial={{ opacity: 0, scale: 0.8, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.8, y: 10 }}
-              className="absolute bottom-16 right-0 mb-2 whitespace-nowrap px-4 py-2 rounded-xl bg-neutral-900 dark:bg-neutral-800 text-white text-xs font-medium shadow-xl border border-neutral-800 dark:border-neutral-700 pointer-events-none"
+              className="absolute bottom-16 right-0 mb-2 hidden sm:block whitespace-nowrap px-4 py-2 rounded-xl bg-neutral-900 dark:bg-neutral-800 text-white text-xs font-medium shadow-xl border border-neutral-800 dark:border-neutral-700 pointer-events-none"
             >
               Ask here to know more
               <div className="absolute -bottom-1 right-6 w-2 h-2 bg-neutral-900 dark:bg-neutral-800 rotate-45 border-r border-b border-neutral-800 dark:border-neutral-700" />
@@ -179,7 +179,7 @@ export function AiChat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-48px)] h-125 max-h-[calc(100vh-150px)] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/85 dark:bg-neutral-900/85 shadow-2xl shadow-neutral-900/15 dark:shadow-black/45 backdrop-blur-xl flex flex-col overflow-hidden"
+            className="fixed z-50 bottom-[calc(max(1rem,env(safe-area-inset-bottom))+4.5rem)] left-[max(0.75rem,env(safe-area-inset-left))] right-[max(0.75rem,env(safe-area-inset-right))] sm:left-auto sm:right-[max(1rem,env(safe-area-inset-right))] sm:w-[380px] sm:max-w-[calc(100vw-32px)] h-[min(70vh,34rem)] sm:h-125 max-h-[calc(100vh-7rem)] sm:max-h-[calc(100vh-150px)] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/85 dark:bg-neutral-900/85 shadow-2xl shadow-neutral-900/15 dark:shadow-black/45 backdrop-blur-xl flex flex-col overflow-hidden"
           >
             {/* Header */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm">

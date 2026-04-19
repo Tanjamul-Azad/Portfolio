@@ -38,7 +38,7 @@ export default function AIChatCard({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "relative w-90 h-115 rounded-2xl overflow-hidden p-px",
+        "relative w-full max-w-[22rem] h-[28rem] sm:h-[30rem] rounded-2xl overflow-hidden p-px",
         className
       )}
     >

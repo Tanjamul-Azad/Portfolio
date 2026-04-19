@@ -33,7 +33,7 @@ export function TestimonialsColumn(props: {
           <Fragment key={index}>
             {props.testimonials.map(({ text, image, name, role }, i) => (
               <div
-                className="p-10 rounded-3xl border shadow-lg shadow-primary/10 max-w-xs w-full"
+                className="p-5 sm:p-8 md:p-10 rounded-3xl border shadow-lg shadow-primary/10 max-w-[88vw] sm:max-w-xs w-full"
                 key={`${name}-${i}`}
               >
                 <div>{text}</div>

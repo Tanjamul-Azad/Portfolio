@@ -164,7 +164,7 @@ export function Experience() {
       {/* Background aesthetic glow */}
       <div className="absolute top-1/2 left-1/2 w-150 h-150 bg-amber-500/5 blur-[120px] rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2" />
 
-      <div className="container px-4 md:px-6 mx-auto relative z-10">
+      <div className="container px-4 sm:px-6 mx-auto relative z-10">
         <div className="mb-16 md:mb-20 text-center max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0 }}
@@ -200,7 +200,7 @@ export function Experience() {
             whileInView={isRouteTransitioning ? undefined : { opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: MOTION_TOKENS.duration.medium, delay: MOTION_TOKENS.duration.quick, ease: MOTION_TOKENS.easing.premium }}
-            className="mt-8 grid grid-cols-3 gap-3"
+            className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3"
           >
             {snapshotStats.map((stat) => (
               <motion.div

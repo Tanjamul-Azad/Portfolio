@@ -16,10 +16,10 @@ export default function BlogPage() {
       <Navbar />
       
       {/* Hero */}
-      <section className="pt-32 pb-16 relative overflow-hidden">
+      <section className="pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-size-[60px_60px]" />
         
-        <div className="container px-6 mx-auto relative">
+        <div className="container px-4 sm:px-6 mx-auto relative">
           <motion.div
             variants={staggerContainer}
             initial="hidden"
@@ -34,14 +34,14 @@ export default function BlogPage() {
             
             <motion.h1 
               variants={fadeInUp}
-              className="text-4xl md:text-5xl font-bold text-neutral-900 dark:text-white mb-6"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold text-neutral-900 dark:text-white mb-6"
             >
               Thoughts, Learnings & Tutorials
             </motion.h1>
             
             <motion.p 
               variants={fadeInUp}
-              className="text-xl text-neutral-600 dark:text-neutral-300"
+              className="text-base sm:text-lg md:text-xl text-neutral-600 dark:text-neutral-300"
             >
               I write about web development, AI, and things I learn while building projects.
             </motion.p>
@@ -52,9 +52,9 @@ export default function BlogPage() {
       {/* Featured Posts */}
       {featuredPosts.length > 0 && (
         <section className="py-12 bg-white dark:bg-neutral-900/50">
-          <div className="container px-6 mx-auto">
+          <div className="container px-4 sm:px-6 mx-auto">
             <h2 className="text-sm text-neutral-500 uppercase tracking-widest mb-8">Featured</h2>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
               {featuredPosts.map((post, index) => (
                 <motion.article
                   key={post.slug}
@@ -64,7 +64,7 @@ export default function BlogPage() {
                 >
                   <Link 
                     href={`/blog/${post.slug}`}
-                    className="block p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 transition-all group h-full"
+                    className="block p-4 sm:p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 transition-all group h-full"
                   >
                     <div className="flex flex-wrap gap-2 mb-4">
                       {post.tags.slice(0, 3).map(tag => (
@@ -86,8 +86,8 @@ export default function BlogPage() {
                       {post.excerpt}
                     </p>
                     
-                    <div className="flex items-center justify-between text-xs text-neutral-500">
-                      <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-neutral-500">
+                      <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
                           {new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -109,7 +109,7 @@ export default function BlogPage() {
 
       {/* All Posts */}
       <section className="py-16 bg-neutral-50 dark:bg-black">
-        <div className="container px-6 mx-auto">
+        <div className="container px-4 sm:px-6 mx-auto">
           <h2 className="text-sm text-neutral-500 uppercase tracking-widest mb-8">All Posts</h2>
           <div className="space-y-4 max-w-3xl">
             {blogPosts.map((post, index) => (
@@ -121,7 +121,7 @@ export default function BlogPage() {
               >
                 <Link 
                   href={`/blog/${post.slug}`}
-                  className="flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-neutral-900 transition-all group"
+                  className="flex items-start sm:items-center justify-between gap-3 p-4 rounded-xl hover:bg-white dark:hover:bg-neutral-900 transition-all group"
                 >
                   <div className="flex-1">
                     <h3 className="font-semibold text-neutral-900 dark:text-white group-hover:text-amber-500 transition-colors mb-1">

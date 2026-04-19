@@ -60,10 +60,10 @@ function MobileProjectCard({ project, index, isRouteTransitioning, failedImages,
       viewport={{ once: true, margin: "-50px" }}
       style={{ perspective: "1000px" }}
     >
-      <div className="group rounded-3xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 bg-white dark:bg-neutral-900 shadow-xl">
+      <div className="group rounded-2xl max-[360px]:rounded-xl sm:rounded-3xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 bg-white dark:bg-neutral-900 shadow-lg sm:shadow-xl">
         {/* Image area */}
         <Link href={`/projects/${project.slug}`} className="block relative focus:outline-none">
-          <div className="aspect-4/3 relative bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
+          <div className="aspect-[16/9] max-[360px]:aspect-[2/1] sm:aspect-4/3 relative bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
             {project.image && !failedImages[project.id] ? (
               <>
                 <AnimatePresence>
@@ -91,7 +91,7 @@ function MobileProjectCard({ project, index, isRouteTransitioning, failedImages,
               </>
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-neutral-900 dark:bg-neutral-100 z-0">
-                <span className="text-6xl font-bold text-neutral-300 dark:text-neutral-700">
+                <span className="text-5xl sm:text-6xl font-bold text-neutral-300 dark:text-neutral-700">
                   {project.title.substring(0, 1)}
                 </span>
               </div>
@@ -103,23 +103,23 @@ function MobileProjectCard({ project, index, isRouteTransitioning, failedImages,
         </Link>
 
         {/* Content Area */}
-        <div className="p-6">
+        <div className="p-4 max-[360px]:p-3 sm:p-5">
           <Link href={`/projects/${project.slug}`} className="block focus:outline-none w-fit">
-            <h3 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2 flex items-center gap-2 group-hover:text-amber-500 transition-colors">
+            <h3 className="text-lg max-[360px]:text-base sm:text-xl font-bold text-neutral-900 dark:text-white mb-2 flex items-center gap-2 group-hover:text-amber-500 transition-colors">
               {project.title}
-              <ArrowUpRight className="w-5 h-5 text-neutral-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+              <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 text-neutral-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
             </h3>
           </Link>
 
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-5 line-clamp-3">
+          <p className="text-sm max-[360px]:text-xs text-neutral-600 dark:text-neutral-400 mb-4 max-[360px]:mb-3 line-clamp-2 sm:line-clamp-3">
             {project.description}
           </p>
 
-          <div className="flex flex-wrap gap-2 mb-6">
-            {project.tags.slice(0, 3).map((tag: string) => (
+          <div className="flex flex-wrap gap-2 max-[360px]:gap-1.5 mb-4 max-[360px]:mb-3">
+            {project.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
               <span
                 key={tag}
-                className="text-[10px] font-medium tracking-wide uppercase px-2.5 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 rounded-full border border-neutral-200 dark:border-neutral-700"
+                className={`text-[10px] max-[360px]:text-[9px] font-medium tracking-wide uppercase px-2.5 max-[360px]:px-2 py-1 max-[360px]:py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 rounded-full border border-neutral-200 dark:border-neutral-700 ${tagIndex === 2 ? "max-[360px]:hidden" : ""}`}
               >
                 {tag}
               </span>
@@ -127,21 +127,21 @@ function MobileProjectCard({ project, index, isRouteTransitioning, failedImages,
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-3 pt-4 border-t border-neutral-100 dark:border-neutral-800">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 pt-3 max-[360px]:pt-2.5 sm:pt-4 border-t border-neutral-100 dark:border-neutral-800">
             {project.liveUrl && project.liveUrl !== '#' && (
-              <Button asChild size="sm" className="flex-1 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 font-medium hover:bg-neutral-800 dark:hover:bg-neutral-200 active:scale-[0.98] transition-all duration-200">
+              <Button asChild size="xs" className="w-full sm:flex-1 rounded-full max-[360px]:h-8 max-[360px]:px-3 max-[360px]:text-[11px] bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 font-medium hover:bg-neutral-800 dark:hover:bg-neutral-200 active:scale-[0.98] transition-all duration-200">
                 <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("projects_open_live_demo", { project_slug: project.slug, source: "mobile_card" })}>
                   <ExternalLink className="w-3.5 h-3.5 mr-1.5" /> Live Demo
                 </a>
               </Button>
             )}
-            <Button asChild size="sm" variant="outline" className="flex-1 rounded-full border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 font-medium active:scale-[0.98] transition-all duration-200">
+            <Button asChild size="xs" variant="outline" className="w-full sm:flex-1 rounded-full max-[360px]:h-8 max-[360px]:px-3 max-[360px]:text-[11px] border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 font-medium active:scale-[0.98] transition-all duration-200">
               <Link href={`/projects/${project.slug}`} onClick={() => trackEvent("projects_open_case_study", { project_slug: project.slug, source: "mobile_card" })}>
                 <FileText className="w-3.5 h-3.5 mr-1.5" /> Case Study
               </Link>
             </Button>
             {project.sourceUrl && project.sourceUrl !== '#' && (
-              <Button asChild size="icon" variant="ghost" className="rounded-full w-9 h-9 shrink-0 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-95 transition-all duration-200">
+              <Button asChild size="icon" variant="ghost" className="self-end sm:self-auto rounded-full w-9 h-9 max-[360px]:w-8 max-[360px]:h-8 shrink-0 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-95 transition-all duration-200">
                 <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("projects_open_source", { project_slug: project.slug, source: "mobile_card" })}>
                   <Github className="w-4 h-4" />
                 </a>
@@ -239,11 +239,11 @@ export function Projects() {
   };
 
   return (
-    <section id="projects" className="scroll-section py-28 relative overflow-hidden min-h-screen flex items-center">
+    <section id="projects" className="scroll-section py-20 md:py-28 relative overflow-hidden md:min-h-screen flex items-center">
 
-      <div className="container px-6 mx-auto relative">
+      <div className="container px-4 sm:px-6 mx-auto relative">
         {/* Header */}
-        <div className="mb-16">
+        <div className="mb-12 md:mb-16">
           <motion.span
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -274,7 +274,7 @@ export function Projects() {
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
           {/* Left Side - Project List */}
           <div
-            className="space-y-0"
+            className="hidden lg:block space-y-0"
             onKeyDown={(event) => {
               if (event.key === "ArrowDown") {
                 event.preventDefault();
@@ -531,7 +531,7 @@ export function Projects() {
         </div>
 
         {/* Mobile Project Cards */}
-        <div className="lg:hidden mt-12 space-y-6">
+        <div className="lg:hidden mt-8 sm:mt-12 space-y-4 sm:space-y-6">
           {filteredProjects.map((project, index) => (
             <MobileProjectCard 
               key={project.id + '-mobile'}
