@@ -54,6 +54,7 @@ const achievement = z.object({
   date: str,
   type: z.enum(["certification", "award", "achievement"]),
   icon: str,
+  image: str.optional(),
   description: str,
   credentialUrl: str.optional(),
   skills: strArr,

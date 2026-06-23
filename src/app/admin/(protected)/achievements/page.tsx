@@ -5,6 +5,7 @@ import { useContent } from "@/components/admin/use-content";
 import { EditorPage } from "@/components/admin/editor-page";
 import { CollectionEditor } from "@/components/admin/collection-editor";
 import {
+  ImageField,
   SelectField,
   TagsField,
   TextAreaField,
@@ -63,6 +64,13 @@ export default function AchievementsEditor() {
                 />
                 <TextField label="Icon (emoji)" value={a.icon} onChange={(v) => update({ icon: v })} />
               </div>
+              <ImageField
+                label="Image / certificate (thumbnail)"
+                folder="achievements"
+                value={a.image ?? ""}
+                onChange={(v) => update({ image: v })}
+                hint="Shown as the card thumbnail and as the full image in the detail popup. Upload or paste a URL."
+              />
               <TextAreaField
                 label="Description"
                 value={a.description}

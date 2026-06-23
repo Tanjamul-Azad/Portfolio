@@ -63,6 +63,7 @@ export interface Achievement {
   date: string;
   type: "certification" | "award" | "achievement";
   icon: string;
+  image?: string;
   description: string;
   credentialUrl?: string;
   skills: string[];

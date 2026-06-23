@@ -2,112 +2,256 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ExternalLink, Award, Medal, Trophy, Star } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Award, Medal, Trophy, Star } from "lucide-react";
+import Image from "next/image";
 import { achievements } from "@/data";
 import type { Achievement } from "@/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
-function AchievementCard({ achievement, index }: { achievement: Achievement; index: number }) {
-  const TypeIcon = {
-    certification: Award,
-    award: Trophy,
-    achievement: Star,
-  }[achievement.type];
+const TYPE_ICON = {
+  certification: Award,
+  award: Trophy,
+  achievement: Star,
+} as const;
 
-  const typeLabel = {
-    certification: "Certification",
-    award: "Award",
-    achievement: "Achievement",
-  }[achievement.type];
+const TYPE_LABEL = {
+  certification: "Certification",
+  award: "Award",
+  achievement: "Achievement",
+} as const;
+
+/** Thumbnail image with a branded fallback when no picture is set. */
+function AchievementThumb({ achievement }: { achievement: Achievement }) {
+  const TypeIcon = TYPE_ICON[achievement.type];
+
+  if (achievement.image) {
+    return (
+      <Image
+        src={achievement.image}
+        alt={achievement.title}
+        fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        className="object-cover transition-transform duration-500 group-hover:scale-105"
+      />
+    );
+  }
 
   return (
-    <motion.article
+    <div
+      className="absolute inset-0 flex flex-col items-center justify-center gap-2"
+      style={{
+        background:
+          "radial-gradient(120% 120% at 30% 20%, rgba(245,158,11,0.20), transparent), #0a0a0a",
+      }}
+    >
+      <TypeIcon className="h-9 w-9 text-amber-400/80" />
+      <span className="select-none text-3xl font-bold text-white/85">
+        {achievement.title.charAt(0)}
+      </span>
+    </div>
+  );
+}
+
+function AchievementCard({
+  achievement,
+  index,
+  onOpen,
+}: {
+  achievement: Achievement;
+  index: number;
+  onOpen: () => void;
+}) {
+  const TypeIcon = TYPE_ICON[achievement.type];
+
+  return (
+    <motion.div
       layout
       initial={{ opacity: 0, y: 26 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.55, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.55, delay: Math.min(index, 6) * 0.08, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -6 }}
       className="group h-full"
     >
-      <div className="relative h-full rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 flex flex-col overflow-hidden transition-all duration-300 group-hover:border-amber-500/35 group-hover:shadow-xl group-hover:shadow-amber-500/10">
-        <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-amber-500/75 to-transparent opacity-70 group-hover:opacity-100" />
-
-        <div className="flex items-start justify-between gap-4 mb-5">
-          <motion.div
-            whileHover={{ scale: 1.06 }}
-            transition={{ duration: 0.2 }}
-            className="w-11 h-11 rounded-xl bg-amber-500/15 border border-amber-500/25 flex items-center justify-center"
-          >
-            <TypeIcon className="w-5 h-5 text-amber-500" />
-          </motion.div>
-
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-700 dark:text-amber-300 text-[11px] font-medium uppercase tracking-[0.14em]">
-            <TypeIcon className="w-3.5 h-3.5" />
-            {typeLabel}
+      <button
+        type="button"
+        onClick={onOpen}
+        className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white text-left transition-all duration-300 group-hover:border-amber-500/40 group-hover:shadow-xl group-hover:shadow-amber-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 dark:border-neutral-800 dark:bg-neutral-900"
+      >
+        {/* Thumbnail — the dominant visual */}
+        <div className="relative aspect-16/10 w-full overflow-hidden bg-neutral-100 dark:bg-neutral-950">
+          <AchievementThumb achievement={achievement} />
+          <div className="absolute inset-0 ring-1 ring-inset ring-black/5 dark:ring-white/10" />
+          <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur-sm">
+            <TypeIcon className="h-3 w-3" />
+            {TYPE_LABEL[achievement.type]}
           </span>
+          {achievement.credentialUrl && (
+            <span className="absolute right-3 top-3 rounded-full bg-amber-500 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-black">
+              Verified
+            </span>
+          )}
         </div>
 
-        <h3 className="text-lg md:text-xl font-semibold text-neutral-900 dark:text-white leading-tight group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors duration-300">
-          {achievement.title}
-        </h3>
+        {/* Details */}
+        <div className="flex flex-1 flex-col p-5">
+          <h3 className="line-clamp-2 text-base font-semibold leading-tight text-neutral-900 transition-colors duration-300 group-hover:text-amber-600 md:text-lg dark:text-white dark:group-hover:text-amber-300">
+            {achievement.title}
+          </h3>
 
-        <div className="mt-3 flex items-center gap-2 text-sm">
-          <span className="text-neutral-600 dark:text-neutral-300 font-medium">{achievement.issuer}</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-          <span className="text-neutral-500 dark:text-neutral-400">{achievement.date}</span>
-        </div>
+          <div className="mt-2 flex items-center gap-2 text-xs">
+            <span className="truncate font-medium text-neutral-600 dark:text-neutral-300">
+              {achievement.issuer}
+            </span>
+            <span className="h-1 w-1 shrink-0 rounded-full bg-amber-500" />
+            <span className="shrink-0 text-neutral-500 dark:text-neutral-400">{achievement.date}</span>
+          </div>
 
-        <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed line-clamp-3">
-          {achievement.description}
-        </p>
+          <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            {achievement.description}
+          </p>
 
-        <div className="mt-5 pt-4 border-t border-neutral-200/80 dark:border-neutral-800/80">
-          <p className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400 mb-2">Skills</p>
-          <div className="flex flex-wrap gap-1.5">
-            {achievement.skills.slice(0, 4).map((skill) => (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {achievement.skills.slice(0, 3).map((skill) => (
               <span
                 key={skill}
-                className="text-[10px] px-2.5 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700"
+                className="rounded-full border border-neutral-200 bg-neutral-100 px-2 py-0.5 text-[10px] text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
               >
                 {skill}
               </span>
             ))}
-            {achievement.skills.length > 4 && (
-              <span className="text-[10px] px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-700 dark:text-amber-300">
-                +{achievement.skills.length - 4}
+            {achievement.skills.length > 3 && (
+              <span className="rounded-full border border-amber-500/25 bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-700 dark:text-amber-300">
+                +{achievement.skills.length - 3}
               </span>
             )}
           </div>
-        </div>
 
-        {achievement.credentialUrl ? (
-          <motion.a
-            href={achievement.credentialUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ y: -1 }}
-            whileTap={{ scale: 0.98 }}
-            className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black px-4 py-2.5 text-sm font-medium transition-colors hover:bg-neutral-800 dark:hover:bg-neutral-200"
-          >
-            Verify Credential
-            <ExternalLink className="w-3.5 h-3.5" />
-          </motion.a>
-        ) : (
-          <span className="mt-5 inline-flex items-center justify-center rounded-full border border-neutral-300 dark:border-neutral-700 px-4 py-2.5 text-xs uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400">
-            Internal Recognition
+          <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-amber-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:text-amber-400">
+            View details
+            <ArrowUpRight className="h-3.5 w-3.5" />
           </span>
+        </div>
+      </button>
+    </motion.div>
+  );
+}
+
+/** Click-to-open detail view with the full image and all metadata. */
+function AchievementDialog({
+  achievement,
+  onClose,
+}: {
+  achievement: Achievement | null;
+  onClose: () => void;
+}) {
+  const TypeIcon = achievement ? TYPE_ICON[achievement.type] : Star;
+
+  return (
+    <Dialog open={!!achievement} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-2xl gap-0 overflow-hidden p-0 max-h-[90vh] overflow-y-auto">
+        {achievement && (
+          <>
+            {/* Full image (contained, so certificates are fully readable) */}
+            <div className="relative aspect-video w-full bg-neutral-100 dark:bg-neutral-950">
+              {achievement.image ? (
+                <Image
+                  src={achievement.image}
+                  alt={achievement.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 42rem"
+                  className="object-contain"
+                />
+              ) : (
+                <div
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+                  style={{
+                    background:
+                      "radial-gradient(120% 120% at 30% 20%, rgba(245,158,11,0.20), transparent), #0a0a0a",
+                  }}
+                >
+                  <TypeIcon className="h-12 w-12 text-amber-400/80" />
+                  <span className="text-5xl font-bold text-white/85">
+                    {achievement.title.charAt(0)}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="p-6">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/25 bg-amber-500/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-amber-700 dark:text-amber-300">
+                  <TypeIcon className="h-3.5 w-3.5" />
+                  {TYPE_LABEL[achievement.type]}
+                </span>
+                {achievement.credentialUrl && (
+                  <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-black">
+                    Verified
+                  </span>
+                )}
+              </div>
+
+              <DialogTitle className="text-xl font-bold leading-tight text-neutral-900 md:text-2xl dark:text-white">
+                {achievement.title}
+              </DialogTitle>
+              <DialogDescription className="mt-1.5 text-sm text-neutral-500 dark:text-neutral-400">
+                {achievement.issuer} · {achievement.date}
+              </DialogDescription>
+
+              <p className="mt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
+                {achievement.description}
+              </p>
+
+              <div className="mt-5">
+                <p className="mb-2 text-[10px] uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
+                  Skills
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {achievement.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="rounded-full border border-neutral-200 bg-neutral-100 px-2.5 py-1 text-[11px] text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {achievement.credentialUrl ? (
+                <a
+                  href={achievement.credentialUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                >
+                  Verify Credential
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              ) : (
+                <span className="mt-6 inline-flex items-center rounded-full border border-neutral-300 px-4 py-2 text-xs uppercase tracking-[0.14em] text-neutral-500 dark:border-neutral-700 dark:text-neutral-400">
+                  Internal Recognition
+                </span>
+              )}
+            </div>
+          </>
         )}
-      </div>
-    </motion.article>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 export function Achievements() {
   const [filter, setFilter] = useState<"all" | Achievement["type"]>("all");
+  const [selected, setSelected] = useState<Achievement | null>(null);
 
-  const filteredAchievements = filter === "all" 
-    ? achievements 
-    : achievements.filter((a) => a.type === filter);
+  const filteredAchievements =
+    filter === "all" ? achievements : achievements.filter((a) => a.type === filter);
 
   const filters: { label: string; value: "all" | Achievement["type"]; icon: typeof Award }[] = [
     { label: "All", value: "all", icon: Medal },
@@ -145,6 +289,7 @@ export function Achievements() {
             className="text-neutral-500 dark:text-neutral-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed"
           >
             CV-verified milestones from competitions, academics, and project-based recognition.
+            Tap any card to view the certificate and full details.
           </motion.p>
         </div>
 
@@ -182,6 +327,7 @@ export function Achievements() {
                 key={achievement.id}
                 achievement={achievement}
                 index={index}
+                onOpen={() => setSelected(achievement)}
               />
             ))}
           </AnimatePresence>
@@ -233,6 +379,8 @@ export function Achievements() {
           })}
         </motion.div>
       </div>
+
+      <AchievementDialog achievement={selected} onClose={() => setSelected(null)} />
     </section>
   );
 }
