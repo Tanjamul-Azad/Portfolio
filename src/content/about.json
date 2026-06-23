@@ -1,0 +1,14 @@
+{
+  "eyebrow": "Who I Am",
+  "heading": "About Me",
+  "personality": {
+    "type": "INTP-A",
+    "label": "The Logician"
+  },
+  "paragraphs": [
+    "I'm a **Full-Stack Developer** and **ML Researcher** in my final year at **United International University**, specialising in Data Science.",
+    "I love building **SaaS products** and small, opinionated **tools that make daily life easier** — the kind where you ship something over a weekend and it quietly solves a real annoyance. There's something deeply satisfying about compressing friction out of a workflow.",
+    "Beyond that, I genuinely enjoy the overlap between building things people use and training systems that learn. I dive deep into ML research, experiment with new models, and figure out how AI can actually solve real problems — not just in theory, but in practice."
+  ],
+  "quote": "Same curiosity that got me through a national Math & Physics Olympiad — just pointed at neural networks now."
+}

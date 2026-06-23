@@ -12,6 +12,16 @@ const contactSchema = z.object({
   message: z.string().min(10, "Message must be at least 10 characters").max(5000),
 });
 
+// Escape user-supplied values before interpolating into the email HTML.
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // Simple in-memory rate limiting (for hobby/small projects)
 // For production, use Upstash Redis or similar
 const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
@@ -93,6 +103,9 @@ export async function POST(request: NextRequest) {
     }
 
     const { name, email, message } = result.data;
+    const safeName = escapeHtml(name);
+    const safeEmail = escapeHtml(email);
+    const safeMessage = escapeHtml(message);
 
     const resendApiKey = process.env.RESEND_API_KEY;
 
@@ -131,11 +144,11 @@ export async function POST(request: NextRequest) {
         <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;border:1px solid #e5e7eb;border-radius:8px;">
           <h2 style="margin-top:0;color:#111827;">New Portfolio Contact</h2>
           <table style="width:100%;border-collapse:collapse;">
-            <tr><td style="padding:8px 0;color:#6b7280;width:80px;">Name</td><td style="padding:8px 0;font-weight:600;color:#111827;">${name}</td></tr>
-            <tr><td style="padding:8px 0;color:#6b7280;">Email</td><td style="padding:8px 0;"><a href="mailto:${email}" style="color:#f59e0b;">${email}</a></td></tr>
+            <tr><td style="padding:8px 0;color:#6b7280;width:80px;">Name</td><td style="padding:8px 0;font-weight:600;color:#111827;">${safeName}</td></tr>
+            <tr><td style="padding:8px 0;color:#6b7280;">Email</td><td style="padding:8px 0;"><a href="mailto:${safeEmail}" style="color:#f59e0b;">${safeEmail}</a></td></tr>
           </table>
           <div style="margin-top:16px;padding:16px;background:#f9fafb;border-radius:6px;">
-            <p style="margin:0;color:#374151;white-space:pre-wrap;">${message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
+            <p style="margin:0;color:#374151;white-space:pre-wrap;">${safeMessage}</p>
           </div>
           <p style="margin-top:16px;font-size:12px;color:#9ca3af;">Sent from ${siteConfig.url} · IP: ${ip}</p>
         </div>

@@ -11,9 +11,41 @@ import Image from "next/image";
 import { ArrowUpRight, ChevronLeft, ChevronRight, ExternalLink, Github, Search, Video } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
+import type { Project } from "@/types";
 
 const PROJECTS_PER_PAGE = 9;
 type PageItem = number | "...";
+
+/** Project thumbnail that degrades to a branded placeholder if the image is missing. */
+function ProjectThumbnail({ project }: { project: Project }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!project.image || failed) {
+    return (
+      <div
+        className="absolute inset-0 flex items-center justify-center"
+        style={{
+          background: `radial-gradient(120% 120% at 30% 20%, ${project.color ?? "#525252"}33, transparent), #0a0a0a`,
+        }}
+      >
+        <span className="text-6xl font-bold text-white/90 select-none">
+          {project.title.charAt(0)}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={project.image}
+      alt={project.title}
+      fill
+      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+      className="object-cover transition-transform duration-500 group-hover:scale-105"
+      onError={() => setFailed(true)}
+    />
+  );
+}
 
 function getVisiblePageItems(totalPages: number, currentPage: number): PageItem[] {
   if (totalPages <= 7) {
@@ -249,13 +281,7 @@ export default function ProjectsPage() {
                   )}
 
                   <Link href={`/projects/${project.slug}`} className="block aspect-[16/9] max-[360px]:aspect-[2/1] sm:aspect-16/10 relative overflow-hidden">
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
+                    <ProjectThumbnail project={project} />
 
                     <div className="absolute inset-0 bg-linear-to-t from-black/55 via-black/10 to-transparent opacity-75 transition-opacity group-hover:opacity-90" />
                     <div className="absolute inset-0 ring-1 ring-inset ring-black/10 dark:ring-white/10" />

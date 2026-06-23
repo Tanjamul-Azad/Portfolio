@@ -1,147 +1,165 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 type CursorVariant = "default" | "hover" | "text" | "click";
+
+const INTERACTIVE_SELECTOR =
+  "a, button, [role='button'], select, label, summary, .cursor-pointer, [data-cursor='hover']";
+const TEXT_INPUT_SELECTOR = "input:not([type='checkbox']):not([type='radio']), textarea, [contenteditable='true']";
 
 export function CustomCursor() {
   const [visible, setVisible] = useState(false);
   const [variant, setVariant] = useState<CursorVariant>("default");
 
+  // Refs let the high-frequency pointermove handler avoid triggering React
+  // re-renders unless the variant/visibility actually changes.
+  const variantRef = useRef<CursorVariant>("default");
+  const visibleRef = useRef(false);
+  const pressedRef = useRef(false);
+
   const cursorX = useMotionValue(-200);
   const cursorY = useMotionValue(-200);
 
-  const dotX = useSpring(cursorX, { stiffness: 950, damping: 50, mass: 0.1 });
-  const dotY = useSpring(cursorY, { stiffness: 950, damping: 50, mass: 0.1 });
+  // Inner dot: fast + precise. Outer ring: smooth, slightly elastic trail.
+  const dotX = useSpring(cursorX, { stiffness: 1500, damping: 60, mass: 0.2 });
+  const dotY = useSpring(cursorY, { stiffness: 1500, damping: 60, mass: 0.2 });
+  const ringX = useSpring(cursorX, { stiffness: 250, damping: 26, mass: 0.55 });
+  const ringY = useSpring(cursorY, { stiffness: 250, damping: 26, mass: 0.55 });
 
-  const ringX = useSpring(cursorX, { stiffness: 450, damping: 35, mass: 0.4 });
-  const ringY = useSpring(cursorY, { stiffness: 450, damping: 35, mass: 0.4 });
+  const pathname = usePathname();
+  const onAdmin = pathname?.startsWith("/admin") ?? false;
 
   useEffect(() => {
+    if (onAdmin) return;
     if (typeof window === "undefined") return;
     if (!window.matchMedia("(pointer: fine)").matches) return;
     if (window.innerWidth < 768) return;
 
+    const applyVariant = (next: CursorVariant) => {
+      if (variantRef.current !== next) {
+        variantRef.current = next;
+        setVariant(next);
+      }
+    };
+
+    const resolveVariant = (target: EventTarget | null): CursorVariant => {
+      if (pressedRef.current) return "click";
+      const el = target instanceof Element ? target : null;
+      if (!el) return "default";
+      if (el.closest(TEXT_INPUT_SELECTOR)) return "text";
+      if (el.closest(INTERACTIVE_SELECTOR)) return "hover";
+      return "default";
+    };
+
     const move = (e: MouseEvent) => {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
-      setVisible(true);
+      if (!visibleRef.current) {
+        visibleRef.current = true;
+        setVisible(true);
+      }
+      applyVariant(resolveVariant(e.target));
     };
-    const leave = () => setVisible(false);
-    const down = () => setVariant("click");
-    const up = () => setVariant((v) => (v === "click" ? "default" : v));
 
-    function attachHoverListeners() {
-      // Safely attach and remove listeners to avoid memory leaks
-      const hoverElements = document.querySelectorAll("a, button, [role='button'], input, textarea, select");
-      const textElements = document.querySelectorAll("p, h1, h2, h3, h4, h5, h6, span, blockquote, li");
+    const leave = () => {
+      visibleRef.current = false;
+      setVisible(false);
+    };
 
-      const handleHoverEnter = () => setVariant("hover");
-      const handleTextEnter = () => setVariant("text");
-      const handleLeave = () => setVariant("default");
+    const down = () => {
+      pressedRef.current = true;
+      applyVariant("click");
+    };
 
-      hoverElements.forEach((el) => {
-        el.removeEventListener("mouseenter", handleHoverEnter);
-        el.removeEventListener("mouseleave", handleLeave);
-        el.addEventListener("mouseenter", handleHoverEnter);
-        el.addEventListener("mouseleave", handleLeave);
-      });
+    const up = (e: MouseEvent) => {
+      pressedRef.current = false;
+      applyVariant(resolveVariant(e.target));
+    };
 
-      textElements.forEach((el) => {
-        el.removeEventListener("mouseenter", handleTextEnter);
-        el.removeEventListener("mouseleave", handleLeave);
-        el.addEventListener("mouseenter", handleTextEnter);
-        el.addEventListener("mouseleave", handleLeave);
-      });
-    }
-
-    // Delay attachment slightly to ensure DOM is ready
-    const timeoutId = setTimeout(() => {
-      attachHoverListeners();
-    }, 100);
-
-    const observer = new MutationObserver((mutations) => {
-        // Debounce or selectively trigger based on meaningful DOM changes
-        let shouldReattach = false;
-        for (const mutation of mutations) {
-            if (mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0) {
-                shouldReattach = true;
-                break;
-            }
-        }
-        if (shouldReattach) {
-             attachHoverListeners();
-        }
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    window.addEventListener("mousemove", move);
+    window.addEventListener("mousemove", move, { passive: true });
     document.addEventListener("mouseleave", leave);
     window.addEventListener("mousedown", down);
     window.addEventListener("mouseup", up);
-    
-    // Modern way to hide cursor cleanly on desktop without affecting mobile
-    document.body.classList.add('cursor-none', 'md:cursor-none');
+
+    // Hide the native cursor only while ours is active, only on fine-pointer desktops.
+    document.body.classList.add("cursor-none");
 
     return () => {
-      clearTimeout(timeoutId);
       window.removeEventListener("mousemove", move);
       document.removeEventListener("mouseleave", leave);
       window.removeEventListener("mousedown", down);
       window.removeEventListener("mouseup", up);
-      observer.disconnect();
-      document.body.classList.remove('cursor-none', 'md:cursor-none');
+      document.body.classList.remove("cursor-none");
     };
-  }, [cursorX, cursorY]);
+  }, [cursorX, cursorY, onAdmin]);
 
-  const dotStyles: Record<CursorVariant, {
+  const dot: Record<CursorVariant, {
     width: number;
     height: number;
-    borderRadius: string | number;
+    borderRadius: number | string;
     background: string;
-    border: string;
     opacity: number;
   }> = {
-    default: { width: 10,  height: 10, borderRadius: "50%", background: "#f59e0b", border: "none", opacity: 0.8 },
-    hover:   { width: 36,  height: 36, borderRadius: "50%", background: "transparent", border: "1.5px solid #f59e0b", opacity: 1 },
-    text:    { width: 2,   height: 24, borderRadius: 2, background: "#f59e0b", border: "none", opacity: 1 },
-    click:   { width: 6,   height: 6,  borderRadius: "50%", background: "#f97316", border: "none", opacity: 1 },
+    default: { width: 8, height: 8, borderRadius: "50%", background: "#f59e0b", opacity: 1 },
+    hover: { width: 6, height: 6, borderRadius: "50%", background: "#f59e0b", opacity: 0.6 },
+    text: { width: 2, height: 22, borderRadius: 2, background: "#f59e0b", opacity: 1 },
+    click: { width: 14, height: 14, borderRadius: "50%", background: "#f97316", opacity: 1 },
   };
 
-  const ringStyles: Record<CursorVariant, {
+  const ring: Record<CursorVariant, {
     width: number;
     height: number;
     opacity: number;
+    borderColor: string;
+    background: string;
   }> = {
-    default: { width: 26, height: 26, opacity: 0.35 },
-    hover:   { width: 56, height: 56, opacity: 0.2 },
-    text:    { width: 26, height: 26, opacity: 0 },
-    click:   { width: 18, height: 18, opacity: 0.5 },
+    default: { width: 30, height: 30, opacity: 0.4, borderColor: "rgba(245,158,11,0.5)", background: "transparent" },
+    hover: { width: 52, height: 52, opacity: 1, borderColor: "rgba(245,158,11,0.9)", background: "rgba(245,158,11,0.08)" },
+    text: { width: 30, height: 30, opacity: 0, borderColor: "rgba(245,158,11,0.5)", background: "transparent" },
+    click: { width: 24, height: 24, opacity: 0.7, borderColor: "rgba(249,115,22,0.9)", background: "rgba(249,115,22,0.1)" },
   };
+
+  if (onAdmin) return null;
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{__html: `
-        /* Hide default cursor only when our custom cursor is active and on right devices */
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @media (pointer: fine) and (min-width: 768px) {
-          body.cursor-none * {
-            cursor: none !important;
-          }
+          body.cursor-none, body.cursor-none * { cursor: none !important; }
         }
-      `}} />
+      `,
+        }}
+      />
+      {/* Trailing ring */}
+      <motion.div
+        className="hidden md:block fixed top-0 left-0 z-9998 pointer-events-none rounded-full border"
+        style={{ x: ringX, y: ringY, translateX: "-50%", translateY: "-50%", willChange: "transform" }}
+        animate={{
+          width: ring[variant].width,
+          height: ring[variant].height,
+          borderColor: ring[variant].borderColor,
+          background: ring[variant].background,
+          opacity: visible ? ring[variant].opacity : 0,
+        }}
+        transition={{ type: "spring", stiffness: 420, damping: 32, mass: 0.6 }}
+      />
+      {/* Precise inner dot */}
       <motion.div
         className="hidden md:block fixed top-0 left-0 z-9999 pointer-events-none"
-        style={{ x: dotX, y: dotY, translateX: "-50%", translateY: "-50%" }}
-        animate={{ ...dotStyles[variant], opacity: visible ? dotStyles[variant].opacity : 0 }}
-        transition={{ duration: 0.08, ease: "linear" }}
-      />
-      <motion.div
-        className="hidden md:block fixed top-0 left-0 z-9998 pointer-events-none rounded-full border border-amber-500/50"
-        style={{ x: ringX, y: ringY, translateX: "-50%", translateY: "-50%" }}
-        animate={{ ...ringStyles[variant], opacity: visible ? ringStyles[variant].opacity : 0 }}
-        transition={{ duration: 0.12, ease: "linear" }}
+        style={{ x: dotX, y: dotY, translateX: "-50%", translateY: "-50%", willChange: "transform" }}
+        animate={{
+          width: dot[variant].width,
+          height: dot[variant].height,
+          borderRadius: dot[variant].borderRadius,
+          background: dot[variant].background,
+          opacity: visible ? dot[variant].opacity : 0,
+        }}
+        transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.5 }}
       />
     </>
   );

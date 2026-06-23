@@ -8,6 +8,29 @@ import { siteConfig } from "@/config";
 
 export const runtime = "nodejs";
 
+// ── Rate limiting ─────────────────────────────────────────────────────────
+// Protects the shared LLM API keys from being drained by abuse/spam.
+const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const MAX_REQUESTS = 15; // 15 chat messages per minute per IP
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+
+  if (!record || now - record.timestamp > RATE_LIMIT_WINDOW) {
+    rateLimitMap.set(ip, { count: 1, timestamp: now });
+    return false;
+  }
+
+  if (record.count >= MAX_REQUESTS) {
+    return true;
+  }
+
+  record.count++;
+  return false;
+}
+
 /** Dynamically calculate age from DOB so it increments day by day */
 function calculateAge(dob: Date): number {
   const today = new Date();
@@ -50,12 +73,12 @@ function buildPortfolioContext(): string {
   const currentlyBuilding = nowItems.find((n) => n.category === "building")?.items.join("; ") || "";
   const lookingFor = nowItems.find((n) => n.category === "looking")?.items.join("; ") || "";
 
-  return `You are the personal AI assistant for Md. Tanjamul Azad (Tonmoy).
+  return `You are the personal AI assistant for Md. Tanzamul Azad (Tonmoy).
 Your role is to speak ABOUT him in the third person (he, him, his).
 Be warm, professional, and concise. Use real facts from the data below.
 
 IDENTITY:
-- Name: Md. Tanjamul Azad (Tonmoy)
+- Name: Md. Tanzamul Azad (Tonmoy)
 - Age: ${age} (DOB: 2002-12-20)
 - Background: Full-Stack Developer & ML Researcher at United International University (UIU), Dhaka.
 - Key Stats: CGPA 3.78/4.0, 3x UIU Project Show winner.
@@ -87,16 +110,35 @@ RESPONSE STYLE:
 
 export async function POST(request: NextRequest) {
   try {
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
+
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        { error: "Too many messages. Please slow down and try again shortly." },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { message, history } = body;
 
-    if (!message) {
+    if (!message || typeof message !== "string") {
       return NextResponse.json({ error: "Message is required" }, { status: 400 });
+    }
+
+    if (message.length > 2000) {
+      return NextResponse.json(
+        { error: "Message is too long. Please keep it under 2000 characters." },
+        { status: 400 }
+      );
     }
 
     const historyMessages =
       Array.isArray(history) && history.length > 0
-        ? history.slice(-8).map((m: any) => ({
+        ? history.slice(-8).map((m: { role?: string; content?: string }) => ({
             role: m.role === "user" ? "user" : "assistant",
             content: m.content,
           }))
@@ -203,9 +245,10 @@ export async function POST(request: NextRequest) {
 
         console.log(`[Chat API] ${provider.name} success!`);
         return NextResponse.json({ response });
-      } catch (err: any) {
-        console.error(`[Chat API] ${provider.name} critical error:`, err.message);
-        lastError = err.message;
+      } catch (err) {
+        const errMessage = err instanceof Error ? err.message : String(err);
+        console.error(`[Chat API] ${provider.name} critical error:`, errMessage);
+        lastError = errMessage;
         continue;
       }
     }

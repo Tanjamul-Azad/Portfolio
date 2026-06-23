@@ -1,62 +1,7 @@
+import data from "@/content/achievements.json";
 import type { Achievement } from "@/types";
 
-export const achievements: Achievement[] = [
-  {
-    id: "1",
-    title: "Champion, UIU CSE Project Show Summer 2025",
-    issuer: "United International University",
-    date: "2025",
-    type: "award",
-    icon: "🏆",
-    description:
-      "Awarded first place in System Analysis & Design for UI/UX contribution to the Complete Legal Aid platform.",
-    skills: ["System Analysis", "UI/UX", "Product Design", "Legal Tech"],
-  },
-  {
-    id: "2",
-    title: "3rd Runner-Up, UIU CSE Project Show Fall 2025",
-    issuer: "United International University",
-    date: "2025",
-    type: "award",
-    icon: "🥉",
-    description:
-      "Recognised in Software Engineering category for full-stack development of Complete Legal Aid.",
-    skills: ["Software Engineering", "Team Delivery", "Full-Stack Development"],
-  },
-  {
-    id: "3",
-    title: "4th Runner-Up, UIU CSE Project Show 2024",
-    issuer: "United International University",
-    date: "2024",
-    type: "award",
-    icon: "🏅",
-    description:
-      "Recognised for AI + IoT innovation with the Care Companion smart healthcare rover.",
-    skills: ["AI", "IoT", "Embedded Systems", "Innovation"],
-  },
-  {
-    id: "4",
-    title: "50% Merit Scholarship — Every Trimester",
-    issuer: "United International University",
-    date: "2022 – Present",
-    type: "achievement",
-    icon: "🎓",
-    description:
-      "Awarded a 50% tuition merit scholarship each and every trimester throughout the BSc CSE programme, reflecting sustained academic excellence.",
-    skills: ["Academic Excellence", "Data Science", "Consistency"],
-  },
-  {
-    id: "5",
-    title: "3rd Place, Math & Physics Olympiad (Junior)",
-    issuer: "BdMOC",
-    date: "2016",
-    type: "achievement",
-    icon: "🥉",
-    description:
-      "Achieved 3rd place at national level, demonstrating strong quantitative and analytical problem-solving from an early age.",
-    skills: ["Mathematics", "Physics", "Analytical Thinking"],
-  },
-];
+export const achievements: Achievement[] = data as Achievement[];
 
 export function getAchievementsByType(type: Achievement["type"]) {
   return achievements.filter((a) => a.type === type);

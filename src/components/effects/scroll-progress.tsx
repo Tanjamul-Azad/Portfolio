@@ -1,12 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 
 export function ScrollProgress() {
   const [scrollProgress, setScrollProgress] = useState(0);
+  const pathname = usePathname();
+  const onAdmin = pathname?.startsWith("/admin") ?? false;
 
   useEffect(() => {
+    if (onAdmin) return;
+
     const handleScroll = () => {
       const { scrollHeight, clientHeight } = document.documentElement;
       const scrollableHeight = scrollHeight - clientHeight;
@@ -18,7 +23,9 @@ export function ScrollProgress() {
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [onAdmin]);
+
+  if (onAdmin) return null;
 
   return (
     <div className="fixed top-1/2 right-4 -translate-y-1/2 z-50 hidden lg:block">
@@ -32,7 +39,7 @@ export function ScrollProgress() {
           transition={{ duration: 0.1 }}
         />
       </div>
-      
+
       {/* Percentage indicator */}
       <motion.div
         className="absolute -left-10 top-1/2 -translate-y-1/2 text-[10px] text-neutral-600 dark:text-neutral-400 font-medium"

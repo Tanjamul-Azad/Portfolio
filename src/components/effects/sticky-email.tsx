@@ -1,9 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config";
 
 export function StickyEmail() {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) return null;
+
   return (
     <motion.div
       className="fixed hidden xl:block z-40 bottom-[max(8rem,env(safe-area-inset-bottom))] left-[max(2rem,env(safe-area-inset-left))]"

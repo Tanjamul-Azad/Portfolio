@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getProjectBySlug } from "@/data/projects";
+import { getProjectBySlug, getAllProjectSlugs } from "@/data/projects";
 import { siteConfig } from "@/config";
 import ProjectCaseStudyClient from "./project-case-study-client";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
+
+export function generateStaticParams() {
+  return getAllProjectSlugs().map((slug) => ({ slug }));
+}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;

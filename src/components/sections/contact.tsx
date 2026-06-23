@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Mail, MessageCircle, ArrowUpRight, Clock, Sparkles } from "lucide-react";
 import { ContactForm } from "./contact-form";
 import { siteConfig } from "@/config";
+import { sectionsContent } from "@/data/site-content";
 import { NetworkPattern } from "@/components/ui/network-pattern";
 
 export function Contact() {
@@ -32,7 +33,7 @@ export function Contact() {
               viewport={{ once: true }}
               className="text-xs text-amber-600 dark:text-amber-400/80 tracking-[0.3em] uppercase mb-4 block"
             >
-              Contact
+              {sectionsContent.contact.eyebrow}
             </motion.span>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -40,9 +41,9 @@ export function Contact() {
               viewport={{ once: true }}
               className="text-3xl sm:text-4xl md:text-6xl font-bold font-heading mb-6 tracking-tight text-neutral-900 dark:text-white leading-[1.1]"
             >
-              Let&apos;s build<br />
+              {sectionsContent.contact.headingLine1}<br />
               <span className="text-amber-500 dark:text-amber-300">
-                something great.
+                {sectionsContent.contact.headingLine2}
               </span>
             </motion.h2>
             <motion.p
@@ -52,8 +53,7 @@ export function Contact() {
               transition={{ delay: 0.1 }}
               className="text-base sm:text-lg text-neutral-500 dark:text-neutral-400 mb-8 sm:mb-12 max-w-md leading-relaxed"
             >
-              Have a project in mind? Let&apos;s discuss how we can work together
-              to bring your vision to life.
+              {sectionsContent.contact.subtext}
             </motion.p>
 
             <motion.div
@@ -118,7 +118,7 @@ export function Contact() {
               <div className="flex items-center gap-2 mt-6 p-3 rounded-xl bg-amber-50 dark:bg-amber-500/5 border border-amber-200/50 dark:border-amber-500/20">
                 <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
                 <span className="text-sm text-amber-700 dark:text-amber-300">
-                  Typically replies within 24–48 hours
+                  {sectionsContent.contact.responseTime}
                 </span>
               </div>
             </motion.div>

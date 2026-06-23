@@ -61,6 +61,11 @@ export function PageTransition({ children }: { children: ReactNode }) {
   const prefersReducedMotion = useReducedMotion() ?? false;
   const { setRouteTransitioning } = useRouteTransitioning();
 
+  // The admin editor renders without per-route transition animations.
+  if (pathname?.startsWith("/admin")) {
+    return <>{children}</>;
+  }
+
   return (
     <AnimatePresence
       mode="wait"

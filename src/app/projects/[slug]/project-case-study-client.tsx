@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowLeft, ArrowUpRight, Github, ExternalLink, Layers, Lightbulb, Target, Trophy, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,16 +9,14 @@ import { getProjectBySlug, projects } from "@/data/projects";
 import { Navbar, Footer } from "@/components/layout";
 import Link from "next/link";
 import Image from "next/image";
-import { fadeInUp, MOTION_TOKENS, staggerContainer } from "@/lib/animations";
+import { fadeInUp, staggerContainer } from "@/lib/animations";
 
 export default function ProjectCaseStudy({ slug }: { slug: string }) {
   const project = getProjectBySlug(slug);
   const [imageVisible, setImageVisible] = useState(true);
-  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     setImageVisible(true);
-    setImageLoaded(false);
   }, [slug]);
 
   if (!project) {
@@ -40,7 +38,7 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
   return (
     <main 
       className="bg-neutral-50 dark:bg-black min-h-screen selection:bg-amber-500/30"
-      style={{ '--project-color': project.color } as any}
+      style={{ '--project-color': project.color } as React.CSSProperties}
     >
       <Navbar />
       
@@ -139,7 +137,6 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
               fill
               priority
               className="object-cover"
-              onLoad={() => setImageLoaded(true)}
               onError={() => setImageVisible(false)}
             />
             <div className="absolute inset-0 bg-linear-to-b from-transparent via-neutral-50/20 to-neutral-50 dark:via-black/20 dark:to-black" />

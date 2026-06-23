@@ -12,6 +12,7 @@ export interface Project {
   sourceUrl?: string;
   videoUrl?: string;
   featured?: boolean;
+  pinned?: boolean;
   // Case study details
   overview?: string;
   problem?: string;
@@ -103,4 +104,56 @@ export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
+}
+
+export interface SiteConfig {
+  name: string;
+  title: string;
+  description: string;
+  url: string;
+  ogImage: string;
+  links: {
+    github: string;
+    linkedin: string;
+    facebook: string;
+    twitter: string;
+    resume: string;
+  };
+  contact: {
+    email: string;
+    whatsapp: string;
+  };
+  author: {
+    name: string;
+    role: string;
+    location: string;
+    twitterHandle: string;
+  };
+}
+
+export interface HeroContent {
+  badge: { status: string; text: string };
+  headlineLines: { text: string; muted?: boolean }[];
+  typewriter: string;
+  actions: { label: string; href: string }[];
+  profileVideo: string;
+}
+
+export interface AboutContent {
+  eyebrow: string;
+  heading: string;
+  personality: { type: string; label: string };
+  paragraphs: string[];
+  quote: string;
+}
+
+export interface SectionsContent {
+  now: { eyebrow: string; heading: string; subtext: string };
+  contact: {
+    eyebrow: string;
+    headingLine1: string;
+    headingLine2: string;
+    subtext: string;
+    responseTime: string;
+  };
 }

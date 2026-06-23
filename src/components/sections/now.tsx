@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Rocket, Microscope, Search } from "lucide-react";
 import { nowItems } from "@/data";
+import { sectionsContent } from "@/data/site-content";
 
 const categoryConfig = {
   building: {
@@ -31,10 +32,10 @@ export function Now() {
           className="text-center mb-10 md:mb-14"
         >
           <span className="text-sm text-neutral-500 dark:text-neutral-400 tracking-[0.16em] uppercase font-medium">
-            What I'm Focused On
+            {sectionsContent.now.eyebrow}
           </span>
           <h2 className="mt-4 text-3xl sm:text-4xl md:text-5xl font-bold font-heading text-neutral-900 dark:text-white tracking-tight">
-            Current Priorities
+            {sectionsContent.now.heading}
           </h2>
 
           <motion.p
@@ -44,7 +45,7 @@ export function Now() {
             transition={{ delay: 0.1 }}
             className="mt-4 text-base sm:text-lg text-neutral-600 dark:text-neutral-400"
           >
-            A concise snapshot of what I am building, learning, and open to.
+            {sectionsContent.now.subtext}
           </motion.p>
         </motion.div>
 

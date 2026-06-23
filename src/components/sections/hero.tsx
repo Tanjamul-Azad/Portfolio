@@ -1,17 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent } from "react";
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useReducedMotion,
-  useMotionValue,
   useScroll,
-  useSpring,
   useTransform,
 } from "framer-motion";
 import InteractiveHoverButton from "@/components/ui/interactive-hover-button";
 import { siteConfig } from "@/config";
+import { heroContent } from "@/data/site-content";
 import { HERO_SEQUENCE, MOTION_TOKENS } from "@/lib";
 
 function SplitText({
@@ -135,16 +133,7 @@ function TypewriterText({
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const imageWrapRef = useRef<HTMLDivElement>(null);
-  const [imageHover, setImageHover] = useState(false);
   const prefersReducedMotion = useReducedMotion() ?? false;
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const springCfg = { stiffness: 180, damping: 25, mass: 0.5 };
-  const rotateX = useSpring(useTransform(mouseY, [-200, 200], [12, -12]), springCfg);
-  const rotateY = useSpring(useTransform(mouseX, [-200, 200], [-12, 12]), springCfg);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -154,14 +143,6 @@ export function Hero() {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.55], [1, 0]);
   const heroY = useTransform(scrollYProgress, [0, 0.55], [0, 80]);
   const imageScale = useTransform(scrollYProgress, [0, 0.55], [1, 0.88]);
-
-  function handleMouseMove(e: MouseEvent<HTMLDivElement>) {
-    if (!imageWrapRef.current) return;
-
-    const { left, top, width, height } = imageWrapRef.current.getBoundingClientRect();
-    mouseX.set(e.clientX - (left + width / 2));
-    mouseY.set(e.clientY - (top + height / 2));
-  }
 
   return (
     <section
@@ -186,32 +167,25 @@ export function Hero() {
             >
               <div className="flex items-center gap-2.5 px-4 py-2 rounded-full border border-neutral-300/70 dark:border-white/15 bg-white/70 dark:bg-black/55 backdrop-blur-md w-fit transition-colors duration-300">
                 <span className="text-[10px] font-semibold tracking-[0.16em] text-green-600 dark:text-green-400 uppercase">
-                  OPEN
+                  {heroContent.badge.status}
                 </span>
                 <span className="text-xs font-medium text-neutral-600 dark:text-neutral-300">
-                  Available for new projects
+                  {heroContent.badge.text}
                 </span>
               </div>
             </motion.div>
 
             <h1 className="display-heading text-[clamp(2.25rem,11vw,6.5rem)] leading-[0.92] mb-6 text-neutral-900 dark:text-white transition-colors duration-300">
-              <div>
-                <SplitText text="Crafting" delay={0.16} reducedMotion={prefersReducedMotion} />
-              </div>
-              <div>
-                <SplitText
-                  text="digital"
-                  delay={0.24}
-                  className="text-neutral-500 dark:text-neutral-500"
-                  reducedMotion={prefersReducedMotion}
-                />
-              </div>
-              <div>
-                <SplitText text="experiences" delay={0.32} reducedMotion={prefersReducedMotion} />
-              </div>
-              <div>
-                <SplitText text="that matter." delay={0.4} reducedMotion={prefersReducedMotion} />
-              </div>
+              {heroContent.headlineLines.map((line, i) => (
+                <div key={`${line.text}-${i}`}>
+                  <SplitText
+                    text={line.text}
+                    delay={0.16 + i * 0.08}
+                    className={line.muted ? "text-neutral-500 dark:text-neutral-500" : ""}
+                    reducedMotion={prefersReducedMotion}
+                  />
+                </div>
+              ))}
             </h1>
 
             <motion.p
@@ -226,7 +200,7 @@ export function Hero() {
               className="mb-10 text-sm md:text-base italic tracking-[0.04em] leading-relaxed text-neutral-700 dark:text-neutral-200 max-w-136 min-h-[3.2rem] md:min-h-12 transition-colors duration-300"
             >
               <TypewriterText
-                text="Full-Stack Developer | ML Researcher | BSc CSE Undergrad (Data Science)"
+                text={heroContent.typewriter}
                 startDelay={2200}
                 charInterval={44}
                 loopDelay={2800}
@@ -238,19 +212,19 @@ export function Hero() {
               variants={HERO_SEQUENCE.item}
               className="flex flex-wrap gap-4"
             >
-              <InteractiveHoverButton
-                text="View Selected Work"
-                href="#projects"
-                aria-label="View Selected Work"
-                classes="h-12 sm:h-14 px-6 sm:px-8 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black text-xs sm:text-sm font-semibold hover-lift"
-              />
-
-              <InteractiveHoverButton
-                text="Start a Project"
-                href="#contact"
-                aria-label="Start a Project"
-                classes="h-12 sm:h-14 px-6 sm:px-8 rounded-full text-xs sm:text-sm font-semibold border-neutral-300 text-neutral-800 dark:border-white/35 dark:text-white bg-transparent hover-lift"
-              />
+              {heroContent.actions.map((action, i) => (
+                <InteractiveHoverButton
+                  key={`${action.label}-${i}`}
+                  text={action.label}
+                  href={action.href}
+                  aria-label={action.label}
+                  classes={
+                    i === 0
+                      ? "h-12 sm:h-14 px-6 sm:px-8 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black text-xs sm:text-sm font-semibold hover-lift"
+                      : "h-12 sm:h-14 px-6 sm:px-8 rounded-full text-xs sm:text-sm font-semibold border-neutral-300 text-neutral-800 dark:border-white/35 dark:text-white bg-transparent hover-lift"
+                  }
+                />
+              ))}
             </motion.div>
 
             <div className="mt-8" />
@@ -267,15 +241,24 @@ export function Hero() {
               className="relative w-56 h-72 sm:w-72 sm:h-96 md:w-96 md:h-[34rem] lg:w-[34rem] lg:h-[44rem] xl:w-[38rem] xl:h-[50rem] mx-auto lg:ml-auto lg:-mr-12 xl:-mr-24"
             >
               <div className="relative h-full w-full overflow-hidden rounded-2xl bg-neutral-200 dark:bg-neutral-900 shadow-xl dark:shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transition-colors duration-300">
-                <video
-                  src="/PROFILE%20VIDEO/profile%20vid.mp4"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  className="w-full h-full object-cover"
-                />
+                {/\.(mp4|webm)$/i.test(heroContent.profileVideo) ? (
+                  <video
+                    src={encodeURI(heroContent.profileVideo)}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                   
+                  <img
+                    src={encodeURI(heroContent.profileVideo)}
+                    alt={siteConfig.author.name}
+                    className="w-full h-full object-cover"
+                  />
+                )}
 
                 <div className="absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_0_80px_rgba(0,0,0,0.6)]" />
               </div>

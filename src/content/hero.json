@@ -1,0 +1,33 @@
+{
+  "badge": {
+    "status": "OPEN",
+    "text": "Available for new projects"
+  },
+  "headlineLines": [
+    {
+      "text": "Crafting"
+    },
+    {
+      "text": "digital",
+      "muted": true
+    },
+    {
+      "text": "experiences"
+    },
+    {
+      "text": "that matter."
+    }
+  ],
+  "typewriter": "Full-Stack Developer | ML Researcher | BSc CSE Undergrad (Data Science)",
+  "actions": [
+    {
+      "label": "View Selected Work",
+      "href": "#projects"
+    },
+    {
+      "label": "Start a Project",
+      "href": "#contact"
+    }
+  ],
+  "profileVideo": "/PROFILE VIDEO/profile vid.mp4"
+}

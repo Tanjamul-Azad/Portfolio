@@ -1,39 +1,51 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { useRouteTransitioning } from "@/components/providers/page-transition";
 
 export function SmoothScroll() {
   const lenisRef = useRef<Lenis | null>(null);
   const { isRouteTransitioning } = useRouteTransitioning();
+  const pathname = usePathname();
+  const onAdmin = pathname?.startsWith("/admin") ?? false;
 
   useEffect(() => {
+    // The admin editor uses native scrolling — Lenis would hijack form scrolling.
+    if (onAdmin) return;
+
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // lerp-based smoothing is frame-rate independent and feels more continuous /
+    // fluent than a fixed-duration tween, which can stutter on fast flicks.
     const lenis = new Lenis({
-      duration: 1.45,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      lerp: prefersReducedMotion ? 1 : 0.085,
       orientation: "vertical",
       gestureOrientation: "vertical",
-      smoothWheel: true,
-      wheelMultiplier: 0.9,
-      touchMultiplier: 1.4,
-      syncTouch: true,
-      syncTouchLerp: 0.12,
+      smoothWheel: !prefersReducedMotion,
+      wheelMultiplier: 1,
+      touchMultiplier: 1.5,
+      syncTouch: !prefersReducedMotion,
+      syncTouchLerp: 0.075,
     });
     lenisRef.current = lenis;
 
+    let rafId = 0;
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
-
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
     return () => {
+      cancelAnimationFrame(rafId);
       lenisRef.current = null;
       lenis.destroy();
     };
-  }, []);
+  }, [onAdmin]);
 
   useEffect(() => {
     if (!lenisRef.current) return;

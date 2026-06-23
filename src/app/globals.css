@@ -1,7 +1,27 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
+
+/* Lenis smooth-scroll base styles — keeps native scroll-behavior from fighting
+   Lenis, and lets nested scroll areas marked [data-lenis-prevent] scroll on their own. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
 
 @theme inline {
   --color-background: var(--background);
@@ -221,6 +241,38 @@
 
   .skip-link {
     @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-md focus:bg-neutral-900 focus:text-white dark:focus:bg-white dark:focus:text-neutral-900;
+  }
+
+  /* Slim, floating, themed scrollbar for contained scroll areas (e.g. the projects rail).
+     The transparent border + background-clip makes the visible thumb ~4px and inset from
+     the edge, so it reads as a delicate pill rather than a chunky bar. */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(120, 120, 120, 0.3) transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(120, 120, 120, 0.28);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 9999px;
+    transition: background-color 0.2s ease;
+  }
+
+  .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(120, 120, 120, 0.45);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(245, 158, 11, 0.7);
   }
 }
 

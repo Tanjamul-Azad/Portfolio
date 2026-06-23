@@ -1,0 +1,50 @@
+[
+  {
+    "slug": "building-complete-legal-aid-production",
+    "title": "Building Complete Legal Aid for Production",
+    "excerpt": "Lessons from shipping a legal technology platform with role-based dashboards, real-time messaging, and AI drafting workflows.",
+    "content": "\n# Building Complete Legal Aid for Production\n\nComplete Legal Aid is a legal technology platform where citizens, lawyers, and admins collaborate in one system.\n\n## My Role\n\nI worked as Frontend Lead and Full-Stack Contributor.\n\n## What I Built\n\n- Full frontend experience for 3 user roles\n- Real-time chat interface with attachments and read receipts\n- Booking and payment UI flows\n- AI drafting integration for legal document assistance\n\n## Core Stack\n\n- React 19 + TypeScript + Vite\n- Django + WebSocket\n- Firebase notifications\n- GCP-backed deployment services\n\n## Key Outcome\n\nThe AI drafting flow reduced document preparation time from around 45 minutes to under 3 minutes.\n\n## Takeaway\n\nIn legal-tech products, workflow clarity matters as much as raw features. Reliable role separation and communication flow made the platform usable in real scenarios.\n    ",
+    "date": "2026-01-20",
+    "readTime": "5 min read",
+    "tags": [
+      "React",
+      "TypeScript",
+      "Django",
+      "WebSocket",
+      "Legal Tech"
+    ],
+    "featured": true
+  },
+  {
+    "slug": "chefmate-nlp-and-ml-pipeline",
+    "title": "ChefMate: NLP + ML Pipeline from User Input to Recipe",
+    "excerpt": "How I used spaCy, fuzzy matching, and scikit-learn to build a practical recipe recommendation workflow.",
+    "content": "\n# ChefMate: NLP + ML Pipeline from User Input to Recipe\n\nChefMate is an AI-powered recipe suggestion app I built as a solo developer.\n\n## Problem\n\nIngredient input is usually messy: spelling errors, synonyms, and inconsistent naming.\n\n## Pipeline\n\n1. Normalize ingredients with spaCy\n2. Handle input variation with FuzzyWuzzy\n3. Predict cuisine and recipe candidates with scikit-learn\n4. Return filtered suggestions through a Flask app\n\n## Dataset\n\nI trained models using a 643MB recipe dataset and focused heavily on preprocessing quality.\n\n## Result\n\nThe NLP + fuzzy matching pipeline improved ingredient recognition by around 70% on noisy input scenarios.\n\n## Takeaway\n\nFor practical ML products, input normalization often drives quality more than model complexity.\n    ",
+    "date": "2025-11-08",
+    "readTime": "6 min read",
+    "tags": [
+      "Python",
+      "Flask",
+      "NLP",
+      "scikit-learn",
+      "spaCy"
+    ],
+    "featured": true
+  },
+  {
+    "slug": "care-companion-ai-iot-system-design",
+    "title": "Care Companion: Designing an AI + IoT Healthcare Rover",
+    "excerpt": "Software architecture notes from building a Raspberry Pi + Arduino healthcare monitoring rover with real-time vision.",
+    "content": "\n# Care Companion: Designing an AI + IoT Healthcare Rover\n\nCare Companion combines AI and IoT for home-care monitoring.\n\n## My Scope\n\nI implemented all software modules and led the team workflow.\n\n## Software Modules\n\n- Sensor data collection pipeline\n- Voice command handling\n- Motor control logic\n- Flask dashboard for caregiver monitoring\n- OpenCV + MobileNetSSD vision inference\n\n## Hardware Integration\n\n- Raspberry Pi 4 as AI core\n- Arduino for sensor communication\n- DHT11, MQ-2, pulse, and flame sensors\n\n## Measured Result\n\nReal-time human detection ran at around 60 FPS on Raspberry Pi 4 during testing.\n\n## Takeaway\n\nStable embedded software boundaries (sensing, control, dashboard, vision) are essential for reliable AI + IoT systems.\n    ",
+    "date": "2025-09-28",
+    "readTime": "5 min read",
+    "tags": [
+      "AI",
+      "IoT",
+      "OpenCV",
+      "Raspberry Pi",
+      "Flask"
+    ],
+    "featured": false
+  }
+]
