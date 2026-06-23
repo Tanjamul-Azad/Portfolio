@@ -116,9 +116,9 @@ export function CustomCursor() {
     borderColor: string;
     background: string;
   }> = {
-    default: { width: 30, height: 30, opacity: 0.4, borderColor: "rgba(245,158,11,0.5)", background: "transparent" },
+    default: { width: 30, height: 30, opacity: 0.4, borderColor: "rgba(245,158,11,0.5)", background: "rgba(0,0,0,0)" },
     hover: { width: 52, height: 52, opacity: 1, borderColor: "rgba(245,158,11,0.9)", background: "rgba(245,158,11,0.08)" },
-    text: { width: 30, height: 30, opacity: 0, borderColor: "rgba(245,158,11,0.5)", background: "transparent" },
+    text: { width: 30, height: 30, opacity: 0, borderColor: "rgba(245,158,11,0.5)", background: "rgba(0,0,0,0)" },
     click: { width: 24, height: 24, opacity: 0.7, borderColor: "rgba(249,115,22,0.9)", background: "rgba(249,115,22,0.1)" },
   };
 

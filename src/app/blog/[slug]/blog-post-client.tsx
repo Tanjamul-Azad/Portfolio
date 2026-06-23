@@ -56,13 +56,13 @@ export default function BlogPostClient({ slug }: { slug: string }) {
             transition={{ duration: 0.5 }}
             className="max-w-3xl mx-auto"
           >
-            <Link
-              href="/blog"
+            <button
+              onClick={() => router.back()}
               className="inline-flex items-center gap-2 text-neutral-500 hover:text-amber-500 transition-colors mb-8 group"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              Back to Blog
-            </Link>
+              Back
+            </button>
 
             <motion.div
               variants={staggerContainer}

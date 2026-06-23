@@ -68,7 +68,6 @@ export function PageTransition({ children }: { children: ReactNode }) {
 
   return (
     <AnimatePresence
-      mode="wait"
       initial={false}
       onExitComplete={() => setRouteTransitioning(false)}
     >
