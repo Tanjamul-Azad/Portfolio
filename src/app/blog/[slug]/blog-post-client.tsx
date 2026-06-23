@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowLeft, Calendar, Clock, Twitter, Linkedin, Copy } from "lucide-react";
@@ -15,6 +16,13 @@ import { toast } from "sonner";
 export default function BlogPostClient({ slug }: { slug: string }) {
   const router = useRouter();
   const post = getPostBySlug(slug);
+
+  // Resolve the share URL only after mount so server and client render the
+  // same markup (avoids a hydration mismatch on the share links).
+  const [shareUrl, setShareUrl] = useState("");
+  useEffect(() => {
+    setShareUrl(window.location.href);
+  }, []);
 
   if (!post) {
     return (
@@ -101,7 +109,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                   </Button>
                   <Button size="sm" variant="ghost" className="h-8 w-8 p-0" asChild>
                     <a
-                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(shareUrl)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -110,7 +118,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                   </Button>
                   <Button size="sm" variant="ghost" className="h-8 w-8 p-0" asChild>
                     <a
-                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >

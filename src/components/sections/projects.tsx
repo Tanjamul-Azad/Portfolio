@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMotionTemplate, useScroll } from "framer-motion";
-import { ArrowUpRight, ExternalLink, Github, FileText } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Github, FileText, Play } from "lucide-react";
 import { getPinnedProjects, projects as allProjects } from "@/data/projects";
 import type { Project } from "@/types";
 import Image from "next/image";
@@ -12,6 +12,11 @@ import { trackEvent } from "@/lib/telemetry";
 import { MOTION_TOKENS } from "@/lib";
 import { cn } from "@/lib/utils";
 import { useRouteTransitioning } from "@/components/providers/page-transition";
+
+/** A direct, inline-playable video file (vs. an external link like YouTube). */
+function isVideoFile(url?: string) {
+  return !!url && /\.(mp4|webm|mov|ogg)$/i.test(url);
+}
 
 /** Image thumbnail that degrades to a branded letter placeholder. */
 function ProjectThumb({
@@ -127,8 +132,19 @@ function MobileProjectCard({ project, index, isRouteTransitioning, failedImages,
       <div className="group rounded-2xl max-[360px]:rounded-xl sm:rounded-3xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 bg-white dark:bg-neutral-900 shadow-lg sm:shadow-xl">
         {/* Image area */}
         <Link href={`/projects/${project.slug}`} className="block relative focus:outline-none">
-          <div className="aspect-[16/9] max-[360px]:aspect-[2/1] sm:aspect-4/3 relative bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
-            {project.image && !failedImages[project.id] ? (
+          <div className="aspect-video max-[360px]:aspect-2/1 sm:aspect-4/3 relative bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
+            {isVideoFile(project.videoUrl) ? (
+              <video
+                src={encodeURI(project.videoUrl!)}
+                poster={project.image ? encodeURI(project.image) : undefined}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                className="absolute inset-0 z-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+            ) : project.image && !failedImages[project.id] ? (
               <>
                 <AnimatePresence>
                   {!loadedImages[project.id] && (
@@ -379,6 +395,10 @@ export function Projects() {
       ? null
       : filteredProjects.find((p) => p.id === hoveredProject) || filteredProjects[0];
 
+  // A direct video file plays inline as an animated preview; anything else
+  // (YouTube, etc.) stays a "Watch Demo" link in the hover overlay.
+  const previewVideo = isVideoFile(activeProject?.videoUrl) ? activeProject!.videoUrl : null;
+
   useEffect(() => {
     if (filteredProjects.length === 0) {
       setHoveredProject(null);
@@ -457,7 +477,7 @@ export function Projects() {
         </div>
 
         {/* Main Content - Split Layout */}
-        <div className="grid lg:grid-cols-[1fr_1.05fr] gap-8 lg:gap-12 items-start">
+        <div className="grid lg:grid-cols-[0.78fr_1.22fr] gap-8 lg:gap-10 items-start">
           {/* Left Side - Scrollable thumbnail rail (fixed height → page never grows) */}
           <div className="hidden lg:block">
             <div className="relative">
@@ -544,9 +564,21 @@ export function Projects() {
                   />
 
                   {/* Project image/preview container */}
-                  <div className="aspect-4/3 relative bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
-                    {/* Full bleed image */}
-                    {activeProject?.image && !failedImages[activeProject.id] ? (
+                  <div className="aspect-16/10 relative bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
+                    {/* Inline animated video preview takes priority when present */}
+                    {previewVideo ? (
+                      <video
+                        key={previewVideo}
+                        src={encodeURI(previewVideo)}
+                        poster={activeProject?.image ? encodeURI(activeProject.image) : undefined}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        className="absolute inset-0 z-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      />
+                    ) : activeProject?.image && !failedImages[activeProject.id] ? (
                       <>
                         <AnimatePresence>
                           {!loadedImages[activeProject.id] && (
@@ -618,6 +650,31 @@ export function Projects() {
                               </Button>
                             </MagneticWrapper>
                           )}
+                          {activeProject?.videoUrl && activeProject.videoUrl !== '#' && !isVideoFile(activeProject.videoUrl) && (
+                            <MagneticWrapper>
+                              <Button
+                                asChild
+                                size="default"
+                                variant="outline"
+                                className="rounded-full bg-black/60 hover:text-white border-white/20 text-white hover:bg-black/90 font-semibold active:scale-[0.98] transition-all duration-200 shadow-2xl backdrop-blur-xl px-6 h-12"
+                              >
+                                <a
+                                  href={activeProject.videoUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={() =>
+                                    trackEvent("projects_open_video", {
+                                      project_slug: activeProject.slug,
+                                      source: "desktop_preview",
+                                    })
+                                  }
+                                >
+                                  <Play className="w-4 h-4 mr-2" />
+                                  Watch Demo
+                                </a>
+                              </Button>
+                            </MagneticWrapper>
+                          )}
                           <MagneticWrapper>
                             <Button
                               asChild
@@ -679,22 +736,34 @@ export function Projects() {
           </div>
         </div>
 
-        {/* Mobile Project Cards */}
-        <div className="lg:hidden mt-8 sm:mt-12 space-y-4 sm:space-y-6">
-          {filteredProjects.map((project, index) => (
-            <MobileProjectCard 
-              key={project.id + '-mobile'}
-              project={project}
-              index={index}
-              isRouteTransitioning={isRouteTransitioning}
-              failedImages={failedImages}
-              loadedImages={loadedImages}
-              markImageLoaded={markImageLoaded}
-              markImageFailed={markImageFailed}
-            />
-          ))}
+        {/* Mobile Project Cards — capped, snap-scrolling pane keeps the page short */}
+        <div className="lg:hidden mt-8 sm:mt-12">
+          {filteredProjects.length > 0 ? (
+            <div className="relative">
+              {/* Edge fade masks */}
+              <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-8 bg-linear-to-b from-white to-transparent dark:from-black" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-8 bg-linear-to-t from-white to-transparent dark:from-black" />
 
-          {filteredProjects.length === 0 && (
+              <div
+                data-lenis-prevent
+                className="custom-scrollbar max-h-[82vh] snap-y snap-proximity overflow-y-auto space-y-4 sm:space-y-6 py-2 pr-1"
+              >
+                {filteredProjects.map((project, index) => (
+                  <div key={project.id + "-mobile"} className="snap-start">
+                    <MobileProjectCard
+                      project={project}
+                      index={index}
+                      isRouteTransitioning={isRouteTransitioning}
+                      failedImages={failedImages}
+                      loadedImages={loadedImages}
+                      markImageLoaded={markImageLoaded}
+                      markImageFailed={markImageFailed}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
             <div className="rounded-2xl border border-dashed border-neutral-300 p-8 text-center text-sm text-neutral-500 dark:border-neutral-700 dark:text-neutral-400">
               No projects matched your filters. Try a different keyword or tag.
             </div>

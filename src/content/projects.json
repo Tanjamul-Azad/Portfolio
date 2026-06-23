@@ -24,7 +24,7 @@
     "pinned": true,
     "overview": "Complete Legal Aid is a production-ready legal technology platform that bridges the gap between citizens seeking legal help and verified legal professionals in Bangladesh. It features role-based dashboards for Citizens, Lawyers, and Admins, with AI-powered legal assistance, secure document management, real-time booking systems, and comprehensive case tracking.",
     "problem": "Bangladesh's legal sector lacks digital infrastructure, creating barriers to justice through limited lawyer accessibility, absence of verified professional directories, no secure document sharing, and zero AI-assisted legal guidance for preliminary queries.",
-    "solution": "Built a full-stack platform with verified lawyer directory (10+ specializations), fine-tuned Gemma 3 AI model for Bangladesh Constitution, military-grade encrypted evidence vault, multi-modal consultation booking (video/phone/in-person), emergency legal reporting, and comprehensive admin oversight tools.",
+    "solution": "Built a full-stack platform with verified lawyer directory (10+ specializations), fine-tuned Gemma 3 AI model for Bangladesh Constitution, AES-256 encrypted evidence vault, multi-modal consultation booking (video/phone/in-person), emergency legal reporting, and comprehensive admin oversight tools.",
     "architecture": "React 19 + TypeScript + Vite frontend, Django 4.2 + Django REST Framework backend, MySQL database with UUID-based security, Django Channels for WebSocket real-time features, fine-tuned Gemma 3 (270M) with LoRA for authenticated users, Gemini API fallback for guests, and JWT + Google OAuth 2.0 authentication.",
     "features": [
       {
@@ -37,7 +37,7 @@
       },
       {
         "title": "Encrypted Evidence Vault",
-        "description": "Military-grade document encryption with unique keys per file, token-based sharing with expiration, access count tracking, and full audit trail for secure evidence management."
+        "description": "Per-file AES-256 document encryption with a unique key for every file, token-based sharing with expiration, access-count tracking, and a full audit trail for secure evidence management."
       },
       {
         "title": "Multi-Modal Consultation Booking",
@@ -59,11 +59,11 @@
       },
       {
         "challenge": "Balancing document security with lawyer-client sharing accessibility",
-        "learned": "Designed token-based sharing system with time expiration, revocation capabilities, and access tracking. Maintains military-grade encryption while enabling seamless controlled access."
+        "learned": "Designed a token-based sharing system with time expiration, revocation, and access tracking — keeping files encrypted end to end while access stays controlled and auditable."
       },
       {
         "challenge": "Real-time updates across multi-role platform (Citizens, Lawyers, Admins)",
-        "learned": "Leveraged Django Channels with WebSocket for instant booking notifications, case updates, and chat messages. Built robust state management to keep all roles synchronized."
+        "learned": "Used Django Channels over WebSocket for instant booking notifications, case updates, and chat messages, with state synchronization that keeps every role consistent in real time."
       }
     ],
     "results": [
@@ -79,7 +79,7 @@
       },
       {
         "metric": "Security",
-        "value": "Military-Grade",
+        "value": "AES-256",
         "description": "End-to-end encryption, UUID-based IDs, JWT auth, token-based sharing"
       },
       {
@@ -313,7 +313,7 @@
     "overview": "UniShare is a community platform built for university students — a single space for sharing academic resources, finding study groups, communicating in real time, and managing listings.",
     "problem": "University students lacked a unified digital space to share resources, collaborate, and communicate — scattered across generic platforms not designed for academic communities.",
     "solution": "Built a modern full-stack web app with real-time messaging via Socket.IO, a responsive dashboard, and smooth client-side state management through TanStack React Query.",
-    "architecture": "React 19 + Vite + TypeScript SPA with Tailwind CSS for styling, Socket.IO for WebSocket-based real-time features, and TanStack React Query for intelligent server-state caching.",
+    "architecture": "React 19 + Vite + TypeScript SPA with Tailwind CSS for styling, Socket.IO for WebSocket-based real-time features, and TanStack React Query for automatic server-state caching.",
     "features": [
       {
         "title": "Real-Time Messaging",
@@ -325,11 +325,11 @@
       },
       {
         "title": "Optimised State Management",
-        "description": "TanStack React Query handles server-state caching, background syncing, and optimistic updates."
+        "description": "TanStack React Query handles server-state caching, background syncing, and optimistic updates automatically."
       },
       {
         "title": "Fully Responsive UI",
-        "description": "Mobile-first fluid layout built with Tailwind CSS for seamless experience across devices."
+        "description": "Mobile-first fluid layout built with Tailwind CSS for a consistent experience across screen sizes."
       }
     ],
     "results": [
@@ -346,7 +346,7 @@
       {
         "metric": "State",
         "value": "TanStack Query",
-        "description": "Intelligent caching and background sync"
+        "description": "Automatic caching and background sync"
       }
     ]
   },

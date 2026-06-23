@@ -74,18 +74,16 @@ export function PageTransition({ children }: { children: ReactNode }) {
     >
       <motion.div
         key={pathname}
-        initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 10 }}
-        animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-        exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -8 }}
+        initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
         onAnimationStart={(definition) => {
           if (definition === "exit") {
             setRouteTransitioning(true);
           }
         }}
         transition={{
-          duration: prefersReducedMotion
-            ? MOTION_TOKENS.duration.quick
-            : MOTION_TOKENS.duration.medium,
+          duration: MOTION_TOKENS.duration.quick,
           ease: MOTION_TOKENS.easing.premium,
         }}
       >

@@ -21,7 +21,7 @@ export function AiChat() {
     {
       id: "welcome",
       role: "assistant",
-      content: `Assalamu Alaikum! 👋 I'm your AI assistant. Ask me anything about ${siteConfig.author.name}'s skills, projects, or research!`,
+      content: `Assalamu Alaikum. I'm ${siteConfig.author.name}'s AI assistant — happy to walk you through his projects, skills, or research. What would you like to know?`,
     },
   ]);
   const [showHint, setShowHint] = useState(true);
@@ -184,7 +184,7 @@ export function AiChat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed z-50 bottom-[calc(max(1rem,env(safe-area-inset-bottom))+4.5rem)] left-[max(0.75rem,env(safe-area-inset-left))] right-[max(0.75rem,env(safe-area-inset-right))] sm:left-auto sm:right-[max(1rem,env(safe-area-inset-right))] sm:w-[380px] sm:max-w-[calc(100vw-32px)] h-[min(70vh,34rem)] sm:h-125 max-h-[calc(100vh-7rem)] sm:max-h-[calc(100vh-150px)] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/85 dark:bg-neutral-900/85 shadow-2xl shadow-neutral-900/15 dark:shadow-black/45 backdrop-blur-xl flex flex-col overflow-hidden"
+            className="fixed z-50 bottom-[calc(max(1rem,env(safe-area-inset-bottom))+4.5rem)] left-[max(0.75rem,env(safe-area-inset-left))] right-[max(0.75rem,env(safe-area-inset-right))] sm:left-auto sm:right-[max(1rem,env(safe-area-inset-right))] sm:w-95 sm:max-w-[calc(100vw-32px)] h-[min(70vh,34rem)] sm:h-125 max-h-[calc(100vh-7rem)] sm:max-h-[calc(100vh-150px)] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/85 dark:bg-neutral-900/85 shadow-2xl shadow-neutral-900/15 dark:shadow-black/45 backdrop-blur-xl flex flex-col overflow-hidden"
           >
             {/* Header */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm">
@@ -213,7 +213,7 @@ export function AiChat() {
                   }`}
                 >
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                       message.role === "user"
                         ? "bg-amber-500 text-white"
                         : "bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300"

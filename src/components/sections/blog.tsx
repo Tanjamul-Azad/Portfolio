@@ -53,8 +53,16 @@ export function Blog() {
           </motion.div>
         </motion.div>
 
-        {/* Blog Grid */}
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
+        {/* Blog Grid — capped scroll pane on mobile so the page stays short */}
+        <div className="relative">
+          {/* Edge fade masks (mobile only) */}
+          <div className="md:hidden pointer-events-none absolute inset-x-0 top-0 z-20 h-8 bg-linear-to-b from-white to-transparent dark:from-black" />
+          <div className="md:hidden pointer-events-none absolute inset-x-0 bottom-0 z-20 h-8 bg-linear-to-t from-white to-transparent dark:from-black" />
+
+          <div
+            data-lenis-prevent
+            className="grid md:grid-cols-2 gap-4 sm:gap-6 max-md:custom-scrollbar max-md:max-h-[80vh] max-md:snap-y max-md:snap-proximity max-md:overflow-y-auto max-md:py-2 max-md:pr-1"
+          >
           {recentPosts.map((post, index) => (
             <motion.article
               key={post.slug}
@@ -63,6 +71,7 @@ export function Blog() {
               whileInView={isRouteTransitioning ? undefined : "visible"}
               viewport={{ once: true }}
               transition={{ delay: index * 0.08 }}
+              className="max-md:snap-start"
             >
               <Link
                 href={`/blog/${post.slug}`}
@@ -128,6 +137,7 @@ export function Blog() {
               </Link>
             </motion.article>
           ))}
+          </div>
         </div>
       </div>
     </section>

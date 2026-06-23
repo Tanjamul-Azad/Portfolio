@@ -198,7 +198,7 @@ export default function ProjectsPage() {
               variants={fadeInUp}
               className="mb-8 text-base sm:text-lg md:text-xl leading-relaxed text-neutral-600 dark:text-neutral-300"
             >
-              Browse every shipped build in a scalable gallery view. Open any card for the case study, then use compact actions below for live preview, source code, and demo video.
+              Every project I&apos;ve shipped, in one place. Open any card for the full case study, or jump straight to the live preview, source code, or demo video.
             </motion.p>
 
             <motion.div variants={fadeInUp} className="flex flex-wrap items-center gap-2">
@@ -280,7 +280,7 @@ export default function ProjectsPage() {
                     </span>
                   )}
 
-                  <Link href={`/projects/${project.slug}`} className="block aspect-[16/9] max-[360px]:aspect-[2/1] sm:aspect-16/10 relative overflow-hidden">
+                  <Link href={`/projects/${project.slug}`} className="block aspect-video max-[360px]:aspect-2/1 sm:aspect-16/10 relative overflow-hidden">
                     <ProjectThumbnail project={project} />
 
                     <div className="absolute inset-0 bg-linear-to-t from-black/55 via-black/10 to-transparent opacity-75 transition-opacity group-hover:opacity-90" />

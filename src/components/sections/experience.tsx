@@ -14,15 +14,17 @@ import type { Experience } from "@/types";
 import { MOTION_TOKENS } from "@/lib";
 import { useRouteTransitioning } from "@/components/providers/page-transition";
 
-function getYearsFromPeriod(period: string) {
+function getPeriodRange(period: string): { start: number; end: number } | null {
   const matches = period.match(/\d{4}/g);
-  if (!matches || matches.length === 0) return 0;
+  if (!matches || matches.length === 0) return null;
 
   const start = Number(matches[0]);
-  const end = /present/i.test(period) ? new Date().getFullYear() : Number(matches[matches.length - 1]);
+  const end = /present|now|ongoing/i.test(period)
+    ? new Date().getFullYear()
+    : Number(matches[matches.length - 1]);
 
-  if (Number.isNaN(start) || Number.isNaN(end) || end < start) return 0;
-  return end - start + 1;
+  if (Number.isNaN(start) || Number.isNaN(end) || end < start) return null;
+  return { start, end };
 }
 
 function ExperienceCard({
@@ -136,10 +138,19 @@ export function Experience() {
   const snapshotStats = useMemo(() => {
     const roleCount = experiences.length;
     const uniqueTechnologies = new Set(experiences.flatMap((exp) => exp.technologies ?? [])).size;
-    const totalYears = experiences.reduce((sum, exp) => sum + getYearsFromPeriod(exp.period), 0);
+
+    // Count the calendar span actually worked (earliest start → latest end),
+    // so overlapping concurrent projects are not double-counted.
+    const ranges = experiences
+      .map((exp) => getPeriodRange(exp.period))
+      .filter((range): range is { start: number; end: number } => range !== null);
+
+    const totalYears = ranges.length
+      ? Math.max(...ranges.map((r) => r.end)) - Math.min(...ranges.map((r) => r.start)) + 1
+      : 0;
 
     return [
-      { label: "Years", value: `${Math.max(1, totalYears)}+` },
+      { label: "Years Active", value: `${Math.max(1, totalYears)}` },
       { label: "Roles", value: `${roleCount}` },
       { label: "Core Skills", value: `${uniqueTechnologies}+` },
     ];
@@ -172,7 +183,7 @@ export function Experience() {
             viewport={{ once: true }}
             className="text-xs text-neutral-500 dark:text-neutral-400 tracking-[0.3em] uppercase mb-4 block"
           >
-            Project Work
+            Experience
           </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -191,8 +202,8 @@ export function Experience() {
             transition={{ delay: MOTION_TOKENS.duration.quick, duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
             className="mt-5 text-neutral-600 dark:text-neutral-400 leading-relaxed"
           >
-            CV-aligned project timeline covering production full-stack delivery, NLP systems,
-            and AI + IoT implementations.
+            A timeline of the work that shaped how I build — production full-stack delivery,
+            NLP systems, and AI + IoT, from first commit to shipped product.
           </motion.p>
 
           <motion.div

@@ -104,11 +104,18 @@ export default function ProjectsEditor() {
                 hint="Upload or paste a URL. Leave blank for a lettered placeholder."
               />
               <TagsField label="Tech tags" value={p.tags} onChange={(v) => update({ tags: v })} />
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <TextField label="Live URL" value={p.liveUrl ?? ""} onChange={(v) => update({ liveUrl: v })} />
                 <TextField label="Source URL" value={p.sourceUrl ?? ""} onChange={(v) => update({ sourceUrl: v })} />
-                <TextField label="Video URL" value={p.videoUrl ?? ""} onChange={(v) => update({ videoUrl: v })} />
               </div>
+              <ImageField
+                label="Preview video"
+                folder="projects"
+                value={p.videoUrl ?? ""}
+                onChange={(v) => update({ videoUrl: v })}
+                accept="video/mp4,video/webm"
+                hint="Upload an .mp4/.webm (max 50MB) and it autoplays as the project preview. Or paste an external link (YouTube, etc.) to show a “Watch Demo” button instead. Leave blank to use the cover image."
+              />
               <div className="flex flex-wrap gap-6">
                 <CheckboxField
                   label="Pinned on homepage"

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, ExternalLink, Award, Medal, Trophy, Star } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Award, Medal, Trophy, Star, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { achievements } from "@/data";
 import type { Achievement } from "@/types";
@@ -246,12 +246,20 @@ function AchievementDialog({
   );
 }
 
+const VISIBLE_LIMIT = 6;
+
 export function Achievements() {
   const [filter, setFilter] = useState<"all" | Achievement["type"]>("all");
   const [selected, setSelected] = useState<Achievement | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
   const filteredAchievements =
     filter === "all" ? achievements : achievements.filter((a) => a.type === filter);
+
+  const visibleAchievements = showAll
+    ? filteredAchievements
+    : filteredAchievements.slice(0, VISIBLE_LIMIT);
+  const hiddenCount = filteredAchievements.length - visibleAchievements.length;
 
   const filters: { label: string; value: "all" | Achievement["type"]; icon: typeof Award }[] = [
     { label: "All", value: "all", icon: Medal },
@@ -288,7 +296,7 @@ export function Achievements() {
             transition={{ delay: 0.1 }}
             className="text-neutral-500 dark:text-neutral-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed"
           >
-            CV-verified milestones from competitions, academics, and project-based recognition.
+            Milestones from competitions, academics, and the projects I&apos;ve shipped.
             Tap any card to view the certificate and full details.
           </motion.p>
         </div>
@@ -305,7 +313,10 @@ export function Achievements() {
             return (
               <button
                 key={f.value}
-                onClick={() => setFilter(f.value)}
+                onClick={() => {
+                  setFilter(f.value);
+                  setShowAll(false);
+                }}
                 className={`flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${
                   filter === f.value
                     ? "bg-amber-500 text-black"
@@ -322,7 +333,7 @@ export function Achievements() {
         {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence mode="popLayout">
-            {filteredAchievements.map((achievement, index) => (
+            {visibleAchievements.map((achievement, index) => (
               <AchievementCard
                 key={achievement.id}
                 achievement={achievement}
@@ -332,6 +343,27 @@ export function Achievements() {
             ))}
           </AnimatePresence>
         </div>
+
+        {/* Show more / less — keeps the section compact as the list grows */}
+        {(hiddenCount > 0 || showAll) && filteredAchievements.length > VISIBLE_LIMIT && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="mt-10 flex justify-center"
+          >
+            <button
+              type="button"
+              onClick={() => setShowAll((prev) => !prev)}
+              className="group inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white/70 px-6 py-2.5 text-sm font-medium text-neutral-700 backdrop-blur-sm transition-all duration-300 hover:border-amber-500/40 hover:text-amber-600 dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-neutral-300 dark:hover:text-amber-300"
+            >
+              {showAll ? "Show less" : `Show ${hiddenCount} more`}
+              <ChevronDown
+                className={`h-4 w-4 transition-transform duration-300 ${showAll ? "rotate-180" : ""}`}
+              />
+            </button>
+          </motion.div>
+        )}
 
         {/* Stats Summary */}
         <motion.div

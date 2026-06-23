@@ -18,6 +18,12 @@ import {
 } from "@/components/sections";
 import { MOTION_TOKENS } from "@/lib";
 
+// Persists across in-app (client-side) navigations but resets on a real page
+// load, so the preloader plays once per visit — not every time you return to
+// the homepage from /blog or /projects. Kept at module scope and read lazily
+// so server and first client render agree (no hydration mismatch).
+const preloaderState = { shown: false };
+
 function SectionStage({ children }: { children: ReactNode }) {
   return (
     <motion.div
@@ -33,17 +39,19 @@ function SectionStage({ children }: { children: ReactNode }) {
 }
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => !preloaderState.shown);
 
-  // Skip preloader if already loaded in this session
+  // Skip the preloader if it already played this visit (sessionStorage covers
+  // hard refreshes; the module flag covers in-app navigation back here).
   useEffect(() => {
-    const hasLoaded = sessionStorage.getItem("portfolio_loaded");
-    if (hasLoaded) {
+    if (preloaderState.shown || sessionStorage.getItem("portfolio_loaded")) {
+      preloaderState.shown = true;
       setIsLoading(false);
     }
   }, []);
 
   const handleComplete = () => {
+    preloaderState.shown = true;
     setIsLoading(false);
     sessionStorage.setItem("portfolio_loaded", "true");
   };

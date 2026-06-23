@@ -110,7 +110,7 @@ export function Contact() {
                 </div>
                 <div>
                   <div className="text-sm font-medium text-neutral-900 dark:text-white">Need a quick overview?</div>
-                  <div className="text-xs text-neutral-500 dark:text-neutral-400">Use the floating AI assistant on bottom-right.</div>
+                  <div className="text-xs text-neutral-500 dark:text-neutral-400">Ask the AI assistant in the bottom-right corner.</div>
                 </div>
               </div>
 

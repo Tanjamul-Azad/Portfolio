@@ -156,7 +156,7 @@ export function Hero() {
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-10 sm:gap-12 items-center">
           <motion.div
             style={{ opacity: heroOpacity, y: heroY }}
-            className="max-w-150 order-2 lg:order-1"
+            className="max-w-150 order-1"
             variants={HERO_SEQUENCE.container}
             initial="hidden"
             animate="visible"
@@ -235,10 +235,10 @@ export function Hero() {
             variants={HERO_SEQUENCE.media}
             initial="hidden"
             animate="visible"
-            className="block order-1 lg:order-2 justify-self-center lg:justify-self-end"
+            className="block order-2 justify-self-center lg:justify-self-end"
           >
             <motion.div
-              className="relative w-56 h-72 sm:w-72 sm:h-96 md:w-96 md:h-[34rem] lg:w-[34rem] lg:h-[44rem] xl:w-[38rem] xl:h-[50rem] mx-auto lg:ml-auto lg:-mr-12 xl:-mr-24"
+              className="relative w-56 h-72 sm:w-72 sm:h-96 md:w-96 md:h-136 lg:w-136 lg:h-176 xl:w-152 xl:h-200 mx-auto lg:ml-auto lg:-mr-12 xl:-mr-24"
             >
               <div className="relative h-full w-full overflow-hidden rounded-2xl bg-neutral-200 dark:bg-neutral-900 shadow-xl dark:shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transition-colors duration-300">
                 {/\.(mp4|webm)$/i.test(heroContent.profileVideo) ? (

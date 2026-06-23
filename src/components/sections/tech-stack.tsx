@@ -179,7 +179,7 @@ export function TechStack() {
           </h3>
 
           <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-            Modern technologies for building fast, scalable applications.
+            The languages, frameworks, and tools I reach for across frontend, backend, AI, and hardware work.
           </p>
         </motion.div>
 
@@ -224,7 +224,7 @@ export function TechStack() {
             </div>
           </div>
 
-          <div className="relative z-10 min-h-[280px] sm:min-h-[340px] overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="relative z-10 min-h-70 sm:min-h-85 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeCategory}
@@ -249,10 +249,10 @@ export function TechStack() {
           transition={{ duration: 0.65, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           className="group relative mt-10 overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800/80 bg-white/50 dark:bg-neutral-950/70 py-4 shadow-sm"
         >
-          <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-24 bg-gradient-to-r from-neutral-100 dark:from-black via-neutral-100/90 dark:via-black/90 to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-24 bg-gradient-to-l from-neutral-100 dark:from-black via-neutral-100/90 dark:via-black/90 to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-24 bg-linear-to-r from-neutral-100 dark:from-black via-neutral-100/90 dark:via-black/90 to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-24 bg-linear-to-l from-neutral-100 dark:from-black via-neutral-100/90 dark:via-black/90 to-transparent" />
 
-          <div className="animate-marquee flex w-max min-w-full items-center gap-4 group-hover:[animation-play-state:paused]">
+          <div className="animate-marquee flex w-max min-w-full items-center gap-4 group-hover:paused">
             {marqueeTech.map((tech, index) => {
               const isWhite = tech.color.toLowerCase() === "#ffffff";
               

@@ -35,7 +35,7 @@ export function Testimonials() {
           <motion.h2
             className="text-3xl sm:text-4xl md:text-6xl font-bold font-heading mb-6 text-neutral-900 dark:text-white tracking-tight"
           >
-            References & Validation
+            References & Recommendations
           </motion.h2>
 
           <motion.p

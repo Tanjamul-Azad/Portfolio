@@ -2,7 +2,7 @@
   {
     "category": "building",
     "items": [
-      "Complete Legal Aid — Currently implementing proper security using BlockChain",
+      "Complete Legal Aid — adding blockchain-backed security for tamper-proof evidence integrity",
       "SkillEx — peer skill-exchange platform (React 19 + Spring Boot 3, AOOP project)",
       "UniShare — real-time university community platform (React 19 + Socket.IO)"
     ]
