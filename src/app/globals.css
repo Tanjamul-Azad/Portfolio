@@ -68,6 +68,27 @@ html.lenis body {
   html {
     scroll-behavior: auto;
     scroll-padding-top: 80px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(120, 120, 120, 0.3) transparent;
+  }
+
+  html::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  html::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  html::-webkit-scrollbar-thumb {
+    background-color: rgba(120, 120, 120, 0.28);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 9999px;
+  }
+
+  html::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(245, 158, 11, 0.7);
   }
 
   /* Keep scrolling natural and smooth across sections */
