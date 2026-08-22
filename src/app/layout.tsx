@@ -103,6 +103,15 @@ export const metadata: Metadata = {
     apple: "/icon.svg",
   },
   manifest: "/site.webmanifest",
+  // Search Console ownership proof. Set GOOGLE_SITE_VERIFICATION in the Vercel
+  // env vars (and BING_SITE_VERIFICATION if you register there too) — Next drops
+  // the tag entirely when the value is undefined, so unset is safe.
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+    other: process.env.BING_SITE_VERIFICATION
+      ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION }
+      : {},
+  },
   alternates: {
     canonical: siteConfig.url,
     types: { "application/rss+xml": `${siteConfig.url}/rss.xml` },
