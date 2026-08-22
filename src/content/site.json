@@ -2,7 +2,7 @@
   "name": "Tanzamul",
   "title": "Md. Tanzamul Azad | Full-Stack Developer, ML Researcher & CSE Undergrad",
   "description": "CSE undergraduate (Data Science major) at United International University, building ML-driven applications, AI + IoT systems, and production-grade full-stack platforms.",
-  "url": "https://tanjamul.dev",
+  "url": "https://tanjamul-azad.vercel.app",
   "ogImage": "https://i.postimg.cc/8JZRwxxV/og-image.jpg",
   "links": {
     "github": "https://github.com/Tanjamul-Azad",
@@ -19,6 +19,16 @@
     "name": "Md. Tanzamul Azad",
     "role": "Full-Stack Developer | ML Researcher | CSE Undergrad (Data Science)",
     "location": "Dhaka, Bangladesh",
-    "twitterHandle": "@tanjamul"
+    "twitterHandle": "@tanjamul",
+    "alternateNames": [
+      "Tanjamul Azad",
+      "Tanzamul Azad",
+      "Md. Tanjamul Azad",
+      "Md. Tanzamul Azad",
+      "Tanjamul",
+      "Tanzamul",
+      "Tonmoy",
+      "Tanjamul Tonmoy"
+    ]
   }
 }

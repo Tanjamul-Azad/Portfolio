@@ -126,6 +126,8 @@ export interface SiteConfig {
   };
   author: {
     name: string;
+    /** Other spellings and short forms people search for, fed to SEO metadata. */
+    alternateNames?: string[];
     role: string;
     location: string;
     twitterHandle: string;

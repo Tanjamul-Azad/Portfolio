@@ -163,10 +163,20 @@ export async function POST(request: NextRequest) {
     // ── PROVIDER SEQUENCING ────────────────────────────────────────────────
     const providers = [
       {
+        // llama-3.3-70b-versatile was retired from Groq and returned 404
+        // model_not_found, which silently took the whole assistant down.
+        // Verified against the live model list on this account.
         name: "Groq",
         url: "https://api.groq.com/openai/v1/chat/completions",
         key: process.env.GROQ_API_KEY,
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
+        type: "openai",
+      },
+      {
+        name: "Groq (small)",
+        url: "https://api.groq.com/openai/v1/chat/completions",
+        key: process.env.GROQ_API_KEY,
+        model: "openai/gpt-oss-20b",
         type: "openai",
       },
       {
@@ -216,7 +226,7 @@ export async function POST(request: NextRequest) {
             body: JSON.stringify({
               model: provider.model,
               messages: [{ role: "system", content: context }, ...historyMessages, { role: "user", content: message }],
-              max_tokens: 400,
+              max_tokens: 800,
               temperature: 0.5,
             }),
           });
@@ -266,6 +276,9 @@ export async function POST(request: NextRequest) {
 
         // SANITIZATION
         const response = rawResponse
+          // Reasoning models sometimes emit their scratchpad inline.
+          .replace(/<think>[\s\S]*?<\/think>/gi, "")
+          .replace(/<think>[\s\S]*$/i, "")
           .replace(/^(Assistant:|AI:|Bot:)\s*/i, "")
           .replace(/\*\*(.*?)\*\*/g, "$1")
           .replace(/\*(.*?)\*/g, "$1")

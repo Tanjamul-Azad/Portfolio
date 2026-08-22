@@ -44,17 +44,21 @@ export const metadata: Metadata = {
   title: siteConfig.title,
   description: siteConfig.description,
   keywords: [
-    "Frontend Developer",
+    // Name variants first — a personal portfolio's highest-value queries are
+    // people searching the name, and this one is spelled several ways.
+    ...(siteConfig.author.alternateNames ?? []),
+    siteConfig.author.name,
+    `${siteConfig.author.name} portfolio`,
+    `${siteConfig.author.name} developer`,
+    "Full-Stack Developer Bangladesh",
+    "ML Researcher Dhaka",
+    "United International University CSE",
     "React Developer",
     "Next.js",
     "TypeScript",
-    "Web Developer",
-    "UI/UX",
     "Portfolio",
-    siteConfig.name,
   ],
   authors: [{ name: siteConfig.author.name, url: siteConfig.url }],
-  alternates: { canonical: siteConfig.url },
   creator: siteConfig.name,
   robots: {
     index: true,
@@ -99,6 +103,10 @@ export const metadata: Metadata = {
     apple: "/icon.svg",
   },
   manifest: "/site.webmanifest",
+  alternates: {
+    canonical: siteConfig.url,
+    types: { "application/rss+xml": `${siteConfig.url}/rss.xml` },
+  },
 };
 
 export default function RootLayout({
@@ -119,6 +127,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Person",
               name: siteConfig.author.name,
+              alternateName: siteConfig.author.alternateNames,
               url: siteConfig.url,
               image: siteConfig.ogImage,
               jobTitle: siteConfig.author.role,
@@ -133,6 +142,14 @@ export default function RootLayout({
                 siteConfig.links.twitter,
                 siteConfig.links.facebook,
               ],
+              alumniOf: {
+                "@type": "CollegeOrUniversity",
+                name: "United International University",
+              },
+              worksFor: {
+                "@type": "Organization",
+                name: "Complete Legal Aid",
+              },
               knowsAbout: [
                 "Full-Stack Development",
                 "Machine Learning",
