@@ -103,11 +103,14 @@ export const metadata: Metadata = {
     apple: "/icon.svg",
   },
   manifest: "/site.webmanifest",
-  // Search Console ownership proof. Set GOOGLE_SITE_VERIFICATION in the Vercel
-  // env vars (and BING_SITE_VERIFICATION if you register there too) — Next drops
-  // the tag entirely when the value is undefined, so unset is safe.
+  // Search Console ownership proof. Not a secret — Google reads it from the
+  // public page source — so it lives in code rather than an env var, with the
+  // env var kept as an override. public/google42b74763a48b3e1f.html is the
+  // file-based proof for the same property, as a fallback.
   verification: {
-    google: process.env.GOOGLE_SITE_VERIFICATION,
+    google:
+      process.env.GOOGLE_SITE_VERIFICATION ??
+      "TQh1YA_IZ3ebEUsrODyJ1zdHrlB2G6qjzCsR4f1hrbk",
     other: process.env.BING_SITE_VERIFICATION
       ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION }
       : {},
