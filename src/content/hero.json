@@ -29,5 +29,6 @@
       "href": "#contact"
     }
   ],
-  "profileVideo": "/PROFILE VIDEO/profile vid.mp4"
+  "profileVideo": "/PROFILE VIDEO/profile vid.mp4",
+  "profilePoster": "/images/profile.jpg"
 }

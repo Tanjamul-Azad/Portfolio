@@ -12,6 +12,10 @@ export function Blog() {
   const recentPosts = blogPosts.slice(0, 4);
   const { isRouteTransitioning } = useRouteTransitioning();
 
+  // Nothing to show is better handled by hiding the section than by rendering a
+  // heading over an empty grid.
+  if (recentPosts.length === 0) return null;
+
   return (
     <section id="blog" className="scroll-section py-20 md:py-28 relative overflow-hidden">
       <div className="container px-4 sm:px-6 mx-auto">
@@ -45,7 +49,7 @@ export function Blog() {
           >
             <Link
               href="/blog"
-              className="group inline-flex items-center gap-2 text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-medium transition-colors"
+              className="group inline-flex items-center gap-2 text-accent hover:text-accent font-medium transition-colors"
             >
               View All Posts
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -53,16 +57,11 @@ export function Blog() {
           </motion.div>
         </motion.div>
 
-        {/* Blog Grid — capped scroll pane on mobile so the page stays short */}
+        {/* Blog grid.
+            Previously a `max-h-[80vh] overflow-y-auto` pane on mobile, which
+            trapped touch scrolling mid-page. Four cards flow fine in the page. */}
         <div className="relative">
-          {/* Edge fade masks (mobile only) */}
-          <div className="md:hidden pointer-events-none absolute inset-x-0 top-0 z-20 h-8 bg-linear-to-b from-white to-transparent dark:from-black" />
-          <div className="md:hidden pointer-events-none absolute inset-x-0 bottom-0 z-20 h-8 bg-linear-to-t from-white to-transparent dark:from-black" />
-
-          <div
-            data-lenis-prevent
-            className="grid md:grid-cols-2 gap-4 sm:gap-6 max-md:custom-scrollbar max-md:max-h-[80vh] max-md:snap-y max-md:snap-proximity max-md:overflow-y-auto max-md:py-2 max-md:pr-1"
-          >
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
           {recentPosts.map((post, index) => (
             <motion.article
               key={post.slug}
@@ -71,14 +70,13 @@ export function Blog() {
               whileInView={isRouteTransitioning ? undefined : "visible"}
               viewport={{ once: true }}
               transition={{ delay: index * 0.08 }}
-              className="max-md:snap-start"
             >
               <Link
                 href={`/blog/${post.slug}`}
                 className={`group block h-full p-4 sm:p-6 rounded-2xl border transition-all duration-300 ${
                   post.featured
                     ? "bg-neutral-50 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
-                    : "glass hover:border-neutral-300 dark:hover:border-neutral-700"
+                    : "glass border-neutral-200/70 dark:border-neutral-800/70 hover:border-neutral-300 dark:hover:border-neutral-700"
                 }`}
               >
                 {/* Tags */}
@@ -89,7 +87,7 @@ export function Blog() {
                       variant="secondary"
                       className={`text-xs ${
                         post.featured
-                          ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                          ? "bg-amber-500/10 text-accent border-amber-500/20"
                           : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400"
                       }`}
                     >
@@ -104,7 +102,7 @@ export function Blog() {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3 group-hover:text-accent transition-colors">
                   {post.title}
                 </h3>
 
@@ -129,8 +127,9 @@ export function Blog() {
                   </span>
                 </div>
 
-                {/* Read more indicator */}
-                <div className="mt-4 pt-4 border-t border-neutral-200/50 dark:border-neutral-800/50 flex items-center gap-2 text-sm font-medium text-amber-600 dark:text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                {/* Read-more affordance. Kept visible on touch — a pointer-only
+                    reveal left an empty bordered strip on phones. */}
+                <div className="mt-4 pt-4 border-t border-neutral-200/50 dark:border-neutral-800/50 flex items-center gap-2 text-sm font-medium text-accent transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-visible:opacity-100">
                   Read Article
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>

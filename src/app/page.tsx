@@ -58,60 +58,71 @@ export default function Home() {
 
   return (
     <main className="scroll-container relative min-h-screen overflow-x-hidden">
-      <AnimatePresence mode="wait" initial={false}>
-        {isLoading ? (
+      {/* The preloader is an overlay, not a gate.
+          It used to be the other branch of an `AnimatePresence mode="wait"`, which
+          meant the server-rendered HTML contained the loading screen and nothing
+          else — bad for crawlers and link-preview bots that don't run JS, and a
+          dead page for anyone whose exit animation never completed (a background
+          tab starves requestAnimationFrame, so it could hang indefinitely). The
+          content now always renders; the overlay just fades away on top of it. */}
+      <AnimatePresence initial={false}>
+        {isLoading && (
           <motion.div
             key="preloader"
+            className="fixed inset-0 z-100"
             initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            // pointerEvents flips the instant the exit starts, so a stalled fade
+            // (hidden tab, starved rAF) can never leave a full-screen overlay
+            // swallowing clicks on the content underneath.
+            exit={{ opacity: 0, pointerEvents: "none" }}
             transition={{ duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
           >
             <Preloader onComplete={handleComplete} />
           </motion.div>
-        ) : (
-          <motion.div
-            key="content"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: MOTION_TOKENS.duration.slow, ease: MOTION_TOKENS.easing.premium }}
-            className="relative z-10"
-          >
-            <Navbar />
-            <Hero />
-            <SectionStage>
-              <About />
-            </SectionStage>
-            <SectionStage>
-              <Now />
-            </SectionStage>
-            <SectionStage>
-              <TechStack />
-            </SectionStage>
-            <SectionStage>
-              <Projects />
-            </SectionStage>
-            <SectionStage>
-              <Experience />
-            </SectionStage>
-            <SectionStage>
-              <Achievements />
-            </SectionStage>
-            <SectionStage>
-              <Testimonials />
-            </SectionStage>
-            <SectionStage>
-              <Blog />
-            </SectionStage>
-            <SectionStage>
-              <Contact />
-            </SectionStage>
-            <SectionStage>
-              <Footer />
-            </SectionStage>
-          </motion.div>
         )}
       </AnimatePresence>
+
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: MOTION_TOKENS.duration.slow,
+          ease: MOTION_TOKENS.easing.premium,
+        }}
+        className="relative z-10"
+      >
+        <Navbar />
+        <Hero />
+        <SectionStage>
+          <About />
+        </SectionStage>
+        <SectionStage>
+          <Now />
+        </SectionStage>
+        <SectionStage>
+          <TechStack />
+        </SectionStage>
+        <SectionStage>
+          <Projects />
+        </SectionStage>
+        <SectionStage>
+          <Experience />
+        </SectionStage>
+        <SectionStage>
+          <Achievements />
+        </SectionStage>
+        <SectionStage>
+          <Testimonials />
+        </SectionStage>
+        <SectionStage>
+          <Blog />
+        </SectionStage>
+        <SectionStage>
+          <Contact />
+        </SectionStage>
+        <Footer />
+      </motion.div>
     </main>
   );
 }

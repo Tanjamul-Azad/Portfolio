@@ -6,6 +6,7 @@ import {
   motion,
 } from "framer-motion";
 import { CodeFlowPattern } from "@/components/ui/code-flow-pattern";
+import { cn } from "@/lib/utils";
 
 type Tech = {
   name: string;
@@ -23,7 +24,7 @@ const categories: Record<Category, Tech[]> = {
     { name: "TypeScript", slug: "typescript", color: "#3178C6" },
     { name: "JavaScript", slug: "javascript", color: "#F7DF1E" },
     { name: "HTML", slug: "html5", color: "#E34F26" },
-    { name: "CSS", slug: "css3", color: "#1572B6" },
+    { name: "CSS", slug: "css", color: "#1572B6" },
     { name: "Tailwind CSS", slug: "tailwindcss", color: "#06B6D4" },
     { name: "Vite", slug: "vite", color: "#646CFF" },
   ],
@@ -75,7 +76,6 @@ const categories: Record<Category, Tech[]> = {
 
 function getIconUrl(slug: string, hex: string) {
   if (slug === "java") return "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg";
-  if (slug === "adobe") return "https://cdn.simpleicons.org/adobe/FF0000";
   if (slug === "jwt") return `https://cdn.simpleicons.org/jsonwebtokens/${hex.replace("#", "")}`;
   if (slug === "mobilenetssd") return `https://cdn.simpleicons.org/tensorflow/${hex.replace("#", "")}`;
   if (slug === "dht11") return `https://cdn.simpleicons.org/arduino/${hex.replace("#", "")}`;
@@ -83,6 +83,55 @@ function getIconUrl(slug: string, hex: string) {
   if (slug === "pulsesensor") return `https://cdn.simpleicons.org/raspberrypi/${hex.replace("#", "")}`;
   if (slug === "flamesensor") return `https://cdn.simpleicons.org/raspberrypi/${hex.replace("#", "")}`;
   return `https://cdn.simpleicons.org/${slug}/${hex.replace("#", "")}`;
+}
+
+/**
+ * Remote brand icon with a monogram fallback.
+ *
+ * The icons come from a third-party CDN whose slugs get renamed and removed
+ * (simple-icons dropped the Adobe marks and renamed css3 → css, both of which
+ * were rendering as broken images here). Rather than trust the slug list to stay
+ * correct forever, a failed load degrades to the tech's initial on a tinted chip.
+ */
+function TechIcon({
+  tech,
+  size,
+  className,
+}: {
+  tech: Tech;
+  size: number;
+  className?: string;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return (
+      <span
+        aria-hidden="true"
+        className={cn(
+          "flex items-center justify-center rounded font-bold leading-none",
+          className
+        )}
+        style={{ color: tech.color, fontSize: size * 0.62 }}
+      >
+        {tech.name.charAt(0).toUpperCase()}
+      </span>
+    );
+  }
+
+  return (
+    <img
+      src={getIconUrl(tech.slug, tech.color)}
+      alt={tech.name}
+      width={size}
+      height={size}
+      loading="lazy"
+      decoding="async"
+      onError={() => setFailed(true)}
+      className={cn("object-contain", className)}
+      draggable={false}
+    />
+  );
 }
 
 function TechCard({ tech, index }: { tech: Tech; index: number }) {
@@ -119,15 +168,10 @@ function TechCard({ tech, index }: { tech: Tech; index: number }) {
         }}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
       >
-        <img
-          src={getIconUrl(tech.slug, tech.color)}
-          alt={tech.name}
-          width={48}
-          height={48}
-          className={`h-8 w-8 object-contain transition-transform duration-300 group-hover:scale-110 sm:h-10 sm:w-10 ${
-            isWhite ? "invert-0" : ""
-          }`}
-          draggable={false}
+        <TechIcon
+          tech={tech}
+          size={48}
+          className="h-8 w-8 transition-transform duration-300 group-hover:scale-110 sm:h-10 sm:w-10"
         />
       </motion.div>
 
@@ -156,7 +200,7 @@ export function TechStack() {
       className="py-20 md:py-24 relative border-y border-neutral-200 dark:border-neutral-800/50 bg-neutral-100/50 dark:bg-neutral-950/50 overflow-hidden"
     >
       <CodeFlowPattern
-        className="opacity-25 dark:opacity-20 text-amber-500 dark:text-amber-400"
+        className="opacity-25 dark:opacity-20 text-accent"
         numElements={35}
         flowSpeed={12}
         maxOpacity={0.2}
@@ -269,14 +313,7 @@ export function TechStack() {
                     }`}
                     style={isWhite ? undefined : { boxShadow: `0 0 0 1px ${tech.color}45 inset` }}
                   >
-                    <img
-                      src={getIconUrl(tech.slug, tech.color)}
-                      alt={tech.name}
-                      width={20}
-                      height={20}
-                      className="h-4 w-4 object-contain"
-                      draggable={false}
-                    />
+                    <TechIcon tech={tech} size={20} className="h-4 w-4" />
                   </span>
                   <span className="text-xs font-medium tracking-wide text-neutral-600 dark:text-neutral-400">
                     {tech.name}

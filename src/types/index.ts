@@ -138,6 +138,9 @@ export interface HeroContent {
   typewriter: string;
   actions: { label: string; href: string }[];
   profileVideo: string;
+  /** Optional still shown before the video decodes, and in place of it when the
+   *  visitor has asked for reduced motion. */
+  profilePoster?: string;
 }
 
 export interface AboutContent {

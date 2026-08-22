@@ -37,6 +37,9 @@ export function CustomCursor() {
     if (typeof window === "undefined") return;
     if (!window.matchMedia("(pointer: fine)").matches) return;
     if (window.innerWidth < 768) return;
+    // A spring-trailing cursor is exactly the kind of motion this setting is for,
+    // and replacing the system cursor is worse than useless if it lags.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const applyVariant = (next: CursorVariant) => {
       if (variantRef.current !== next) {

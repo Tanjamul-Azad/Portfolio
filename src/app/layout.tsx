@@ -53,7 +53,8 @@ export const metadata: Metadata = {
     "Portfolio",
     siteConfig.name,
   ],
-  authors: [{ name: siteConfig.name, url: siteConfig.url }],
+  authors: [{ name: siteConfig.author.name, url: siteConfig.url }],
+  alternates: { canonical: siteConfig.url },
   creator: siteConfig.name,
   robots: {
     index: true,
@@ -110,6 +111,39 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${outfit.variable} font-sans antialiased`}
       >
+        <script
+          type="application/ld+json"
+          // Static, developer-authored JSON built from siteConfig — no user input.
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name: siteConfig.author.name,
+              url: siteConfig.url,
+              image: siteConfig.ogImage,
+              jobTitle: siteConfig.author.role,
+              email: `mailto:${siteConfig.contact.email}`,
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: siteConfig.author.location,
+              },
+              sameAs: [
+                siteConfig.links.github,
+                siteConfig.links.linkedin,
+                siteConfig.links.twitter,
+                siteConfig.links.facebook,
+              ],
+              knowsAbout: [
+                "Full-Stack Development",
+                "Machine Learning",
+                "React",
+                "Next.js",
+                "TypeScript",
+                "Data Science",
+              ],
+            }),
+          }}
+        />
         <a href="#main-content" className="skip-link">Skip to main content</a>
         <ThemeProvider
           attribute="class"

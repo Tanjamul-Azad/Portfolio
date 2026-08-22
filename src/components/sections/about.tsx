@@ -71,7 +71,7 @@ export function About() {
           {/* INTP-A badge */}
           <motion.div variants={item} className="flex justify-start">
             <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900">
-              <Brain className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+              <Brain className="w-4 h-4 text-accent" />
               <span className="text-sm font-semibold text-neutral-900 dark:text-white">
                 {aboutContent.personality.type}
               </span>

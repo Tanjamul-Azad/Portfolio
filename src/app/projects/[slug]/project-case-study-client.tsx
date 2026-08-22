@@ -56,7 +56,7 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
             <Link 
               href="/#projects"
               scroll={false}
-              className="inline-flex items-center gap-2 text-neutral-500 hover:text-amber-500 transition-colors mb-8 group"
+              className="inline-flex items-center gap-2 text-neutral-500 hover:text-accent transition-colors mb-8 group"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               Back to Projects
@@ -74,7 +74,7 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
                 <Badge 
                   key={tag} 
                   variant="secondary"
-                  className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                  className="bg-amber-500/10 text-accent border-amber-500/20"
                 >
                   {tag}
                 </Badge>
@@ -257,7 +257,7 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
                   <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
                     <ArrowUpRight className="w-5 h-5 text-amber-500" />
                   </div>
-                  <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-4 group-hover:text-amber-500 transition-colors">
+                  <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-4 group-hover:text-accent transition-colors">
                     {feature.title}
                   </h3>
                   <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed text-sm lg:text-base">
@@ -381,7 +381,7 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
               return (
                 <Link 
                   href={`/projects/${nextProject.slug}`}
-                  className="inline-flex items-center gap-3 text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white hover:text-amber-500 transition-colors group"
+                  className="inline-flex items-center gap-3 text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white hover:text-accent transition-colors group"
                 >
                   {nextProject.title}
                   <ArrowUpRight className="w-8 h-8 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />

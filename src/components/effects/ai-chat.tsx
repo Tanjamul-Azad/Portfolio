@@ -13,7 +13,21 @@ interface Message {
   content: string;
 }
 
-// Suggested questions removed for clean professional UI
+/** Carries the server's stable error `code` so the UI can pick the right copy. */
+class ChatError extends Error {
+  constructor(public code: string) {
+    super(code);
+    this.name = "ChatError";
+  }
+}
+
+const ERROR_COPY: Record<string, string> = {
+  rate_limited:
+    "That's a lot of questions at once — give it a minute and try again.",
+  upstream_unavailable: `The assistant is temporarily unavailable. Please try again in a moment, or email ${siteConfig.contact.email} directly.`,
+  not_configured: `The assistant isn't connected right now. Please reach out at ${siteConfig.contact.email} and you'll get a real reply.`,
+  unknown: `Sorry, I'm having trouble connecting. Please try again, or email ${siteConfig.contact.email}.`,
+};
 
 export function AiChat() {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,25 +41,59 @@ export function AiChat() {
   const [showHint, setShowHint] = useState(true);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
   const onAdmin = pathname?.startsWith("/admin") ?? false;
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
+  // Scroll the list's own scrollTop rather than calling scrollIntoView on a
+  // sentinel: scrollIntoView walks up to scrollable ancestors and was yanking
+  // the whole page every time a message arrived.
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    const list = listRef.current;
+    if (!list) return;
+    list.scrollTo({ top: list.scrollHeight, behavior: "smooth" });
+  }, [messages, isLoading]);
 
   useEffect(() => {
     if (isOpen) {
-      if (inputRef.current) inputRef.current.focus();
+      inputRef.current?.focus();
       setShowHint(false);
     }
   }, [isOpen]);
+
+  // Escape closes the panel and returns focus to the launcher.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setIsOpen(false);
+      triggerRef.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen]);
+
+  // Clicking outside dismisses it, the way every other floating panel behaves.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (panelRef.current?.contains(target)) return;
+      if (triggerRef.current?.contains(target)) return;
+      setIsOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [isOpen]);
+
+  // The hint bubble is a one-time nudge, not a permanent fixture.
+  useEffect(() => {
+    const timer = setTimeout(() => setShowHint(false), 8000);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (onAdmin) return null;
 
@@ -81,11 +129,11 @@ export function AiChat() {
 
       const data = await response.json();
 
-      if (data.error) {
-        if (data.error === "quota_exceeded") {
-          throw new Error("__quota__");
-        }
-        throw new Error(data.error);
+      if (!response.ok || data.error) {
+        // The server sends a stable `code`; the prose in `error` is for logs and
+        // may change. Rate limiting and mis-configuration deserve distinct copy.
+        const code = response.status === 429 ? "rate_limited" : data.code;
+        throw new ChatError(typeof code === "string" ? code : "unknown");
       }
 
       // Client-side safety: strip any leaked markdown artifacts
@@ -106,13 +154,11 @@ export function AiChat() {
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err) {
-      const isQuota = err instanceof Error && err.message === "__quota__";
+      const code = err instanceof ChatError ? err.code : "unknown";
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: isQuota
-          ? `The AI API has hit its daily free-tier limit. It resets every 24 hours. In the meantime, feel free to reach out directly at ${siteConfig.contact.email}!`
-          : "Sorry, I'm having trouble connecting right now. Please try again or reach out via email!",
+        content: ERROR_COPY[code] ?? ERROR_COPY.unknown,
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -144,11 +190,13 @@ export function AiChat() {
         </AnimatePresence>
 
         <motion.button
-          onClick={() => setIsOpen(!isOpen)}
-          className="w-14 h-14 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/90 dark:bg-neutral-900/90 text-amber-600 dark:text-amber-400 shadow-lg shadow-neutral-900/10 dark:shadow-black/30 backdrop-blur-xl flex items-center justify-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
+          ref={triggerRef}
+          onClick={() => setIsOpen((open) => !open)}
+          aria-expanded={isOpen}
+          className="w-14 h-14 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/90 dark:bg-neutral-900/90 text-accent shadow-lg shadow-neutral-900/10 dark:shadow-black/30 backdrop-blur-xl flex items-center justify-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          aria-label="Toggle AI Chat"
+          aria-label={isOpen ? "Close AI assistant" : "Open AI assistant"}
         >
           <AnimatePresence mode="wait">
             {isOpen ? (
@@ -180,6 +228,10 @@ export function AiChat() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            ref={panelRef}
+            role="dialog"
+            aria-modal="false"
+            aria-label="AI assistant"
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -188,7 +240,7 @@ export function AiChat() {
           >
             {/* Header */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-accent flex items-center justify-center">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div className="grow">
@@ -202,7 +254,15 @@ export function AiChat() {
             </div>
 
             {/* Messages */}
-            <div data-lenis-prevent className="grow overflow-y-auto p-4 space-y-4 bg-white/40 dark:bg-neutral-950/40 backdrop-blur-md">
+            <div
+              ref={listRef}
+              data-lenis-prevent
+              role="log"
+              aria-live="polite"
+              aria-atomic="false"
+              aria-label="Conversation"
+              className="grow overflow-y-auto overscroll-contain p-4 space-y-4 bg-white/40 dark:bg-neutral-950/40 backdrop-blur-md"
+            >
               {messages.map((message) => (
                 <motion.div
                   key={message.id}
@@ -267,8 +327,6 @@ export function AiChat() {
                   </div>
                 </motion.div>
               )}
-              
-              <div ref={messagesEndRef} />
             </div>
 
             {/* Suggested Questions Area Removed */}
@@ -285,6 +343,9 @@ export function AiChat() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask me anything..."
+                  aria-label="Message"
+                  autoComplete="off"
+                  maxLength={2000}
                   className="grow px-4 py-2.5 rounded-full bg-white/50 dark:bg-neutral-800/50 text-neutral-900 dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 border border-neutral-200/50 dark:border-neutral-700/50 focus:border-amber-500/30 transition-all"
                   disabled={isLoading}
                 />

@@ -148,6 +148,14 @@ html.lenis body {
   --border: oklch(0.92 0 0);
   --input: oklch(0.92 0 0);
   --ring: oklch(0.15 0 0);
+
+  /* Accent text.
+     Tailwind's amber-500 (#f59e0b) is ~2.2:1 on white and amber-600 (#d97706)
+     is ~3.4:1 — both fail WCAG AA for body copy, and amber-500 fails even the
+     3:1 bar for icons. amber-700 clears AA at 5.1:1 while reading as the same
+     colour, so the accent is themed rather than hard-coded per component. */
+  --accent-fg: #b45309;
+  --accent-fg-strong: #92400e;
 }
 
 .dark {
@@ -170,6 +178,10 @@ html.lenis body {
   --border: oklch(0.22 0.01 260);
   --input: oklch(0.22 0.01 260);
   --ring: oklch(0.85 0 0);
+
+  /* On near-black, the bright end of the ramp is the readable one (~11:1). */
+  --accent-fg: #fbbf24;
+  --accent-fg-strong: #fcd34d;
 }
 
 @layer base {
@@ -215,6 +227,47 @@ html.lenis body {
     @apply bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-neutral-200/50 dark:border-neutral-800/50;
   }
 
+  /* Lighter glass used for inline surfaces (filter chips, floating rails, cards).
+     Kept separate from .glass-panel so it can sit on top of section backgrounds
+     without the heavier opacity reading as a solid block. */
+  .glass {
+    @apply bg-white/70 dark:bg-neutral-900/60 backdrop-blur-xl border-neutral-200/70 dark:border-neutral-800/70;
+  }
+
+  /* Cursor-tracked spotlight for cards. The parent sets --spot-x/--spot-y on
+     pointer move; the ::before layer fades in only while hovered so idle cards
+     cost nothing. .spotlight-content just re-establishes stacking above it. */
+  .spotlight-surface {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .spotlight-surface::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease-out;
+    background: radial-gradient(
+      16rem circle at var(--spot-x, 50%) var(--spot-y, 0%),
+      rgba(245, 158, 11, 0.14),
+      transparent 65%
+    );
+  }
+
+  .spotlight-surface:hover::before,
+  .spotlight-surface:focus-within::before {
+    opacity: 1;
+  }
+
+  .spotlight-content {
+    position: relative;
+    z-index: 1;
+  }
+
   /* Premium Interactions */
   .hover-lift {
     @apply transition-transform duration-300 ease-out hover:-translate-y-1;
@@ -258,6 +311,25 @@ html.lenis body {
 
   .pause {
     animation-play-state: paused !important;
+  }
+
+  /* Theme-aware accent text. Use instead of literal amber-500/600 text colours
+     so light and dark each get a shade that actually passes contrast. */
+  .text-accent {
+    color: var(--accent-fg);
+  }
+
+  .hover\:text-accent:hover,
+  .focus-visible\:text-accent:focus-visible {
+    color: var(--accent-fg-strong);
+  }
+
+  .group:hover .group-hover\:text-accent {
+    color: var(--accent-fg);
+  }
+
+  .group:focus-visible .group-focus-visible\:text-accent {
+    color: var(--accent-fg);
   }
 
   .skip-link {

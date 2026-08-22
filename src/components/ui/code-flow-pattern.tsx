@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -65,6 +65,19 @@ const codeSymbols = [
   "?.",
 ];
 
+/**
+ * Deterministic stand-in for Math.random(), keyed on an index and a channel.
+ *
+ * These decorative values are computed during render, which runs on the server
+ * too — Math.random() there produced different numbers than the client and broke
+ * hydration ("server rendered text didn't match the client"). A pure function of
+ * the index gives the same scatter on both sides, so the markup matches.
+ */
+function noise(index: number, channel: number): number {
+  const x = Math.sin((index + 1) * 12.9898 + channel * 78.233) * 43758.5453;
+  return x - Math.floor(x);
+}
+
 export function CodeFlowPattern({
   className,
   numElements = 40,
@@ -97,6 +110,28 @@ export function CodeFlowPattern({
       setElements(newElements);
     }
   }, [dimensions, numElements, flowSpeed]);
+
+  const binaryDrops = useMemo(
+    () =>
+      Array.from({ length: 20 }, (_, i) => ({
+        duration: 8 + noise(i, 1) * 4,
+        delay: noise(i, 2) * 3,
+        bit: noise(i, 3) > 0.5 ? "1" : "0",
+      })),
+    []
+  );
+
+  const syntaxLines = useMemo(
+    () =>
+      Array.from({ length: 8 }, (_, i) => {
+        const startFraction = noise(i, 4) * 0.3;
+        return {
+          startX: startFraction * dimensions.width,
+          endX: (startFraction + noise(i, 5) * 0.4) * dimensions.width,
+        };
+      }),
+    [dimensions.width]
+  );
 
   // Resize observer
   useEffect(() => {
@@ -226,13 +261,13 @@ export function CodeFlowPattern({
                 opacity: [0, 0.15, 0.15, 0],
               }}
               transition={{
-                duration: 8 + Math.random() * 4,
-                delay: Math.random() * 3,
+                duration: binaryDrops[i].duration,
+                delay: binaryDrops[i].delay,
                 repeat: Infinity,
                 ease: "linear",
               }}
             >
-              {Math.random() > 0.5 ? "1" : "0"}
+              {binaryDrops[i].bit}
             </motion.text>
           );
         })}
@@ -240,10 +275,8 @@ export function CodeFlowPattern({
 
       {/* Syntax highlighting lines */}
       <g className="syntax-lines">
-        {Array.from({ length: 8 }).map((_, i) => {
+        {syntaxLines.map(({ startX, endX }, i) => {
           const y = (i * dimensions.height) / 8;
-          const startX = Math.random() * dimensions.width * 0.3;
-          const endX = startX + Math.random() * dimensions.width * 0.4;
 
           return (
             <motion.line

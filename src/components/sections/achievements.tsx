@@ -100,7 +100,7 @@ function AchievementCard({
 
         {/* Details */}
         <div className="flex flex-1 flex-col p-5">
-          <h3 className="line-clamp-2 text-base font-semibold leading-tight text-neutral-900 transition-colors duration-300 group-hover:text-amber-600 md:text-lg dark:text-white dark:group-hover:text-amber-300">
+          <h3 className="line-clamp-2 text-base font-semibold leading-tight text-neutral-900 transition-colors duration-300 group-hover:text-accent md:text-lg dark:text-white dark:group-hover:text-amber-300">
             {achievement.title}
           </h3>
 
@@ -126,7 +126,7 @@ function AchievementCard({
               </span>
             ))}
             {achievement.skills.length > 3 && (
-              <span className="rounded-full border border-amber-500/25 bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-700 dark:text-amber-300">
+              <span className="rounded-full border border-amber-500/25 bg-amber-500/10 px-2 py-0.5 text-[10px] text-accent">
                 +{achievement.skills.length - 3}
               </span>
             )}
@@ -154,7 +154,14 @@ function AchievementDialog({
 
   return (
     <Dialog open={!!achievement} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl gap-0 overflow-hidden p-0 max-h-[90vh] overflow-y-auto">
+      {/* data-lenis-prevent: without it the smooth-scroll layer swallows wheel
+          events inside the modal and the certificate can't be scrolled.
+          overflow was set twice on the same element (hidden + y-auto), which
+          axis won depended on generated CSS order — now stated per-axis. */}
+      <DialogContent
+        data-lenis-prevent
+        className="max-h-[90vh] max-w-2xl gap-0 overflow-x-hidden overflow-y-auto overscroll-contain p-0"
+      >
         {achievement && (
           <>
             {/* Full image (contained, so certificates are fully readable) */}
@@ -185,7 +192,7 @@ function AchievementDialog({
 
             <div className="p-6">
               <div className="mb-3 flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/25 bg-amber-500/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-amber-700 dark:text-amber-300">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/25 bg-amber-500/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-accent">
                   <TypeIcon className="h-3.5 w-3.5" />
                   {TYPE_LABEL[achievement.type]}
                 </span>
@@ -355,7 +362,7 @@ export function Achievements() {
             <button
               type="button"
               onClick={() => setShowAll((prev) => !prev)}
-              className="group inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white/70 px-6 py-2.5 text-sm font-medium text-neutral-700 backdrop-blur-sm transition-all duration-300 hover:border-amber-500/40 hover:text-amber-600 dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-neutral-300 dark:hover:text-amber-300"
+              className="group inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white/70 px-6 py-2.5 text-sm font-medium text-neutral-700 backdrop-blur-sm transition-all duration-300 hover:border-amber-500/40 hover:text-accent dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-neutral-300 dark:hover:text-amber-300"
             >
               {showAll ? "Show less" : `Show ${hiddenCount} more`}
               <ChevronDown

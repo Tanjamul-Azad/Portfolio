@@ -131,12 +131,18 @@ function MobileProjectCard({ project, index, isRouteTransitioning, failedImages,
     >
       <div className="group rounded-2xl max-[360px]:rounded-xl sm:rounded-3xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 bg-white dark:bg-neutral-900 shadow-lg sm:shadow-xl">
         {/* Image area */}
-        <Link href={`/projects/${project.slug}`} className="block relative focus:outline-none">
+        <Link
+          href={`/projects/${project.slug}`}
+          aria-label={`${project.title} case study`}
+          className="block relative rounded-t-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/70"
+        >
           <div className="aspect-video max-[360px]:aspect-2/1 sm:aspect-4/3 relative bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
             {isVideoFile(project.videoUrl) ? (
               <video
                 src={encodeURI(project.videoUrl!)}
                 poster={project.image ? encodeURI(project.image) : undefined}
+                aria-hidden="true"
+                tabIndex={-1}
                 autoPlay
                 muted
                 loop
@@ -184,8 +190,11 @@ function MobileProjectCard({ project, index, isRouteTransitioning, failedImages,
 
         {/* Content Area */}
         <div className="p-4 max-[360px]:p-3 sm:p-5">
-          <Link href={`/projects/${project.slug}`} className="block focus:outline-none w-fit">
-            <h3 className="text-lg max-[360px]:text-base sm:text-xl font-bold text-neutral-900 dark:text-white mb-2 flex items-center gap-2 group-hover:text-amber-500 transition-colors">
+          <Link
+            href={`/projects/${project.slug}`}
+            className="block w-fit rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/70"
+          >
+            <h3 className="text-lg max-[360px]:text-base sm:text-xl font-bold text-neutral-900 dark:text-white mb-2 flex items-center gap-2 group-hover:text-accent transition-colors">
               {project.title}
               <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 text-neutral-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
             </h3>
@@ -222,8 +231,14 @@ function MobileProjectCard({ project, index, isRouteTransitioning, failedImages,
             </Button>
             {project.sourceUrl && project.sourceUrl !== '#' && (
               <Button asChild size="icon" variant="ghost" className="self-end sm:self-auto rounded-full w-9 h-9 max-[360px]:w-8 max-[360px]:h-8 shrink-0 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-95 transition-all duration-200">
-                <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("projects_open_source", { project_slug: project.slug, source: "mobile_card" })}>
+                <a
+                  href={project.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackEvent("projects_open_source", { project_slug: project.slug, source: "mobile_card" })}
+                >
                   <Github className="w-4 h-4" />
+                  <span className="sr-only">View source for {project.title} on GitHub</span>
                 </a>
               </Button>
             )}
@@ -307,7 +322,7 @@ function RailRow({
             {project.title}
           </h3>
           {isPinned && (
-            <span className="shrink-0 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">
+            <span className="shrink-0 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-accent">
               Pinned
             </span>
           )}
@@ -351,6 +366,7 @@ export function Projects() {
   const pinnedIdSet = useMemo(() => new Set(getPinnedProjects().map((p) => p.id)), []);
 
   const [hoveredProject, setHoveredProject] = useState<string | null>(displayProjects[0]?.id || null);
+  const [showAllMobile, setShowAllMobile] = useState(false);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
   const projectLinkRefs = useRef<Array<HTMLAnchorElement | null>>([]);
@@ -389,6 +405,13 @@ export function Projects() {
   };
 
   const filteredProjects = displayProjects;
+
+  // Mobile shows a short, complete list first rather than a scroll-inside-scroll pane.
+  const MOBILE_INITIAL_COUNT = 3;
+  const visibleMobileProjects = showAllMobile
+    ? filteredProjects
+    : filteredProjects.slice(0, MOBILE_INITIAL_COUNT);
+  const hiddenMobileCount = filteredProjects.length - visibleMobileProjects.length;
 
   const activeProject =
     filteredProjects.length === 0
@@ -708,7 +731,6 @@ export function Projects() {
                                   href={activeProject.sourceUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  title="View Source"
                                   onClick={() =>
                                     trackEvent("projects_open_source", {
                                       project_slug: activeProject.slug,
@@ -717,6 +739,9 @@ export function Projects() {
                                   }
                                 >
                                   <Github className="w-5 h-5" />
+                                  <span className="sr-only">
+                                    View source for {activeProject.title} on GitHub
+                                  </span>
                                 </a>
                               </Button>
                             </MagneticWrapper>
@@ -730,42 +755,52 @@ export function Projects() {
               </AnimatePresence>
             ) : (
               <div className="rounded-2xl border border-dashed border-neutral-300 p-8 text-center text-sm text-neutral-500 dark:border-neutral-700 dark:text-neutral-400">
-                No projects matched your filters. Try a different keyword or tag.
+                No projects to show yet — check back soon.
               </div>
             )}
           </div>
         </div>
 
-        {/* Mobile Project Cards — capped, snap-scrolling pane keeps the page short */}
+        {/* Mobile project cards.
+            These used to live in a `max-h-[82vh] overflow-y-auto` pane. Nesting a
+            scroll container inside the page scroll traps the finger on touch and
+            hides the rest of the list behind an edge with no affordance, so the
+            cards now flow in the page and a "show more" control keeps the section
+            short instead. */}
         <div className="lg:hidden mt-8 sm:mt-12">
           {filteredProjects.length > 0 ? (
-            <div className="relative">
-              {/* Edge fade masks */}
-              <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-8 bg-linear-to-b from-white to-transparent dark:from-black" />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-8 bg-linear-to-t from-white to-transparent dark:from-black" />
-
-              <div
-                data-lenis-prevent
-                className="custom-scrollbar max-h-[82vh] snap-y snap-proximity overflow-y-auto space-y-4 sm:space-y-6 py-2 pr-1"
-              >
-                {filteredProjects.map((project, index) => (
-                  <div key={project.id + "-mobile"} className="snap-start">
-                    <MobileProjectCard
-                      project={project}
-                      index={index}
-                      isRouteTransitioning={isRouteTransitioning}
-                      failedImages={failedImages}
-                      loadedImages={loadedImages}
-                      markImageLoaded={markImageLoaded}
-                      markImageFailed={markImageFailed}
-                    />
-                  </div>
+            <>
+              <div className="space-y-4 sm:space-y-6">
+                {visibleMobileProjects.map((project, index) => (
+                  <MobileProjectCard
+                    key={project.id + "-mobile"}
+                    project={project}
+                    index={index}
+                    isRouteTransitioning={isRouteTransitioning}
+                    failedImages={failedImages}
+                    loadedImages={loadedImages}
+                    markImageLoaded={markImageLoaded}
+                    markImageFailed={markImageFailed}
+                  />
                 ))}
               </div>
-            </div>
+
+              {hiddenMobileCount > 0 && (
+                <div className="mt-6 flex justify-center">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowAllMobile(true)}
+                    className="rounded-full h-11 px-6 text-sm font-semibold border-neutral-300 dark:border-neutral-700"
+                  >
+                    Show {hiddenMobileCount} more{" "}
+                    {hiddenMobileCount === 1 ? "project" : "projects"}
+                  </Button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="rounded-2xl border border-dashed border-neutral-300 p-8 text-center text-sm text-neutral-500 dark:border-neutral-700 dark:text-neutral-400">
-              No projects matched your filters. Try a different keyword or tag.
+              No projects to show yet — check back soon.
             </div>
           )}
         </div>

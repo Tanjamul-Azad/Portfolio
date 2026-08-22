@@ -52,6 +52,8 @@ export function Now() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {nowItems.map((item, categoryIndex) => {
             const config = categoryConfig[item.category];
+            // Content is editor-driven, so an unknown category must not crash the section.
+            if (!config) return null;
             const Icon = config.icon;
 
             return (
@@ -64,7 +66,14 @@ export function Now() {
                 transition={{ duration: 0.45, delay: categoryIndex * 0.08 }}
                 className="group relative"
               >
-                <div className="spotlight-surface h-full p-5 sm:p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 transition-all duration-300 hover:border-amber-400/45 dark:hover:border-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/12 dark:hover:shadow-black/40">
+                <div
+                  onPointerMove={(event) => {
+                    const el = event.currentTarget;
+                    const rect = el.getBoundingClientRect();
+                    el.style.setProperty("--spot-x", `${event.clientX - rect.left}px`);
+                    el.style.setProperty("--spot-y", `${event.clientY - rect.top}px`);
+                  }}
+                  className="spotlight-surface h-full p-5 sm:p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 transition-all duration-300 hover:border-amber-400/45 dark:hover:border-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/12 dark:hover:shadow-black/40">
                   <div className="absolute inset-x-6 top-0 h-px bg-linear-to-r from-transparent via-amber-500/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                   <div className="spotlight-content">

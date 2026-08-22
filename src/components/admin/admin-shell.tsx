@@ -69,7 +69,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                       className={cn(
                         "whitespace-nowrap rounded-md px-3 py-2 text-sm transition-colors",
                         active
-                          ? "bg-amber-500/15 font-medium text-amber-600 dark:text-amber-400"
+                          ? "bg-amber-500/15 font-medium text-accent"
                           : "text-neutral-600 hover:bg-neutral-200/60 dark:text-neutral-400 dark:hover:bg-neutral-800/60"
                       )}
                     >

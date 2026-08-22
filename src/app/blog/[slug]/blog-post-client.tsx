@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowLeft, Calendar, Clock, Twitter, Linkedin, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getPostBySlug, blogPosts } from "@/data";
+import { siteConfig } from "@/config";
 import { Navbar, Footer } from "@/components/layout";
 import Link from "next/link";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
@@ -14,33 +13,37 @@ import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 
 export default function BlogPostClient({ slug }: { slug: string }) {
-  const router = useRouter();
   const post = getPostBySlug(slug);
 
-  // Resolve the share URL only after mount so server and client render the
-  // same markup (avoids a hydration mismatch on the share links).
-  const [shareUrl, setShareUrl] = useState("");
-  useEffect(() => {
-    setShareUrl(window.location.href);
-  }, []);
+  // Derived from config rather than read from window after mount: the effect
+  // version left the share links pointing at an empty URL on first paint.
+  const shareUrl = `${siteConfig.url}/blog/${slug}`;
 
   if (!post) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-black">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">Post not found</h1>
-          <Button onClick={() => router.push("/blog")} variant="outline">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Blog
+          <Button asChild variant="outline">
+            <Link href="/blog">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Blog
+            </Link>
           </Button>
         </div>
       </div>
     );
   }
 
-  const copyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    toast.success("Link copied to clipboard!");
+  const copyLink = async () => {
+    // navigator.clipboard is undefined outside secure contexts and can reject
+    // when permission is denied — the old version claimed success regardless.
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Link copied to clipboard");
+    } catch {
+      toast.error("Couldn't copy the link. You can copy it from the address bar.");
+    }
   };
 
   return (
@@ -56,13 +59,13 @@ export default function BlogPostClient({ slug }: { slug: string }) {
             transition={{ duration: 0.5 }}
             className="max-w-3xl mx-auto"
           >
-            <button
-              onClick={() => router.back()}
-              className="inline-flex items-center gap-2 text-neutral-500 hover:text-amber-500 transition-colors mb-8 group"
+            <Link
+              href="/blog"
+              className="inline-flex items-center gap-2 text-neutral-500 hover:text-accent transition-colors mb-8 group"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              Back
-            </button>
+              All posts
+            </Link>
 
             <motion.div
               variants={staggerContainer}
@@ -74,7 +77,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                   <Badge
                     key={tag}
                     variant="secondary"
-                    className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                    className="bg-amber-500/10 text-accent border-amber-500/20"
                   >
                     {tag}
                   </Badge>
@@ -106,6 +109,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                 <div className="flex items-center gap-2">
                   <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={copyLink}>
                     <Copy className="w-4 h-4" />
+                    <span className="sr-only">Copy link to this post</span>
                   </Button>
                   <Button size="sm" variant="ghost" className="h-8 w-8 p-0" asChild>
                     <a
@@ -114,6 +118,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                       rel="noopener noreferrer"
                     >
                       <Twitter className="w-4 h-4" />
+                      <span className="sr-only">Share this post on X</span>
                     </a>
                   </Button>
                   <Button size="sm" variant="ghost" className="h-8 w-8 p-0" asChild>
@@ -123,6 +128,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                       rel="noopener noreferrer"
                     >
                       <Linkedin className="w-4 h-4" />
+                      <span className="sr-only">Share this post on LinkedIn</span>
                     </a>
                   </Button>
                 </div>
@@ -135,7 +141,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                   prose-headings:font-bold prose-headings:text-neutral-900 dark:prose-headings:text-white
                   prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl
                   prose-p:text-neutral-600 dark:prose-p:text-neutral-300 prose-p:leading-relaxed
-                  prose-a:text-amber-500 prose-a:no-underline hover:prose-a:underline
+                  prose-a:text-[var(--accent-fg)] prose-a:no-underline hover:prose-a:underline
                   prose-strong:text-neutral-900 dark:prose-strong:text-white
                   prose-code:text-amber-600 dark:prose-code:text-amber-400 prose-code:bg-neutral-100 dark:prose-code:bg-neutral-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
                   prose-pre:bg-neutral-900 dark:prose-pre:bg-neutral-950 prose-pre:border prose-pre:border-neutral-800 prose-pre:overflow-x-auto
@@ -165,7 +171,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                     href={`/blog/${relatedPost.slug}`}
                     className="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-amber-500/50 transition-colors group"
                   >
-                    <h3 className="font-semibold text-neutral-900 dark:text-white group-hover:text-amber-500 transition-colors mb-2">
+                    <h3 className="font-semibold text-neutral-900 dark:text-white group-hover:text-accent transition-colors mb-2">
                       {relatedPost.title}
                     </h3>
                     <p className="text-sm text-neutral-500 line-clamp-2">{relatedPost.excerpt}</p>

@@ -14,7 +14,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { contactFormSchema, type ContactFormValues } from "@/lib/validations";
+import {
+  MESSAGE_MAX,
+  NAME_MAX,
+  contactFormSchema,
+  type ContactFormValues,
+} from "@/lib/validations";
 import { toast } from "sonner";
 import { Shield, Send } from "lucide-react";
 
@@ -23,12 +28,15 @@ export function ContactForm() {
   
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
+    mode: "onBlur",
     defaultValues: {
       name: "",
       email: "",
       message: "",
     },
   });
+
+  const messageLength = form.watch("message")?.length ?? 0;
 
   async function onSubmit(values: ContactFormValues) {
     // Honeypot spam protection - if filled, it's a bot
@@ -43,7 +51,7 @@ export function ContactForm() {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, website: honeypot }),
       });
 
       const data = await response.json();
@@ -67,7 +75,10 @@ export function ContactForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
         {/* Honeypot field - hidden from real users, bots will fill it */}
-        <div className="absolute opacity-0 pointer-events-none" aria-hidden="true">
+        <div
+          className="pointer-events-none absolute -left-[9999px] top-0 h-px w-px overflow-hidden opacity-0"
+          aria-hidden="true"
+        >
           <label htmlFor="website">Website</label>
           <input
             type="text"
@@ -89,6 +100,8 @@ export function ContactForm() {
               <FormControl>
                 <Input
                   placeholder="Your name"
+                  autoComplete="name"
+                  maxLength={NAME_MAX}
                   {...field}
                   className="bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-amber-500/50 focus:ring-amber-500/20"
                 />
@@ -107,6 +120,8 @@ export function ContactForm() {
                 <Input
                   placeholder="Your email"
                   type="email"
+                  autoComplete="email"
+                  inputMode="email"
                   {...field}
                   className="bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-amber-500/50 focus:ring-amber-500/20"
                 />
@@ -120,11 +135,24 @@ export function ContactForm() {
           name="message"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-neutral-600 dark:text-neutral-300">Message</FormLabel>
+              <div className="flex items-baseline justify-between gap-3">
+                <FormLabel className="text-neutral-600 dark:text-neutral-300">Message</FormLabel>
+                <span
+                  className={`text-xs tabular-nums ${
+                    messageLength > MESSAGE_MAX
+                      ? "text-red-500"
+                      : "text-neutral-400 dark:text-neutral-500"
+                  }`}
+                >
+                  {messageLength}/{MESSAGE_MAX}
+                </span>
+              </div>
               <FormControl>
                 <Textarea
                   placeholder="Tell me how I can help"
-                  className="min-h-[100px] resize-none bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-amber-500/50 focus:ring-amber-500/20"
+                  autoComplete="off"
+                  maxLength={MESSAGE_MAX}
+                  className="min-h-25 resize-y bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-amber-500/50 focus:ring-amber-500/20"
                   {...field}
                 />
               </FormControl>

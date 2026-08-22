@@ -47,11 +47,11 @@ export default function AdminDashboard() {
               href={card.href}
               className="group flex items-start gap-3 rounded-xl border border-neutral-200 bg-white p-4 transition-colors hover:border-amber-400/60 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-amber-500/40"
             >
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-accent">
                 <Icon className="size-4.5" />
               </div>
               <div className="min-w-0">
-                <h2 className="font-semibold text-neutral-900 group-hover:text-amber-600 dark:text-white dark:group-hover:text-amber-400">
+                <h2 className="font-semibold text-neutral-900 group-hover:text-accent dark:text-white dark:group-hover:text-amber-400">
                   {card.title}
                 </h2>
                 <p className="text-sm text-neutral-500">{card.desc}</p>

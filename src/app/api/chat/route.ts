@@ -14,6 +14,10 @@ const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const MAX_REQUESTS = 15; // 15 chat messages per minute per IP
 
+// Without a deadline a wedged provider holds the request open until the platform
+// kills it, and the remaining fallbacks never get a turn.
+const PROVIDER_TIMEOUT_MS = 12_000;
+
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
   const record = rateLimitMap.get(ip);
@@ -138,10 +142,20 @@ export async function POST(request: NextRequest) {
 
     const historyMessages =
       Array.isArray(history) && history.length > 0
-        ? history.slice(-8).map((m: { role?: string; content?: string }) => ({
-            role: m.role === "user" ? "user" : "assistant",
-            content: m.content,
-          }))
+        ? history
+            .filter(
+              (m: unknown): m is { role?: string; content: string } =>
+                typeof m === "object" &&
+                m !== null &&
+                typeof (m as { content?: unknown }).content === "string" &&
+                (m as { content: string }).content.trim().length > 0
+            )
+            .slice(-8)
+            .map((m) => ({
+              role: m.role === "user" ? ("user" as const) : ("assistant" as const),
+              // History is client-supplied: cap each turn before it reaches a paid provider.
+              content: m.content.slice(0, 2000),
+            }))
         : [];
 
     const context = buildPortfolioContext();
@@ -164,9 +178,12 @@ export async function POST(request: NextRequest) {
       },
       {
         name: "Gemini",
-        url: `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+        // gemini-1.5-flash on the v1 endpoint has been retired; 2.0-flash on
+        // v1beta is the current equivalent. The key moves to a header so it
+        // cannot leak through logs or referrers.
+        url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
         key: process.env.GEMINI_API_KEY,
-        model: "gemini-1.5-flash",
+        model: "gemini-2.0-flash",
         type: "google",
       },
       {
@@ -179,17 +196,19 @@ export async function POST(request: NextRequest) {
     ];
 
     let lastError = "";
+    const providersConfigured = providers.some((p) => Boolean(p.key));
 
     for (const provider of providers) {
       if (!provider.key) continue;
 
       try {
-        console.log(`[Chat API] Attempting ${provider.name}...`);
+        const signal = AbortSignal.timeout(PROVIDER_TIMEOUT_MS);
 
         let res;
         if (provider.type === "openai") {
           res = await fetch(provider.url, {
             method: "POST",
+            signal,
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${provider.key}`,
@@ -202,13 +221,25 @@ export async function POST(request: NextRequest) {
             }),
           });
         } else {
-          // Google Gemini Format
+          // Google Gemini format. The conversation is mapped turn by turn — the
+          // previous version folded the system prompt into the user message and
+          // dropped history entirely, so the Gemini fallback answered every
+          // message with no memory of the one before it.
           res = await fetch(provider.url, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            signal,
+            headers: {
+              "Content-Type": "application/json",
+              "x-goog-api-key": provider.key,
+            },
             body: JSON.stringify({
+              systemInstruction: { parts: [{ text: context }] },
               contents: [
-                { role: "user", parts: [{ text: `SYSTEM CONTEXT: ${context}\n\nUSER MESSAGE: ${message}` }] },
+                ...historyMessages.map((m) => ({
+                  role: m.role === "user" ? "user" : "model",
+                  parts: [{ text: m.content }],
+                })),
+                { role: "user", parts: [{ text: message }] },
               ],
               generationConfig: { maxOutputTokens: 400, temperature: 0.5 },
             }),
@@ -243,7 +274,6 @@ export async function POST(request: NextRequest) {
           .replace(/^[-*+]\s+/gm, "• ")
           .trim();
 
-        console.log(`[Chat API] ${provider.name} success!`);
         return NextResponse.json({ response });
       } catch (err) {
         const errMessage = err instanceof Error ? err.message : String(err);
@@ -253,7 +283,16 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ error: `All providers failed. Last error: ${lastError}` }, { status: 500 });
+    // The browser gets a generic message. Provider names and status codes stay in
+    // the server log, where they belong — they were previously echoed to the client.
+    console.error("[Chat API] All providers failed. Last error:", lastError || "none configured");
+    return NextResponse.json(
+      {
+        error: "The assistant is unavailable right now. Please try again shortly.",
+        code: providersConfigured ? "upstream_unavailable" : "not_configured",
+      },
+      { status: 503 }
+    );
   } catch (error) {
     console.error("Chat API Critical Error:", error);
     return NextResponse.json({ error: "Failed to process request" }, { status: 500 });

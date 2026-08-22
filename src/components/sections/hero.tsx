@@ -7,6 +7,8 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
+import Image from "next/image";
+import { Pause, Play } from "lucide-react";
 import InteractiveHoverButton from "@/components/ui/interactive-hover-button";
 import { siteConfig } from "@/config";
 import { heroContent } from "@/data/site-content";
@@ -26,10 +28,13 @@ function SplitText({
   reducedMotion?: boolean;
 }) {
   return (
-    <span className={`inline-flex overflow-hidden ${className}`}>
+    // The visible characters are individual spans for the stagger, which screen
+    // readers announce one letter at a time. Expose the whole word once instead.
+    <span className={`inline-flex overflow-hidden ${className}`} role="text" aria-label={text}>
       {text.split("").map((char, i) => (
         <motion.span
           key={`${char}-${i}`}
+          aria-hidden="true"
           className="inline-block"
           initial={reducedMotion ? { opacity: 0 } : { y: "115%", rotateZ: 3, opacity: 0 }}
           animate={reducedMotion ? { opacity: 1 } : { y: 0, rotateZ: 0, opacity: 1 }}
@@ -70,6 +75,13 @@ function TypewriterText({
     let timeoutId: number | undefined;
     let isDisposed = false;
 
+    // The loop is infinite, so it would otherwise keep scheduling timers for a
+    // tab nobody is looking at.
+    const onVisibility = () => {
+      if (document.hidden && timeoutId) window.clearTimeout(timeoutId);
+      else if (!document.hidden && !isDisposed) startTypingCycle(0);
+    };
+
     const startTypingCycle = (delay: number) => {
       timeoutId = window.setTimeout(() => {
         if (isDisposed) return;
@@ -96,9 +108,11 @@ function TypewriterText({
     };
 
     startTypingCycle(startDelay);
+    document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
       isDisposed = true;
+      document.removeEventListener("visibilitychange", onVisibility);
       if (timeoutId) window.clearTimeout(timeoutId);
     };
   }, [charInterval, loopDelay, reducedMotion, startDelay, text]);
@@ -107,15 +121,17 @@ function TypewriterText({
   const isComplete = visibleCount >= text.length;
 
   return (
-    <span className="relative block">
+    // The full string is exposed once, statically. The animated copy is hidden:
+    // the old version had an aria-live region that re-announced "typing" /
+    // "typing complete" on every loop of an infinite animation.
+    <span className="relative block" role="text" aria-label={text}>
       {/* Reserve final multiline height so surrounding layout never shifts. */}
-      <span className="invisible">
+      <span className="invisible" aria-hidden="true">
         {text}...
       </span>
-      <span className="absolute inset-0">
+      <span className="absolute inset-0" aria-hidden="true">
         {visibleText}
         <motion.span
-          aria-hidden
           className="inline-block"
           initial={{ opacity: 0 }}
           animate={isComplete ? { opacity: [1, 0.25, 1] } : { opacity: 0 }}
@@ -124,10 +140,93 @@ function TypewriterText({
           ...
         </motion.span>
       </span>
-      <span className="sr-only" aria-live="polite">
-        {isComplete ? "typing complete" : "typing"}
-      </span>
     </span>
+  );
+}
+
+/**
+ * Hero portrait. The source may be a video or a still, and either can fail, so
+ * this handles all three states.
+ *
+ * The video is decorative, muted, and looping, so it is hidden from assistive
+ * tech and the still carries the alt text. It preloads metadata only — the old
+ * `preload="auto"` pulled the full multi-megabyte file on every page load — and
+ * it does not autoplay under prefers-reduced-motion. A pause control is offered
+ * either way, since auto-playing motion needs a way to stop it (WCAG 2.2.2).
+ */
+function HeroMedia({ reducedMotion }: { reducedMotion: boolean }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoFailed, setVideoFailed] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(!reducedMotion);
+
+  const src = heroContent.profileVideo;
+  const poster = heroContent.profilePoster;
+  const isVideo = /\.(mp4|webm|mov)$/i.test(src);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (reducedMotion) {
+      video.pause();
+      setIsPlaying(false);
+    }
+  }, [reducedMotion]);
+
+  const toggle = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      void video.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+    } else {
+      video.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  if (!isVideo || videoFailed) {
+    const fallback = videoFailed ? poster ?? src : src;
+    return (
+      <Image
+        src={fallback}
+        alt={siteConfig.author.name}
+        fill
+        priority
+        sizes="(max-width: 640px) 224px, (max-width: 1024px) 384px, 608px"
+        className="object-cover"
+      />
+    );
+  }
+
+  return (
+    <>
+      <video
+        ref={videoRef}
+        src={encodeURI(src)}
+        poster={poster ? encodeURI(poster) : undefined}
+        autoPlay={!reducedMotion}
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-hidden="true"
+        tabIndex={-1}
+        disablePictureInPicture
+        onError={() => setVideoFailed(true)}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+        className="h-full w-full object-cover"
+      />
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label={isPlaying ? "Pause background video" : "Play background video"}
+        className="absolute bottom-3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-black/45 text-white opacity-60 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-black/75 hover:opacity-100 focus-visible:opacity-100"
+      >
+        {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+      </button>
+      {/* The portrait still carries the accessible name for the whole media slot. */}
+      <span className="sr-only">{siteConfig.author.name}</span>
+    </>
   );
 }
 
@@ -241,26 +340,8 @@ export function Hero() {
               className="relative w-56 h-72 sm:w-72 sm:h-96 md:w-96 md:h-136 lg:w-136 lg:h-176 xl:w-152 xl:h-200 mx-auto lg:ml-auto lg:-mr-12 xl:-mr-24"
             >
               <div className="relative h-full w-full overflow-hidden rounded-2xl bg-neutral-200 dark:bg-neutral-900 shadow-xl dark:shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transition-colors duration-300">
-                {/\.(mp4|webm)$/i.test(heroContent.profileVideo) ? (
-                  <video
-                    src={encodeURI(heroContent.profileVideo)}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                   
-                  <img
-                    src={encodeURI(heroContent.profileVideo)}
-                    alt={siteConfig.author.name}
-                    className="w-full h-full object-cover"
-                  />
-                )}
-
-                <div className="absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_0_80px_rgba(0,0,0,0.6)]" />
+                <HeroMedia reducedMotion={prefersReducedMotion} />
+                <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_0_80px_rgba(0,0,0,0.6)]" />
               </div>
             </motion.div>
 

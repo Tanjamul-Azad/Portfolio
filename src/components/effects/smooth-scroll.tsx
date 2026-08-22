@@ -28,8 +28,11 @@ export function SmoothScroll() {
       smoothWheel: !prefersReducedMotion,
       wheelMultiplier: 1,
       touchMultiplier: 1.5,
-      syncTouch: !prefersReducedMotion,
-      syncTouchLerp: 0.075,
+      // Touch scrolling stays native. syncTouch routes finger scrolling through
+      // Lenis's rAF loop, which costs the platform's momentum and rubber-band
+      // physics and reads as laggy on phones — the exact devices least able to
+      // spare the frames. Smoothing is a pointer-wheel nicety, not a touch one.
+      syncTouch: false,
     });
     lenisRef.current = lenis;
 

@@ -1,146 +1,33 @@
-"use client";
+import type { Metadata } from "next";
+import { siteConfig } from "@/config";
+import BlogPageClient from "./blog-index-client";
 
-import { motion } from "framer-motion";
-import { Calendar, Clock, ArrowRight } from "lucide-react";
-import { Navbar, Footer } from "@/components/layout";
-import { blogPosts } from "@/data";
-import Link from "next/link";
-import { fadeInUp, staggerContainer } from "@/lib/animations";
-import { Badge } from "@/components/ui/badge";
+// The list page previously had no metadata of its own, so search results and
+// link previews for /blog showed the homepage title and description.
+export const metadata: Metadata = {
+  title: `Blog | ${siteConfig.name}`,
+  description:
+    "Notes on web development, machine learning, and lessons from building production systems.",
+  alternates: { canonical: `${siteConfig.url}/blog` },
+  openGraph: {
+    type: "website",
+    url: `${siteConfig.url}/blog`,
+    title: `Blog | ${siteConfig.name}`,
+    description:
+      "Notes on web development, machine learning, and lessons from building production systems.",
+    siteName: siteConfig.name,
+    images: [{ url: siteConfig.ogImage, width: 1200, height: 630, alt: `${siteConfig.name} blog` }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `Blog | ${siteConfig.name}`,
+    description:
+      "Notes on web development, machine learning, and lessons from building production systems.",
+    images: [siteConfig.ogImage],
+    creator: siteConfig.author.twitterHandle,
+  },
+};
 
 export default function BlogPage() {
-  const featuredPosts = blogPosts.filter(p => p.featured);
-
-  return (
-    <main className="bg-neutral-50 dark:bg-black min-h-screen">
-      <Navbar />
-      
-      {/* Hero */}
-      <section className="pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-size-[60px_60px]" />
-        
-        <div className="container px-4 sm:px-6 mx-auto relative">
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate="visible"
-            className="max-w-3xl"
-          >
-            <motion.div variants={fadeInUp} className="mb-4">
-              <span className="text-sm text-neutral-500 dark:text-neutral-400 tracking-[0.16em] uppercase font-medium">
-                Blog & Notes
-              </span>
-            </motion.div>
-            
-            <motion.h1 
-              variants={fadeInUp}
-              className="text-3xl sm:text-4xl md:text-5xl font-bold text-neutral-900 dark:text-white mb-6"
-            >
-              Thoughts, Learnings & Tutorials
-            </motion.h1>
-            
-            <motion.p 
-              variants={fadeInUp}
-              className="text-base sm:text-lg md:text-xl text-neutral-600 dark:text-neutral-300"
-            >
-              I write about web development, AI, and things I learn while building projects.
-            </motion.p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Featured Posts */}
-      {featuredPosts.length > 0 && (
-        <section className="py-12 bg-white dark:bg-neutral-900/50">
-          <div className="container px-4 sm:px-6 mx-auto">
-            <h2 className="text-sm text-neutral-500 uppercase tracking-widest mb-8">Featured</h2>
-            <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
-              {featuredPosts.map((post, index) => (
-                <motion.article
-                  key={post.slug}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Link 
-                    href={`/blog/${post.slug}`}
-                    className="block p-4 sm:p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 transition-all group h-full"
-                  >
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {post.tags.slice(0, 3).map(tag => (
-                        <Badge 
-                          key={tag} 
-                          variant="secondary" 
-                          className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-xs"
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    
-                    <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-3 group-hover:text-amber-500 transition-colors">
-                      {post.title}
-                    </h3>
-                    
-                    <p className="text-neutral-600 dark:text-neutral-400 text-sm mb-4 line-clamp-2">
-                      {post.excerpt}
-                    </p>
-                    
-                    <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-neutral-500">
-                      <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {post.readTime}
-                        </span>
-                      </div>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-amber-500" />
-                    </div>
-                  </Link>
-                </motion.article>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* All Posts */}
-      <section className="py-16 bg-neutral-50 dark:bg-black">
-        <div className="container px-4 sm:px-6 mx-auto">
-          <h2 className="text-sm text-neutral-500 uppercase tracking-widest mb-8">All Posts</h2>
-          <div className="space-y-4 max-w-3xl">
-            {blogPosts.map((post, index) => (
-              <motion.article
-                key={post.slug}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-              >
-                <Link 
-                  href={`/blog/${post.slug}`}
-                  className="flex items-start sm:items-center justify-between gap-3 p-4 rounded-xl hover:bg-white dark:hover:bg-neutral-900 transition-all group"
-                >
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-neutral-900 dark:text-white group-hover:text-amber-500 transition-colors mb-1">
-                      {post.title}
-                    </h3>
-                    <div className="flex items-center gap-4 text-xs text-neutral-500">
-                      <span>{new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                      <span>{post.readTime}</span>
-                    </div>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-neutral-400 group-hover:text-amber-500 group-hover:translate-x-1 transition-all" />
-                </Link>
-              </motion.article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <Footer />
-    </main>
-  );
+  return <BlogPageClient />;
 }

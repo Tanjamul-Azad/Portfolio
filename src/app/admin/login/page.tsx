@@ -33,7 +33,7 @@ export default function LoginPage() {
         onSubmit={onSubmit}
         className="w-full max-w-sm space-y-5 rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
       >
-        <div className="flex size-11 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
+        <div className="flex size-11 items-center justify-center rounded-xl bg-amber-500/15 text-accent">
           <Lock className="size-5" />
         </div>
         <div>

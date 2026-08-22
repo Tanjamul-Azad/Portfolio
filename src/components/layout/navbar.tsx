@@ -15,13 +15,14 @@ import { ThemeToggle } from "@/components/common";
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState<string>("now");
+  const [activeSection, setActiveSection] = useState<string>("");
   const pathname = usePathname();
   const isHome = pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -34,7 +35,10 @@ export function Navbar() {
       .map((id) => document.getElementById(id))
       .filter((section): section is HTMLElement => section !== null);
 
-    if (sections.length === 0) return;
+    if (sections.length === 0) {
+      setActiveSection("");
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -51,10 +55,11 @@ export function Navbar() {
 
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, []);
+  }, [pathname]);
 
   return (
     <nav
+      aria-label="Main"
       className={cn(
         "fixed top-0 w-full z-50 transition-all duration-500 ease-in-out border-b border-transparent",
         scrolled
@@ -77,7 +82,7 @@ export function Navbar() {
               const isAnchorLink = link.href.startsWith('#');
               const href = isAnchorLink ? (isHome ? link.href : `/${link.href}`) : link.href;
               const sectionId = link.href.replace("#", "");
-              const isActive = isAnchorLink && activeSection === sectionId;
+              const isActive = isHome && isAnchorLink && activeSection === sectionId;
 
               return (
                 <Link
@@ -165,7 +170,7 @@ export function Navbar() {
                 </div>
 
                 {/* Nav links */}
-                <nav className="flex-1 px-4 py-6">
+                <nav aria-label="Mobile" className="flex-1 px-4 py-6">
                   <ul className="space-y-0.5">
                     {navLinks.map((link, i) => {
                       const sectionId = link.href.replace("#", "");
@@ -184,7 +189,7 @@ export function Navbar() {
                               className={cn(
                                 "flex items-center gap-3 px-3 py-3 rounded-xl text-base font-medium transition-all group",
                                 isActive
-                                  ? "text-amber-600 dark:text-amber-400 bg-amber-500/8 dark:bg-amber-500/10"
+                                  ? "text-accent bg-amber-500/8 dark:bg-amber-500/10"
                                   : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900"
                               )}
                             >
@@ -217,7 +222,7 @@ export function Navbar() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={`Open ${label}`}
-                        className="p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-900 hover:bg-amber-500/10 dark:hover:bg-amber-500/10 text-neutral-500 dark:text-neutral-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
+                        className="p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-900 hover:bg-amber-500/10 dark:hover:bg-amber-500/10 text-neutral-500 dark:text-neutral-400 hover:text-accent transition-colors"
                       >
                         <Icon className="w-4.5 h-4.5" />
                       </Link>

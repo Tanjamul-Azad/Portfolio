@@ -7,9 +7,14 @@ export const runtime = "nodejs";
 
 // Server-side validation schema
 const contactSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters").max(100),
-  email: z.string().email("Please enter a valid email address"),
-  message: z.string().min(10, "Message must be at least 10 characters").max(5000),
+  name: z.string().trim().min(2, "Name must be at least 2 characters").max(100),
+  email: z.string().trim().email("Please enter a valid email address").max(254),
+  message: z.string().trim().min(10, "Message must be at least 10 characters").max(5000),
+  // Honeypot. Real submissions leave it empty; the field is off-screen and
+  // untabbable. Deliberately accepts any string rather than rejecting a
+  // non-empty one — a validation error would tell the bot exactly which field
+  // tripped. It is checked after parsing and silently absorbed instead.
+  website: z.string().max(200).optional(),
 });
 
 // Escape user-supplied values before interpolating into the email HTML.
@@ -27,6 +32,7 @@ function escapeHtml(value: string): string {
 const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const MAX_REQUESTS = 3; // 3 requests per minute
+const RATE_LIMIT_MAX_ENTRIES = 500;
 const DEFAULT_RESEND_FROM = "onboarding@resend.dev";
 
 function resolveFromAddress(rawValue?: string): string {
@@ -45,17 +51,29 @@ function resolveFromAddress(rawValue?: string): string {
   return candidate;
 }
 
+/**
+ * Drops expired entries so the map cannot grow without bound.
+ *
+ * Done lazily on write rather than from a module-scope `setInterval`: on a
+ * serverless runtime that timer re-arms on every cold start, is never cleared,
+ * and holds a handle open for a process that may be frozen between requests.
+ */
+function pruneRateLimits(now: number): void {
+  if (rateLimitMap.size < RATE_LIMIT_MAX_ENTRIES) return;
+  for (const [key, value] of rateLimitMap) {
+    if (now - value.timestamp > RATE_LIMIT_WINDOW * 2) {
+      rateLimitMap.delete(key);
+    }
+  }
+}
+
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
+  pruneRateLimits(now);
+
   const record = rateLimitMap.get(ip);
 
-  if (!record) {
-    rateLimitMap.set(ip, { count: 1, timestamp: now });
-    return false;
-  }
-
-  if (now - record.timestamp > RATE_LIMIT_WINDOW) {
-    // Reset window
+  if (!record || now - record.timestamp > RATE_LIMIT_WINDOW) {
     rateLimitMap.set(ip, { count: 1, timestamp: now });
     return false;
   }
@@ -67,16 +85,6 @@ function isRateLimited(ip: string): boolean {
   record.count++;
   return false;
 }
-
-// Cleanup old entries periodically
-setInterval(() => {
-  const now = Date.now();
-  rateLimitMap.forEach((value, key) => {
-    if (now - value.timestamp > RATE_LIMIT_WINDOW * 2) {
-      rateLimitMap.delete(key);
-    }
-  });
-}, 60 * 1000);
 
 export async function POST(request: NextRequest) {
   try {
@@ -102,7 +110,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: errors }, { status: 400 });
     }
 
-    const { name, email, message } = result.data;
+    const { name, email, message, website } = result.data;
+
+    // Trap tripped. Return the same success shape a real send produces so the
+    // bot gets no signal about why nothing arrived.
+    if (website) {
+      return NextResponse.json({ success: true, message: "Message received successfully" });
+    }
+
     const safeName = escapeHtml(name);
     const safeEmail = escapeHtml(email);
     const safeMessage = escapeHtml(message);

@@ -5,16 +5,20 @@ import { testimonials } from "@/data";
 import { TestimonialsColumn, type TestimonialItem } from "@/components/ui/testimonials-columns-1";
 
 export function Testimonials() {
+  // Avatars are rendered locally from initials — the previous version hit
+  // ui-avatars.com on every page view, which is a third-party request, a
+  // referrer leak, and a single point of failure for a purely decorative image.
   const testimonialItems: TestimonialItem[] = testimonials.map((testimonial) => ({
     text: testimonial.content,
-    image: `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=f59e0b&color=fff&size=96`,
     name: testimonial.name,
     role: `${testimonial.role} at ${testimonial.company}`,
   }));
 
-  const firstColumn = testimonialItems.slice(0, 1);
-  const secondColumn = testimonialItems.slice(1, 2);
-  const thirdColumn = testimonialItems.slice(2, 3);
+  // Deal the items round-robin across the columns instead of slicing fixed
+  // single-item windows, which silently dropped everything past the third entry.
+  const columns: TestimonialItem[][] = [[], [], []];
+  testimonialItems.forEach((item, i) => columns[i % 3].push(item));
+  const [firstColumn, secondColumn, thirdColumn] = columns;
   const hasTestimonials = testimonialItems.length > 0;
 
   return (

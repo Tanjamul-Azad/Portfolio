@@ -47,13 +47,16 @@ export default function InteractiveHoverButton({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <div className='bg-primary h-2 w-2 rounded-full transition-all duration-500 group-hover:scale-[40]' />
+      <div aria-hidden='true' className='bg-primary h-2 w-2 rounded-full transition-all duration-500 group-hover:scale-[40]' />
       <span className='inline-flex items-center gap-2 transition-all duration-500 group-hover:translate-x-20 group-hover:opacity-0'>
         {icon && iconPosition === 'left' ? <span className='inline-flex items-center'>{icon}</span> : null}
         <span>{text}</span>
         {icon && iconPosition === 'right' ? <span className='inline-flex items-center'>{icon}</span> : null}
       </span>
-      <div className='text-primary-foreground absolute top-0 left-0 z-10 flex h-full w-full -translate-x-16 items-center justify-center gap-2 opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:opacity-100'>
+      <div
+        aria-hidden='true'
+        className='text-primary-foreground absolute top-0 left-0 z-10 flex h-full w-full -translate-x-16 items-center justify-center gap-2 opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:opacity-100'
+      >
         {(hoverIcon ? hoverIconPosition === 'left' : iconPosition === 'left')
           ? <span className='inline-flex items-center'>{hoverIcon ?? icon}</span>
           : null}
@@ -75,6 +78,7 @@ export default function InteractiveHoverButton({
         rel={rel}
         className={cn(
           'group bg-background relative inline-flex min-w-40 items-center justify-center overflow-hidden rounded-full border p-2 px-6 font-semibold',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
           classes
         )}
         layout
@@ -89,6 +93,7 @@ export default function InteractiveHoverButton({
     <motion.button
       className={cn(
         'group bg-background relative flex min-w-40 items-center justify-center overflow-hidden rounded-full border p-2 px-6 font-semibold',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         classes
       )}
       type='button'
