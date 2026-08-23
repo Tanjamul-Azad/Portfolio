@@ -1,19 +1,19 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { createContext, useContext } from "react";
 import type { ReactNode } from "react";
-import { MOTION_TOKENS } from "@/lib";
 
 type RouteTransitionContextValue = {
   isRouteTransitioning: boolean;
-  setRouteTransitioning: (value: boolean) => void;
 };
 
+/**
+ * Always false. Kept because several sections read it to decide whether to run
+ * their scroll-reveal animations, and "not transitioning" is the correct answer
+ * now that route changes are not animated.
+ */
 const RouteTransitionContext = createContext<RouteTransitionContextValue>({
   isRouteTransitioning: false,
-  setRouteTransitioning: () => {},
 });
 
 export function useRouteTransitioning() {
@@ -21,73 +21,33 @@ export function useRouteTransitioning() {
 }
 
 export function RouteTransitionProvider({ children }: { children: ReactNode }) {
-  const [isRouteTransitioning, setRouteTransitioning] = useState(false);
-
-  useEffect(() => {
-    const html = document.documentElement;
-    const body = document.body;
-
-    if (isRouteTransitioning) {
-      html.setAttribute("data-route-transitioning", "true");
-      body.style.overflow = "hidden";
-      body.style.touchAction = "none";
-    } else {
-      html.removeAttribute("data-route-transitioning");
-      body.style.overflow = "";
-      body.style.touchAction = "";
-    }
-
-    return () => {
-      html.removeAttribute("data-route-transitioning");
-      body.style.overflow = "";
-      body.style.touchAction = "";
-    };
-  }, [isRouteTransitioning]);
-
-  const value = useMemo(
-    () => ({ isRouteTransitioning, setRouteTransitioning }),
-    [isRouteTransitioning]
-  );
-
   return (
-    <RouteTransitionContext.Provider value={value}>
+    <RouteTransitionContext.Provider value={{ isRouteTransitioning: false }}>
       {children}
     </RouteTransitionContext.Provider>
   );
 }
 
+/**
+ * Passthrough. There is deliberately no cross-route animation here.
+ *
+ * Two separate bugs came out of animating this boundary, because in the App
+ * Router the page arrives as a `children` prop rather than as a differently
+ * keyed element:
+ *
+ *  - Wrapping it in AnimatePresence meant the "exiting" copy re-rendered with
+ *    the *incoming* page's content and then never unmounted. Every case study
+ *    ended up rendered twice, stacked, the second at opacity 0 — so the page was
+ *    double height with a dead invisible half below the real content. Scrolling
+ *    into that region is what felt like the page being stuck.
+ *
+ *  - Keying a motion.div on the pathname fixed the ghost but forced a full
+ *    remount on every navigation, which re-suspended the route and left it
+ *    parked on the loading fallback instead of resolving.
+ *
+ * The fade was cosmetic and each section already animates itself on scroll, so
+ * the honest fix is not to animate this boundary at all.
+ */
 export function PageTransition({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
-  const prefersReducedMotion = useReducedMotion() ?? false;
-  const { setRouteTransitioning } = useRouteTransitioning();
-
-  // The admin editor renders without per-route transition animations.
-  if (pathname?.startsWith("/admin")) {
-    return <>{children}</>;
-  }
-
-  return (
-    <AnimatePresence
-      initial={false}
-      onExitComplete={() => setRouteTransitioning(false)}
-    >
-      <motion.div
-        key={pathname}
-        initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
-        onAnimationStart={(definition) => {
-          if (definition === "exit") {
-            setRouteTransitioning(true);
-          }
-        }}
-        transition={{
-          duration: MOTION_TOKENS.duration.quick,
-          ease: MOTION_TOKENS.easing.premium,
-        }}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
-  );
+  return <>{children}</>;
 }

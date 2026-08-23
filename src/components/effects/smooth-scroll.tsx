@@ -3,11 +3,9 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
-import { useRouteTransitioning } from "@/components/providers/page-transition";
 
 export function SmoothScroll() {
   const lenisRef = useRef<Lenis | null>(null);
-  const { isRouteTransitioning } = useRouteTransitioning();
   const pathname = usePathname();
   const onAdmin = pathname?.startsWith("/admin") ?? false;
 
@@ -49,15 +47,6 @@ export function SmoothScroll() {
       lenis.destroy();
     };
   }, [onAdmin]);
-
-  useEffect(() => {
-    if (!lenisRef.current) return;
-    if (isRouteTransitioning) {
-      lenisRef.current.stop();
-      return;
-    }
-    lenisRef.current.start();
-  }, [isRouteTransitioning]);
 
   return null;
 }
