@@ -50,7 +50,14 @@ export function ArchitectureDiagram({
 
   return (
     <figure className="my-8">
-      <div className="overflow-x-auto rounded-2xl border border-neutral-200 bg-white p-4 sm:p-6 dark:border-neutral-800 dark:bg-neutral-900/60">
+      {/* The diagram has a legibility floor, so on a narrow screen it scrolls
+          sideways rather than shrinking its labels into illegibility. */}
+      <div
+        className="custom-scrollbar overflow-x-auto overscroll-x-contain rounded-2xl border border-neutral-200 bg-white p-4 sm:p-6 dark:border-neutral-800 dark:bg-neutral-900/60"
+        tabIndex={0}
+        role="group"
+        aria-label={`${caption} (scrollable)`}
+      >
         <svg
           viewBox={`0 0 ${WIDTH} ${height}`}
           width="100%"
@@ -195,6 +202,7 @@ export function ArchitectureDiagram({
       </div>
       <figcaption className="mt-3 text-center text-sm text-neutral-500 dark:text-neutral-400">
         {caption}
+        <span className="mt-1 block text-xs opacity-70 sm:hidden">Scroll sideways to see the full diagram</span>
       </figcaption>
     </figure>
   );

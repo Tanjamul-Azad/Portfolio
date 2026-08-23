@@ -49,7 +49,7 @@ export function Blog() {
           >
             <Link
               href="/blog"
-              className="group inline-flex items-center gap-2 text-accent hover:text-accent font-medium transition-colors"
+              className="group inline-flex min-h-11 items-center gap-2 text-accent font-medium transition-colors"
             >
               View All Posts
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

@@ -27,7 +27,7 @@ export function ThemeToggle() {
         size="icon"
         aria-hidden="true"
         tabIndex={-1}
-        className="w-9 h-9 rounded-full"
+        className="h-11 w-11 rounded-full sm:h-9 sm:w-9"
       >
         <span className="w-5 h-5" />
       </Button>
@@ -41,7 +41,7 @@ export function ThemeToggle() {
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
       title={isDark ? "Switch to light theme" : "Switch to dark theme"}
-      className="group w-9 h-9 rounded-full bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 hover:scale-110 active:scale-95 transition-all duration-300"
+      className="group h-11 w-11 sm:h-9 sm:w-9 rounded-full bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 hover:scale-110 active:scale-95 transition-all duration-300"
     >
       {isDark ? (
         <Sun className="w-5 h-5 text-amber-400 group-hover:rotate-180 transition-transform duration-500" />

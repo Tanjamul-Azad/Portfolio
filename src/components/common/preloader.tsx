@@ -132,11 +132,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
             setIsVisible(false);
             onCompleteRef.current();
           }}
-          // `[cursor:pointer]`, not `cursor-pointer`: CustomCursor treats the
-          // literal `.cursor-pointer` class as an interactive-element marker, so
-          // putting it on a full-screen overlay pinned the cursor to its enlarged
-          // hover ring across the whole viewport. Same CSS, no class-name match.
-          className="fixed inset-0 z-100 flex [cursor:pointer] flex-col items-center justify-center overflow-hidden bg-black dark:bg-neutral-950"
+          className="fixed inset-0 z-100 flex cursor-pointer flex-col items-center justify-center overflow-hidden bg-black dark:bg-neutral-950"
           exit={{ clipPath: "inset(0 0 100% 0)" }}
           transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
         >

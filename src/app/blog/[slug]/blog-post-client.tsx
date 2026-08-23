@@ -61,7 +61,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
           >
             <Link
               href="/blog"
-              className="inline-flex items-center gap-2 text-neutral-500 hover:text-accent transition-colors mb-8 group"
+              className="group -ml-1 inline-flex min-h-11 items-center gap-2 px-1 text-neutral-500 hover:text-accent transition-colors mb-8"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               All posts
@@ -107,11 +107,11 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={copyLink}>
+                  <Button size="sm" variant="ghost" className="size-11 p-0 sm:size-8" onClick={copyLink}>
                     <Copy className="w-4 h-4" />
                     <span className="sr-only">Copy link to this post</span>
                   </Button>
-                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0" asChild>
+                  <Button size="sm" variant="ghost" className="size-11 p-0 sm:size-8" asChild>
                     <a
                       href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(shareUrl)}`}
                       target="_blank"
@@ -121,7 +121,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                       <span className="sr-only">Share this post on X</span>
                     </a>
                   </Button>
-                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0" asChild>
+                  <Button size="sm" variant="ghost" className="size-11 p-0 sm:size-8" asChild>
                     <a
                       href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
                       target="_blank"

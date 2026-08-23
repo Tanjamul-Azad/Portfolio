@@ -70,7 +70,7 @@ export function Navbar() {
       <div className="container mx-auto px-4 sm:px-6 flex items-center justify-between">
         <Link
           href="/"
-          className="text-lg sm:text-xl font-bold font-heading tracking-tight text-neutral-900 dark:text-white"
+          className="inline-flex items-center py-2.5 text-lg sm:text-xl font-bold font-heading tracking-tight text-neutral-900 dark:text-white"
         >
           {siteConfig.name}
         </Link>
@@ -117,7 +117,7 @@ export function Navbar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`Open ${label}`}
-                className="p-2 rounded-full text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/10 transition-all duration-300 hover-lift focus-visible:ring-2 focus-visible:ring-amber-500/70"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/10 transition-all duration-300 hover-lift focus-visible:ring-2 focus-visible:ring-amber-500/70"
               >
                 <Icon className="w-4.5 h-4.5" />
               </Link>
@@ -222,7 +222,7 @@ export function Navbar() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={`Open ${label}`}
-                        className="p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-900 hover:bg-amber-500/10 dark:hover:bg-amber-500/10 text-neutral-500 dark:text-neutral-400 hover:text-accent transition-colors"
+                        className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-900 hover:bg-amber-500/10 dark:hover:bg-amber-500/10 text-neutral-500 dark:text-neutral-400 hover:text-accent transition-colors"
                       >
                         <Icon className="w-4.5 h-4.5" />
                       </Link>

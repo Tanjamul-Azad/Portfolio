@@ -245,7 +245,7 @@ export function TechStack() {
                     key={category}
                     type="button"
                     onClick={() => setActiveCategory(category)}
-                    className="relative rounded-xl px-3 sm:px-4 md:px-5 py-2.5 text-xs sm:text-sm font-medium outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-amber-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-neutral-900"
+                    className="relative min-h-11 rounded-xl px-3 sm:px-4 md:px-5 py-2.5 text-xs sm:text-sm font-medium outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-amber-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-neutral-900"
                   >
                     {isActive && (
                       <motion.span

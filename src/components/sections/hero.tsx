@@ -220,7 +220,7 @@ function HeroMedia({ reducedMotion }: { reducedMotion: boolean }) {
         type="button"
         onClick={toggle}
         aria-label={isPlaying ? "Pause background video" : "Play background video"}
-        className="absolute bottom-3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-black/45 text-white opacity-60 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-black/75 hover:opacity-100 focus-visible:opacity-100"
+        className="absolute bottom-3 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-black/45 text-white opacity-60 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-black/75 hover:opacity-100 focus-visible:opacity-100"
       >
         {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
       </button>

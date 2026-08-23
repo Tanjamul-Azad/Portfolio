@@ -57,7 +57,7 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
             <Link 
               href="/#projects"
               scroll={false}
-              className="inline-flex items-center gap-2 text-neutral-500 hover:text-accent transition-colors mb-8 group"
+              className="group -ml-1 inline-flex min-h-11 items-center gap-2 px-1 text-neutral-500 hover:text-accent transition-colors mb-8"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               Back to Projects
@@ -390,7 +390,7 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
               return (
                 <Link 
                   href={`/projects/${nextProject.slug}`}
-                  className="inline-flex items-center gap-3 text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white hover:text-accent transition-colors group"
+                  className="group inline-flex min-h-11 items-center gap-3 px-1 text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white hover:text-accent transition-colors"
                 >
                   {nextProject.title}
                   <ArrowUpRight className="w-8 h-8 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />

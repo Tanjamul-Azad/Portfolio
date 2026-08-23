@@ -192,7 +192,7 @@ function MobileProjectCard({ project, index, isRouteTransitioning, failedImages,
         <div className="p-4 max-[360px]:p-3 sm:p-5">
           <Link
             href={`/projects/${project.slug}`}
-            className="block w-fit rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/70"
+            className="flex min-h-11 w-fit items-center rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/70"
           >
             <h3 className="text-lg max-[360px]:text-base sm:text-xl font-bold text-neutral-900 dark:text-white mb-2 flex items-center gap-2 group-hover:text-accent transition-colors">
               {project.title}
@@ -230,7 +230,7 @@ function MobileProjectCard({ project, index, isRouteTransitioning, failedImages,
               </Link>
             </Button>
             {project.sourceUrl && project.sourceUrl !== '#' && (
-              <Button asChild size="icon" variant="ghost" className="self-end sm:self-auto rounded-full w-9 h-9 max-[360px]:w-8 max-[360px]:h-8 shrink-0 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-95 transition-all duration-200">
+              <Button asChild size="icon" variant="ghost" className="self-end sm:self-auto rounded-full size-11 sm:size-9 shrink-0 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-95 transition-all duration-200">
                 <a
                   href={project.sourceUrl}
                   target="_blank"

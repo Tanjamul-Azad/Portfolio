@@ -17,7 +17,7 @@ export function Footer() {
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-neutral-400 dark:text-neutral-600 hover:text-accent hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+              className="inline-flex min-h-11 items-center px-1 text-xs text-neutral-400 dark:text-neutral-600 hover:text-accent hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
             >
               {link.name}
             </Link>

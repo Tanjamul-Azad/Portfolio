@@ -20,15 +20,18 @@ const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 duration-200",
         link: "text-primary underline-offset-4 hover:underline hover:text-accent duration-200",
       },
+      // Every size clears a 44px touch target on small screens and relaxes to
+      // its designed height from `sm:` up, where a mouse is doing the pointing.
+      // 36px controls are comfortable with a cursor and fiddly with a thumb.
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        xs: "h-6 gap-1 rounded-md px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
-        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
-        icon: "size-9",
-        "icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm": "size-8",
-        "icon-lg": "size-10",
+        default: "h-11 px-4 py-2 has-[>svg]:px-3 sm:h-9",
+        xs: "h-11 gap-1 rounded-md px-3 text-xs has-[>svg]:px-2 sm:h-6 sm:px-2 sm:has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
+        sm: "h-11 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 sm:h-8",
+        lg: "h-12 rounded-md px-6 has-[>svg]:px-4 sm:h-10",
+        icon: "size-11 sm:size-9",
+        "icon-xs": "size-11 rounded-md sm:size-6 [&_svg:not([class*='size-'])]:size-3",
+        "icon-sm": "size-11 sm:size-8",
+        "icon-lg": "size-11 sm:size-10",
       },
     },
     defaultVariants: {
