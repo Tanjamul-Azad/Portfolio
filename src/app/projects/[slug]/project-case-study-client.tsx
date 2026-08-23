@@ -10,6 +10,7 @@ import { Navbar, Footer } from "@/components/layout";
 import Link from "next/link";
 import Image from "next/image";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
+import { ArchitectureDiagram } from "@/components/ui/architecture-diagram";
 
 export default function ProjectCaseStudy({ slug }: { slug: string }) {
   const project = getProjectBySlug(slug);
@@ -197,31 +198,39 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
       )}
 
       {/* Architecture */}
-      {project.architecture && (
-        <section className="py-20 md:py-32 bg-neutral-50 dark:bg-black/50 overflow-hidden">
+      {(project.architectureDiagram || project.architecture) && (
+        <section className="py-20 md:py-28 bg-neutral-50 dark:bg-black/50">
           <div className="container px-4 sm:px-6 mx-auto">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
               className="max-w-5xl mx-auto"
             >
-              <div className="flex items-center gap-4 mb-10 justify-center">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 shadow-lg">
-                  <Layers className="w-6 h-6 text-amber-500" />
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 shrink-0 rounded-2xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
+                  <Layers className="w-6 h-6 text-accent" />
                 </div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white tracking-tight">System Architecture</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white tracking-tight">
+                  System Architecture
+                </h2>
               </div>
-              
-              <div className="relative group">
-                <div className="absolute -inset-1 bg-linear-to-r from-amber-500/20 to-sky-500/20 rounded-[2rem] blur-xl opacity-50 group-hover:opacity-100 transition-opacity" />
-                <div className="relative p-5 sm:p-8 md:p-14 rounded-[2rem] bg-white dark:bg-neutral-900/80 backdrop-blur-2xl border border-neutral-200 dark:border-neutral-800 shadow-2xl">
-                  <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed font-mono text-sm md:text-base whitespace-pre-wrap">
-                    {project.architecture}
-                  </p>
-                </div>
-              </div>
+
+              {/* The prose sets up what to look for; the diagram carries the detail,
+                  so it is deliberately not a caption-length restatement of it. */}
+              {project.architecture && (
+                <p className="max-w-3xl text-base sm:text-lg leading-relaxed text-neutral-600 dark:text-neutral-300">
+                  {project.architecture}
+                </p>
+              )}
+
+              {project.architectureDiagram && (
+                <ArchitectureDiagram
+                  diagram={project.architectureDiagram}
+                  accent={project.color}
+                />
+              )}
             </motion.div>
           </div>
         </section>

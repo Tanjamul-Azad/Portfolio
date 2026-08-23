@@ -1,4 +1,6 @@
 export interface Project {
+  /** Rendered as an inline SVG on the case-study page. */
+  architectureDiagram?: ArchitectureDiagram;
   id: string;
   slug: string;
   title: string;
@@ -132,6 +134,28 @@ export interface SiteConfig {
     location: string;
     twitterHandle: string;
   };
+}
+
+/** One box in an architecture diagram row. */
+export interface ArchitectureNode {
+  label: string;
+  /** Optional second line — a technology, protocol, or brief qualifier. */
+  detail?: string;
+}
+
+/** A horizontal band of the diagram; bands are drawn top to bottom in order. */
+export interface ArchitectureLayer {
+  /** Small caption above the row, e.g. "Client" or "Persistence". */
+  title: string;
+  nodes: ArchitectureNode[];
+  /** Label drawn on the arrow leading into the next layer, e.g. "HTTPS / JSON". */
+  edgeLabel?: string;
+}
+
+export interface ArchitectureDiagram {
+  /** Sentence describing what the reader is looking at; also the accessible name. */
+  caption: string;
+  layers: ArchitectureLayer[];
 }
 
 export interface HeroContent {
