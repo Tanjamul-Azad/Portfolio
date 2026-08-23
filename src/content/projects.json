@@ -3,153 +3,188 @@
     "id": "1",
     "slug": "complete-legal-aid",
     "title": "Complete Legal Aid",
-    "description": "Full-stack legal technology platform connecting citizens with verified lawyers through AI-powered assistance, encrypted document management, and multi-modal consultation booking.",
+    "description": "Bilingual legal-aid platform connecting Bangladeshi citizens with verified lawyers — escrow payments, encrypted evidence, and four AI agents on one real-time stack.",
     "role": "Full-Stack Developer & AI Integration Lead",
-    "impact": "Built a complete legal-tech ecosystem serving three user roles with bilingual AI legal assistant (Bangla/English), encrypted evidence vault, and real-time consultation booking that streamlines access to legal services in Bangladesh.",
+    "impact": "Produced a deployable justice platform rather than a demo: Docker Compose brings up PostgreSQL, Redis, Daphne, nginx, and certbot with automatic TLS, and production settings actively refuse to start with DEBUG on, SQLite, or default passwords.",
     "image": "/images/projects/Complete_legal_aid.png",
     "color": "#3b82f6",
     "tags": [
       "React 19",
       "TypeScript",
-      "Django REST",
-      "MySQL",
-      "Gemma 3",
+      "Django 4.2",
+      "Django Channels",
+      "PostgreSQL 16",
+      "Redis",
       "WebSocket",
-      "Tailwind CSS",
-      "JWT Auth"
+      "Gemini",
+      "OpenAI Agents",
+      "FAISS",
+      "SSLCommerz",
+      "Docker",
+      "JWT"
     ],
     "liveUrl": "https://completelegalaid.systems/",
     "featured": true,
     "pinned": true,
-    "overview": "Complete Legal Aid is a production-ready legal technology platform that bridges the gap between citizens seeking legal help and verified legal professionals in Bangladesh. It features role-based dashboards for Citizens, Lawyers, and Admins, with AI-powered legal assistance, secure document management, real-time booking systems, and comprehensive case tracking.",
-    "problem": "Bangladesh's legal sector lacks digital infrastructure, creating barriers to justice through limited lawyer accessibility, absence of verified professional directories, no secure document sharing, and zero AI-assisted legal guidance for preliminary queries.",
-    "solution": "Built a full-stack platform with verified lawyer directory (10+ specializations), fine-tuned Gemma 3 AI model for Bangladesh Constitution, AES-256 encrypted evidence vault, multi-modal consultation booking (video/phone/in-person), emergency legal reporting, and comprehensive admin oversight tools.",
-    "architecture": "React 19 + TypeScript + Vite frontend, Django 4.2 + Django REST Framework backend, MySQL database with UUID-based security, Django Channels for WebSocket real-time features, fine-tuned Gemma 3 (270M) with LoRA for authenticated users, Gemini API fallback for guests, and JWT + Google OAuth 2.0 authentication.",
+    "overview": "Legal help in Bangladesh is hard to price, hard to verify, and hard to reach. CLA puts citizens, verified lawyers, and administrators on one platform in both Bangla and English, and treats the awkward parts of the problem — proving a lawyer is real, holding money safely until work is done, and keeping evidence private — as first-class features rather than afterthoughts.",
+    "problem": "A citizen looking for legal help has no reliable way to check that a lawyer is genuine, no protection when paying up front, and no safe channel for sensitive documents. Lawyers, meanwhile, lose hours drafting standard filings by hand. Both sides fall back on personal referrals, which excludes anyone without the right contacts.",
+    "solution": "Every role gets its own dashboard over a shared Django backend. Payments run through an escrow flow with an immutable ledger, so money is only released against completed work and the books can be proven consistent. Evidence never sits at a public URL — nginx denies /media by default and files are reachable only through short-lived signed links. Four server-side AI agents handle triage, case-strength estimation, drafting, and emergency routing, each restricted to an allow-listed set of tools and scoped to the caller's role.",
+    "architecture": "The stack is event-driven rather than poll-driven: a service or signal pushes through a Redis channel layer into Django Channels, and the browser's WebSocket provider updates the UI directly. Polling exists only as a fallback. The AI layer is deliberately isolated — all keys stay server-side, and every AI feature degrades gracefully to a non-AI path when a key or an optional ML dependency is missing, so a missing API key never takes the platform down.",
     "features": [
       {
-        "title": "Verified Lawyer Directory",
-        "description": "Comprehensive search and filtering by specialization, location, language, rating, and fees. Rigorous verification including bar council number validation and admin approval."
+        "title": "Four scoped AI agents",
+        "description": "Counsel Match triages a citizen's problem into a ranked lawyer shortlist; Justice Lens gives a calibrated case-strength estimate with cited articles; Document Forge drafts from a lawyer's own cases and flags unfilled placeholders; Sentinel handles emergency triage with anonymity-respecting NGO routing. All use function-calling against allow-listed tools, stream over SSE, and are throttled per user."
       },
       {
-        "title": "Bilingual AI Legal Assistant",
-        "description": "Fine-tuned Gemma 3 model trained on Bangladesh Constitution with LoRA adapters. Supports Bangla and English with streaming responses, context-aware conversations, and legal citation."
+        "title": "Escrow payments on an immutable ledger",
+        "description": "SSLCommerz payments flow through a single audited path that writes append-only WalletLedgerEntry records. A reconcile_wallets management command proves the ledger and balances agree."
       },
       {
-        "title": "Encrypted Evidence Vault",
-        "description": "Per-file AES-256 document encryption with a unique key for every file, token-based sharing with expiration, access-count tracking, and a full audit trail for secure evidence management."
+        "title": "Signed-link evidence vault",
+        "description": "Evidence, identity papers, and chat attachments are never served from public URLs. nginx default-denies /media except explicit public folders; everything else is reachable only via short-lived signed links, behind extension, MIME, and magic-byte validation with a 25 MB cap."
       },
       {
-        "title": "Multi-Modal Consultation Booking",
-        "description": "Real-time booking system supporting video calls, phone consultations, and in-person chamber visits with availability management, status tracking, and instant notifications."
+        "title": "Constitution RAG in plain Bangla",
+        "description": "A Gemini-backed assistant answers in everyday Bangla, retrieving over the Constitution with FAISS so answers cite real articles instead of paraphrasing from memory."
       },
       {
-        "title": "Case Management System",
-        "description": "End-to-end case tracking with priority levels, status workflows (Submitted → In Review → Hearing → Resolved), timeline milestones, court details, and hearing reminders."
+        "title": "Ban-aware JWT sessions",
+        "description": "One-hour access tokens with seven-day rotating refresh and a blacklist. Banning a user invalidates their existing tokens immediately rather than waiting for expiry."
       },
       {
-        "title": "Emergency Legal Reporting",
-        "description": "Anonymous emergency reporting for domestic violence, police misconduct, harassment, and other urgent situations with direct routing to CLA responders and secure documentation."
+        "title": "Court-ready bilingual drafting",
+        "description": "Generates bail applications, deeds, notices, and affidavits in Bangla or English from lawyer-owned, database-backed templates that can be shared across the firm."
       }
     ],
     "challenges": [
       {
-        "challenge": "AI model latency affecting user experience with fine-tuned Gemma 3",
-        "learned": "Implemented singleton pattern with lazy loading, streaming responses for real-time interaction, and Gemini API fallback for instant guest user responses. Reduced perceived latency significantly."
+        "challenge": "Keeping money movement auditable when payments, refunds, and withdrawals all touch the same balance.",
+        "learned": "Routed every balance change through one service instead of letting views update wallets directly, and made the ledger append-only so a mistake produces a correcting entry rather than a silent edit. That made a reconciliation command possible — consistency became something to verify on demand rather than assume."
       },
       {
-        "challenge": "Balancing document security with lawyer-client sharing accessibility",
-        "learned": "Designed a token-based sharing system with time expiration, revocation, and access tracking — keeping files encrypted end to end while access stays controlled and auditable."
+        "challenge": "Confidential uploads are easy to leak, because the obvious setup serves them from a guessable static path.",
+        "learned": "Inverted the default: nginx denies everything under /media unless explicitly allowed, and private files are reachable only through expiring signed links. Deny-by-default means a new upload type is private until someone deliberately publishes it — the opposite of the usual failure mode."
       },
       {
-        "challenge": "Real-time updates across multi-role platform (Citizens, Lawyers, Admins)",
-        "learned": "Used Django Channels over WebSocket for instant booking notifications, case updates, and chat messages, with state synchronization that keeps every role consistent in real time."
+        "challenge": "The on-box ML extras (FAISS, sentence-transformers) pull in torch at roughly 2.5 GB, which is unacceptable in a CI image.",
+        "learned": "Split them into a separate requirements-ml.txt and made every dependent feature detect their absence and fall back. The Docker image and CI skip them entirely, and the same codebase runs in both shapes without branching."
+      },
+      {
+        "challenge": "Giving LLM agents real capability without giving them free rein over the database.",
+        "learned": "Each agent gets an explicit allow-list of tools and inherits the caller's role, so a citizen's agent cannot reach a lawyer's cases. Capability is granted per tool rather than withheld per query, which is far easier to reason about when reviewing what an agent can actually do."
       }
     ],
     "results": [
       {
-        "metric": "AI Models",
-        "value": "Dual AI",
-        "description": "Fine-tuned Gemma 3 for authenticated users, Gemini API for guests"
+        "metric": "AI Agents",
+        "value": "4",
+        "description": "Counsel Match, Justice Lens, Document Forge, Sentinel — each role-scoped and tool-restricted"
       },
       {
         "metric": "User Roles",
         "value": "3",
-        "description": "Citizen, Lawyer, and Admin with distinct workflows and permissions"
+        "description": "Citizen, lawyer, and admin, each with a separate code-split dashboard"
       },
       {
-        "metric": "Security",
-        "value": "AES-256",
-        "description": "End-to-end encryption, UUID-based IDs, JWT auth, token-based sharing"
+        "metric": "Languages",
+        "value": "বাংলা + EN",
+        "description": "Full i18n with Bangla code-split from the main bundle"
       },
       {
-        "metric": "Specializations",
-        "value": "10+",
-        "description": "Family, Criminal, Property, Corporate, Tax, IP, Labor, Constitutional, Environmental law"
+        "metric": "Production Stack",
+        "value": "5 services",
+        "description": "PostgreSQL 16, Redis 7, Daphne, nginx, and certbot via one Docker Compose deploy"
       }
     ],
     "architectureDiagram": {
-      "caption": "Complete Legal Aid routes three roles through one Django backend, keeping real-time consultation and AI drafting on separate paths.",
+      "caption": "Complete Legal Aid pushes state changes outward through Redis and Django Channels; the browser subscribes rather than polls.",
       "layers": [
         {
-          "title": "Roles - React 19 + TypeScript",
-          "edgeLabel": "JWT-authenticated",
+          "title": "Clients - React 19 + Vite",
+          "edgeLabel": "JWT over HTTPS and WSS",
           "nodes": [
             {
               "label": "Citizen",
-              "detail": "case intake"
+              "detail": "cases, booking, vault"
             },
             {
               "label": "Lawyer",
-              "detail": "consultation"
+              "detail": "drafting, earnings"
             },
             {
               "label": "Admin",
-              "detail": "verification"
+              "detail": "verification, ledger"
             }
           ]
         },
         {
-          "title": "Transport",
-          "edgeLabel": "routed by concern",
+          "title": "Edge - nginx",
+          "edgeLabel": "proxies /api /ws /admin",
           "nodes": [
             {
-              "label": "Django REST",
-              "detail": "CRUD + auth"
+              "label": "TLS + SPA",
+              "detail": "certbot auto-renewal"
             },
             {
-              "label": "Django Channels",
-              "detail": "WebSocket messaging"
+              "label": "Media Policy",
+              "detail": "default-deny, signed links only"
             }
           ]
         },
         {
-          "title": "Domain Services",
+          "title": "Application - Django 4.2 on Daphne (ASGI)",
+          "edgeLabel": "service calls",
+          "nodes": [
+            {
+              "label": "DRF Views",
+              "detail": "HTTP layer"
+            },
+            {
+              "label": "Channels Consumers",
+              "detail": "notifications, dashboard, presence"
+            },
+            {
+              "label": "Agent Runtime",
+              "detail": "SSE, tool allow-list"
+            }
+          ]
+        },
+        {
+          "title": "Services",
           "edgeLabel": "persisted",
           "nodes": [
             {
-              "label": "Consultation Booking",
-              "detail": "multi-modal"
+              "label": "Wallet",
+              "detail": "escrow + immutable ledger"
             },
             {
-              "label": "AI Drafting",
-              "detail": "bilingual bn / en"
+              "label": "Document",
+              "detail": "bilingual generation"
             },
             {
-              "label": "Evidence Vault",
-              "detail": "encrypted at rest"
+              "label": "AI",
+              "detail": "Gemini + FAISS RAG"
+            },
+            {
+              "label": "Search",
+              "detail": "statutes, case law, news"
             }
           ]
         },
         {
-          "title": "Persistence",
+          "title": "Infrastructure",
           "nodes": [
             {
-              "label": "MySQL",
-              "detail": "cases, users, messages"
+              "label": "PostgreSQL 16",
+              "detail": "SQLite for local dev"
             },
             {
-              "label": "Encrypted Store",
-              "detail": "documents"
+              "label": "Redis 7",
+              "detail": "channel layer"
+            },
+            {
+              "label": "Secure Media Store",
+              "detail": "signed-link access"
             }
           ]
         }
@@ -160,9 +195,9 @@
     "id": "5",
     "slug": "skillex",
     "title": "SkillEx",
-    "description": "Peer skill-exchange platform where users can learn and teach skills through mutual exchange — no money required.",
+    "description": "Peer skill-exchange platform where people trade what they can teach for what they want to learn — matched semantically, with no money involved.",
     "role": "Full-Stack Developer",
-    "impact": "Designed and built a full monorepo architecture with semantic skill-matching powered by Gemini Embedding API, enabling relevant peer connections for skill exchange.",
+    "impact": "The OOP brief pushed toward structure that earned its keep: one client boundary on the frontend and an interface-per-service split on the backend meant the embedding provider could be swapped for a local fallback without touching a controller.",
     "image": "/images/projects/SkilllEX.png",
     "color": "#10b981",
     "tags": [
@@ -173,49 +208,55 @@
       "Java 21",
       "Spring Data JPA",
       "Flyway",
+      "MySQL 8",
       "JWT",
-      "Gemini API"
+      "Gemini Embeddings",
+      "Firebase Auth"
     ],
     "sourceUrl": "https://github.com/Tanjamul-Azad/SkillEx",
     "featured": false,
     "pinned": true,
-    "overview": "SkillEx is an Advanced OOP course project and personal initiative — a platform that lets people exchange skills peer-to-peer without monetary transactions. It uses semantic AI matching to connect users based on what they can offer and what they want to learn.",
-    "problem": "Access to quality skill learning is often gated by cost. Many people have valuable knowledge to share but no structured platform for mutual skill exchange.",
-    "solution": "Built a full-stack monorepo with a React 19 frontend and Spring Boot 3 backend. Integrated Gemini Embedding API for semantic skill matching to surface relevant connections.",
-    "architecture": "React 19 + Vite + TypeScript frontend with feature-first vertical slices and TanStack Query; Spring Boot 3 + Java 21 backend with clean service/repository separation, Flyway SQL migrations, and JWT authentication.",
+    "overview": "An Advanced OOP course project taken past the coursework brief. The interesting constraint is that there is no currency: a match is only useful when two people's offers and wants genuinely complement each other, which turns matching into the core engineering problem rather than a feature bolted on later.",
+    "problem": "Skill learning is gated by cost, while plenty of people hold knowledge worth trading. Keyword matching is not good enough to pair them — someone offering \"React\" and someone wanting \"frontend development\" never meet, even though they should.",
+    "solution": "Skills are embedded through the Gemini Embedding API and matched by semantic similarity, so related phrasings converge. Because a hosted embedding service is a hard dependency for a course project, the backend falls back to local embeddings whenever no API key is present — the feature degrades in quality rather than disappearing.",
+    "architecture": "A monorepo with clean seams. The frontend is organised as feature-first vertical slices, and all network access funnels through a single ApiClient singleton, so JWT attachment and error shape live in one place. The backend keeps controllers thin and routes work through service interfaces to implementations, with Flyway owning the schema as versioned SQL.",
     "features": [
       {
-        "title": "Semantic Skill Matching",
-        "description": "Uses Gemini Embedding API to match users based on skills offered and skills wanted — going beyond keyword search."
+        "title": "Semantic skill matching",
+        "description": "Gemini embeddings place offered and wanted skills in the same vector space, so \"React\" and \"frontend development\" match on meaning rather than on shared characters."
       },
       {
-        "title": "JWT Authentication",
-        "description": "Secure token-based auth with refresh flow and CORS configuration."
+        "title": "Graceful embedding fallback",
+        "description": "With EMBEDDING_PROVIDER set to api but no key present, the backend silently switches to local embeddings instead of failing the request."
       },
       {
-        "title": "Flyway Migrations",
-        "description": "Database schema managed through versioned SQL migrations for reliable deployments."
+        "title": "Single API boundary",
+        "description": "An ApiClient singleton wraps fetch, attaches the JWT, and normalises every response into ApiResponse<T> — so success, error, and message handling are identical across features."
       },
       {
-        "title": "Feature-First Frontend",
-        "description": "Frontend organised into vertical feature slices with a shared ApiClient singleton for consistent HTTP communication."
+        "title": "Versioned schema with Flyway",
+        "description": "Migrations run as ordered SQL on startup, so a fresh clone reaches the current schema without anyone running statements by hand."
+      },
+      {
+        "title": "Feature-first frontend slices",
+        "description": "Each domain owns its components, services, and types together, so a feature can be read or removed without tracing through shared folders."
       }
     ],
     "results": [
       {
-        "metric": "Stack",
-        "value": "Full Monorepo",
-        "description": "React 19 frontend + Spring Boot 3 backend in a single managed repo"
-      },
-      {
         "metric": "Matching",
-        "value": "AI-Powered",
-        "description": "Gemini Embedding API for semantic skill matching"
+        "value": "Semantic",
+        "description": "Gemini embeddings, with an automatic local fallback"
       },
       {
-        "metric": "Architecture",
-        "value": "Clean OOP",
-        "description": "Built as Advanced OOP capstone with proper layering"
+        "metric": "Stack",
+        "value": "Monorepo",
+        "description": "React 19 frontend and Spring Boot 3 backend sharing one migration source"
+      },
+      {
+        "metric": "Schema",
+        "value": "Flyway",
+        "description": "Versioned SQL applied automatically on first run"
       }
     ],
     "architectureDiagram": {
@@ -289,74 +330,94 @@
           ]
         }
       ]
-    }
+    },
+    "challenges": [
+      {
+        "challenge": "A hosted embedding API is a single point of failure for the one feature the product is built around.",
+        "learned": "Made the provider a configuration choice with an automatic local fallback rather than a hard dependency. Designing the degraded path first meant the feature had a defined behaviour without a key, instead of an exception."
+      },
+      {
+        "challenge": "Getting a Spring Boot backend and a Vite frontend running together locally involves MySQL, ports, and migration order.",
+        "learned": "Automated it — a pre-start script detects and starts MySQL, waits for port 3306, and ensures the database exists before the backend boots. Setup friction is a real cost on a team project; removing it is worth the scripting."
+      },
+      {
+        "challenge": "Thin controllers are easy to describe and easy to erode once deadlines arrive.",
+        "learned": "Keeping the service as an interface with a separate implementation made the boundary structural rather than a convention. It is harder to leak business logic into a controller when doing so means bypassing a type you would have to go around deliberately."
+      }
+    ]
   },
   {
     "id": "3",
     "slug": "convoverse",
     "title": "ConvoVerse",
-    "description": "LLM-based multi-agent social practice system with staged exposure modes to help users build communication confidence.",
+    "description": "HCI research prototype where introverted learners rehearse conversations with LLM agents before facing the real thing.",
     "role": "System Designer & Frontend Developer",
-    "impact": "Designed a multi-agent LLM flow with adaptive pacing, rewind-and-retry mechanics, and reflective feedback for social practice.",
+    "impact": "Contributes a reusable interaction pattern rather than a product: staged exposure, reversible actions, and non-evaluative feedback, applicable to any system supporting participation.",
     "image": "/images/projects/ConvoVerse.png",
     "color": "#8b5cf6",
     "tags": [
-      "TypeScript",
       "React",
-      "Next.js",
-      "LLM APIs",
-      "HCI"
+      "TypeScript",
+      "LLM Agents",
+      "Multi-Agent Systems",
+      "HCI",
+      "Interaction Design",
+      "Prototype"
     ],
     "sourceUrl": "https://github.com/Tanjamul-Azad/ConvoVerse",
     "featured": true,
     "pinned": true,
-    "overview": "ConvoVerse is an LLM-based practice environment for communication training. It introduces progressive interaction stages and role-based AI agents to reduce social pressure while practicing.",
-    "problem": "Many learners need low-pressure practice before participating confidently in real social or academic interactions.",
-    "solution": "Designed a three-stage progression (Observer, One-on-One, Small Group) and built an interactive frontend that supports adaptive pacing, retries, and reflection.",
-    "architecture": "TypeScript/React/Next.js interface integrated with role-based LLM agent APIs and session-level interaction controls.",
+    "overview": "An academic Human-Computer Interaction project built on a specific claim: many capable students stay quiet not from lack of knowledge but from lack of rehearsal. ConvoVerse gives them a private space to practise, positioning AI as a facilitator that helps someone feel ready to participate — explicitly not as a substitute for talking to people.",
+    "problem": "Educational platforms optimise for delivering content and assume participation follows. For students who freeze in discussions, the barrier is social readiness, and every existing option asks them to practise in exactly the public setting they are avoiding.",
+    "solution": "Difficulty is scaffolded in stages instead of thrown at the user. Observer Mode lets them watch agents converse without participating; then one-on-one with a single peer agent; then a small group where a Peer, a Group Member, and a Facilitator compete for turns. Rewind and Retry lets any exchange be restarted with no penalty.",
+    "architecture": "The same agent roles are recombined per stage rather than rewritten, so escalating difficulty is a matter of how many agents are present and how they interact. Psychological safety is enforced as a design constraint: no scoring, no public exposure, no forced turn — closing feedback is reflective rather than evaluative.",
     "features": [
       {
-        "title": "Multi-Agent Roles",
-        "description": "Introduced three distinct AI roles for controlled social simulation across different interaction styles."
+        "title": "Observer Mode",
+        "description": "The user watches AI agents hold a conversation with no expectation of input, so the first exposure carries no risk of being addressed."
       },
       {
-        "title": "Graduated Exposure",
-        "description": "Designed Observer to One-on-One to Small Group progression for confidence-building practice."
+        "title": "Three distinct agent roles",
+        "description": "A Peer converses as an equal, a Group Member competes for speaking turns, and a Facilitator keeps discussion moving — together modelling the dynamics that make group settings hard."
       },
       {
         "title": "Rewind and Retry",
-        "description": "Enabled users to revisit and retry responses, improving iterative communication learning."
+        "description": "Any exchange can be restarted to try a different response, making exploration free and removing the cost of saying the wrong thing."
       },
       {
-        "title": "Reflective Feedback",
-        "description": "Included post-session reflection flows to support continuous behavioral improvement."
+        "title": "Adaptive pacing",
+        "description": "Conversation speed and complexity respond to the user's comfort rather than following a fixed script."
+      },
+      {
+        "title": "Non-evaluative reflection",
+        "description": "Sessions close with reflective prompts rather than a score, keeping the experience about confidence instead of performance."
       }
     ],
     "challenges": [
       {
-        "challenge": "Balancing realism and emotional safety in generated interactions",
-        "learned": "Role-specific prompts and pacing controls reduced overload and improved consistency of practice sessions."
+        "challenge": "An AI conversation partner risks becoming a substitute for human contact — the opposite of the intended outcome.",
+        "learned": "Framed every interaction as rehearsal for a real conversation rather than a replacement, and made the staging always point outward toward participation. The framing is the intervention here; the same agents with different framing would produce a different, worse product."
       },
       {
-        "challenge": "Translating HCI concepts into practical UI behavior",
-        "learned": "Iterative UI prototyping with small feedback loops produced clearer interaction patterns."
+        "challenge": "Scoring is the obvious way to show progress, and exactly the wrong mechanic for anxious users.",
+        "learned": "Dropped scores entirely in favour of reflective prompts. Any evaluative signal reintroduces the judgement the environment exists to remove, so the safety property has to be enforced by leaving features out."
       }
     ],
     "results": [
       {
         "metric": "Agent Roles",
         "value": "3",
-        "description": "Role-based AI interaction design implemented"
+        "description": "Peer, Group Member, and Facilitator, recombined per stage"
       },
       {
-        "metric": "Exposure Stages",
+        "metric": "Scaffold Stages",
         "value": "3",
-        "description": "Observer, One-on-One, and Small Group progression"
+        "description": "Observe, one-on-one, then small group"
       },
       {
-        "metric": "Approach",
-        "value": "HCI-Guided",
-        "description": "System design grounded in communication practice principles"
+        "metric": "Scoring",
+        "value": "None",
+        "description": "Reflective feedback only — a deliberate design constraint"
       }
     ],
     "architectureDiagram": {
@@ -420,68 +481,85 @@
     "id": "4",
     "slug": "care-companion",
     "title": "Care Companion",
-    "description": "AI + IoT smart healthcare rover for patient monitoring with sensor integration, autonomous tracking, and caregiver dashboard.",
+    "description": "Raspberry Pi health rover that monitors vitals, dispenses medication on schedule, and raises alerts for gas, fire, or a panic button.",
     "role": "Software Developer & Team Lead",
-    "impact": "Coded all software modules independently and integrated MobileNetSSD with OpenCV, achieving real-time human detection at about 60 FPS on Raspberry Pi 4.",
+    "impact": "Built entirely from commodity parts — Pi 4, Arduino UNO, DHT11, MQ-2, a pulse sensor, an L298N driver — keeping the whole prototype within a student budget while covering monitoring, reminders, hazard detection, and mobility.",
     "image": "/images/projects/care-companion.png",
     "tags": [
-      "Python",
-      "Flask",
-      "OpenCV",
-      "MobileNetSSD",
       "Raspberry Pi 4",
-      "Arduino"
+      "Arduino UNO",
+      "Python",
+      "Django 4.2",
+      "Django REST",
+      "Django Channels",
+      "Celery",
+      "Redis",
+      "MySQL 8",
+      "OpenCV",
+      "IoT"
     ],
     "sourceUrl": "https://github.com/Tanjamul-Azad/Silicon-Squad-",
     "featured": false,
     "pinned": true,
-    "overview": "Care Companion combines AI and IoT to support elderly and home patient care through real-time sensing, autonomous behavior, and remote monitoring.",
-    "problem": "Home-care environments often lack continuous monitoring and fast visibility for caregivers during routine and emergency situations.",
-    "solution": "Built Raspberry Pi-based AI control software, integrated Arduino sensor streams, implemented motor control and voice commands, and created a Flask dashboard for live monitoring.",
-    "architecture": "Raspberry Pi 4 as AI core, Arduino for sensor interfaces, Python control scripts, MobileNetSSD/OpenCV vision pipeline, and Flask web dashboard.",
+    "overview": "A microprocessor project that ended up a working prototype: a mobile assistant for patients and elderly people living at home, combining continuous vitals monitoring with physical actions — moving to the patient, opening a medicine drawer, sounding an alarm.",
+    "problem": "Home care depends on someone being present. Missed medication, an unnoticed fever, a gas leak, or a fall can all go undetected for hours, and commercial monitoring systems are priced out of reach for most households.",
+    "solution": "Split the work across two processors by what each is good at. An Arduino UNO owns the sensors, where tight timing loops matter; the Raspberry Pi 4 handles vision, voice, decisions, and the web layer. They talk over serial, so a slow decision on the Pi never delays a sensor read.",
+    "architecture": "The dashboard never talks to hardware. Sensor readings land in MySQL and the UI reads from there, with Django Channels pushing updates over WebSocket. Celery and Redis own scheduled medication reminders, so timing survives a page being closed — the browser is a view onto state, not a participant in control.",
     "features": [
       {
-        "title": "Real-Time Monitoring",
-        "description": "Collected and surfaced sensor data (DHT11, MQ-2, pulse sensor, flame) through a caregiver-facing dashboard."
+        "title": "Continuous vitals monitoring",
+        "description": "DHT11 for temperature and a Pulse Sensor Amped for heart rate, sampled on the Arduino and streamed to the Pi over serial for threshold checks."
       },
       {
-        "title": "Autonomous Human Detection",
-        "description": "Integrated MobileNetSSD and OpenCV for real-time tracking and patient-following behavior."
+        "title": "Automated medication dispensing",
+        "description": "An SG90 servo opens the correct drawer on schedule with a buzzer prompt, driven by Celery so the timing holds independently of the dashboard."
       },
       {
-        "title": "Voice Command Control",
-        "description": "Implemented command handling for hands-free rover interaction."
+        "title": "Hazard detection",
+        "description": "MQ-2 gas and IR flame sensors raise immediate local alarms and push a notification to caregivers, without waiting on a network round trip."
       },
       {
-        "title": "Medication and Alert Workflows",
-        "description": "Added reminder and alert logic to support safer day-to-day caregiving."
+        "title": "Autonomous mobility",
+        "description": "TT gear motors through an L298N driver, with Pi Camera v3 person detection and obstacle avoidance so the rover can reach the patient."
+      },
+      {
+        "title": "Voice control",
+        "description": "Wake-word commands let a patient summon or direct the rover without reaching a screen or a button."
+      },
+      {
+        "title": "Caregiver dashboard",
+        "description": "Live vitals and trend charts over WebSocket, plus a panic-button feed, reading from the database rather than polling hardware."
       }
     ],
     "challenges": [
       {
-        "challenge": "Maintaining real-time behavior on constrained hardware",
-        "learned": "Optimized capture and inference flow to keep detection responsive while other control loops ran concurrently."
+        "challenge": "Sensor sampling and computer vision on one processor make each other unreliable — vision work starves the timing-sensitive reads.",
+        "learned": "Gave the Arduino sole ownership of sensors and left the Pi to decisions and vision, with serial between them. Splitting by timing requirement rather than by feature is what made both halves predictable."
       },
       {
-        "challenge": "Coordinating multiple sensor and control channels",
-        "learned": "Built modular software boundaries between sensing, motion, and dashboard pipelines to keep the system reliable."
+        "challenge": "Medication reminders cannot depend on a browser being open, but the obvious implementation puts the timer in the request cycle.",
+        "learned": "Moved scheduling into Celery with Redis as the broker, so reminders fire from a worker regardless of who is watching. Anything with real-world consequences belongs outside the request cycle."
+      },
+      {
+        "challenge": "Emergency alerts that travel through the web stack inherit its latency, which is the wrong trade for a gas leak.",
+        "learned": "Made hazards trigger the local buzzer and LEDs directly on the device, then notify over the network as a second step. The safety-critical path should not depend on anything that can be slow or offline."
       }
     ],
     "results": [
       {
-        "metric": "Detection Speed",
-        "value": "~60 FPS",
-        "description": "Real-time human detection achieved on Raspberry Pi 4"
+        "metric": "Sensors",
+        "value": "4",
+        "description": "Temperature, pulse, gas, and flame, sampled continuously"
       },
       {
-        "metric": "Software Scope",
-        "value": "End-to-End",
-        "description": "Implemented sensing, control, AI vision, and dashboard modules"
+        "metric": "Processors",
+        "value": "2",
+        "description": "Arduino UNO for sensing, Raspberry Pi 4 for decisions and vision"
       },
       {
-        "metric": "Platform",
-        "value": "AI + IoT",
-        "description": "Integrated embedded hardware with practical web monitoring"
+        "metric": "Alert Path",
+        "value": "Local first",
+        "description": "Hazards sound on-device before any network call"
       }
     ],
     "architectureDiagram": {
@@ -573,9 +651,9 @@
     "id": "6",
     "slug": "unishare",
     "title": "UniShare",
-    "description": "Real-time full-stack web application for university communities to share resources, connect, and collaborate.",
+    "description": "Real-time campus marketplace and community app — listings, groups, and chat that update live over a single WebSocket connection.",
     "role": "Full-Stack Developer",
-    "impact": "Delivered a live, responsive university community platform with real-time WebSocket messaging, push notifications, and a fully interactive dashboard — end to end.",
+    "impact": "Shipped with a real test setup — Vitest plus React Testing Library — and GitHub Actions deploying the UI, which is the part most student projects skip.",
     "image": "/images/projects/UniShare.png",
     "color": "#6366f1",
     "tags": [
@@ -584,48 +662,53 @@
       "Vite",
       "Tailwind CSS",
       "Socket.IO",
-      "TanStack Query"
+      "Node.js",
+      "Express",
+      "Better-SQLite3",
+      "TanStack Query",
+      "Zod",
+      "Vitest"
     ],
     "sourceUrl": "https://github.com/Tanjamul-Azad/UniShare",
     "featured": false,
     "pinned": true,
-    "overview": "UniShare is a community platform built for university students — a single space for sharing academic resources, finding study groups, communicating in real time, and managing listings.",
-    "problem": "University students lacked a unified digital space to share resources, collaborate, and communicate — scattered across generic platforms not designed for academic communities.",
-    "solution": "Built a modern full-stack web app with real-time messaging via Socket.IO, a responsive dashboard, and smooth client-side state management through TanStack React Query.",
-    "architecture": "React 19 + Vite + TypeScript SPA with Tailwind CSS for styling, Socket.IO for WebSocket-based real-time features, and TanStack React Query for automatic server-state caching.",
+    "overview": "A university community platform where students list items, form groups, and message each other. The design constraint was that everything social should feel immediate: a new message or listing appears without a refresh, and without the app polling in the background.",
+    "problem": "Campus buying, selling, and group coordination scatter across Facebook groups and messenger threads, where posts are unsearchable and nothing is scoped to the university. Rebuilding that on request-response alone would mean constant polling to feel current.",
+    "solution": "One Socket.IO connection per client carries chat, notifications, and listing updates, with REST handling ordinary reads and writes. TanStack Query owns the cache, so a socket event invalidates the affected query rather than the UI hand-patching its own state.",
+    "architecture": "Better-SQLite3 backs the server — synchronous and embedded, which removes connection-pool handling and async plumbing at this scale. Zod validates payloads at runtime on the client, so data crossing the socket boundary is checked rather than trusted to match its TypeScript type.",
     "features": [
       {
-        "title": "Real-Time Messaging",
-        "description": "Live chat and push notifications powered by Socket.IO WebSocket integration."
+        "title": "Live chat and notifications",
+        "description": "Socket.IO carries messages and notifications over one duplex connection, with rooms scoping broadcasts to the people who should receive them."
       },
       {
-        "title": "Interactive Dashboard",
-        "description": "Track listings, groups, saved items, and account settings from a single responsive view."
+        "title": "Cache-driven UI updates",
+        "description": "Socket events invalidate TanStack Query keys instead of mutating component state, so the refetch path is the same whether an update arrived by socket or by navigation."
       },
       {
-        "title": "Optimised State Management",
-        "description": "TanStack React Query handles server-state caching, background syncing, and optimistic updates automatically."
+        "title": "Runtime-validated payloads",
+        "description": "Zod schemas check incoming data at the boundary, catching shape mismatches that TypeScript types cannot enforce at runtime."
       },
       {
-        "title": "Fully Responsive UI",
-        "description": "Mobile-first fluid layout built with Tailwind CSS for a consistent experience across screen sizes."
+        "title": "Tested and continuously deployed",
+        "description": "Vitest with React Testing Library and JSDOM cover the UI, and GitHub Actions handles deployment."
       }
     ],
     "results": [
       {
-        "metric": "Real-Time",
-        "value": "WebSocket",
-        "description": "Socket.IO for live chat and push notifications"
+        "metric": "Transport",
+        "value": "1 socket",
+        "description": "Chat, notifications, and listing updates share one connection"
       },
       {
-        "metric": "UI",
-        "value": "Fully Responsive",
-        "description": "Mobile-first with Tailwind CSS"
+        "metric": "Frontend",
+        "value": "96 files",
+        "description": "TypeScript throughout, with route-level code splitting"
       },
       {
-        "metric": "State",
-        "value": "TanStack Query",
-        "description": "Automatic caching and background sync"
+        "metric": "CI",
+        "value": "Automated",
+        "description": "Vitest suite plus GitHub Actions deployment"
       }
     ],
     "liveUrl": "https://unishare-app.vercel.app/",
@@ -682,15 +765,25 @@
           ]
         }
       ]
-    }
+    },
+    "challenges": [
+      {
+        "challenge": "Live updates and a client cache disagree easily — the socket says one thing while the cache still holds another.",
+        "learned": "Stopped treating socket payloads as state and treated them as invalidation signals instead. Letting the query layer refetch keeps one source of truth; patching the cache directly from an event is where the two views drift apart."
+      },
+      {
+        "challenge": "Choosing a database for a project that must be trivial to run locally but still relational.",
+        "learned": "Better-SQLite3 is synchronous and embedded, so there is no pool, no daemon, and no await on every query. At campus scale the simplicity is worth more than the concurrency a server-based database would add."
+      }
+    ]
   },
   {
     "id": "2",
     "slug": "chefmate",
     "title": "ChefMate",
-    "description": "AI-powered recipe suggestion web app using NLP normalization and ML-based cuisine and recipe prediction from user ingredients.",
+    "description": "Recipe finder that takes whatever is actually in your kitchen, in plain English, and ranks real recipes by how much of each one you can already make.",
     "role": "Solo Developer",
-    "impact": "Improved ingredient recognition accuracy by approximately 70% on noisy and varied user inputs through NLP normalization and typo-tolerant matching.",
+    "impact": "Turned a text-matching problem into a retrieval one. Every result carries an explicit match score plus the matched and missing ingredient lists, so the ranking is legible instead of being a number the user has to trust.",
     "image": "/images/projects/chefmate.png",
     "color": "#f97316",
     "tags": [
@@ -698,103 +791,119 @@
       "Flask",
       "spaCy",
       "scikit-learn",
-      "FuzzyWuzzy",
-      "Pandas"
+      "TF-IDF",
+      "kNN",
+      "rapidfuzz",
+      "pandas"
     ],
     "sourceUrl": "https://github.com/Tanjamul-Azad/ChefMate",
     "featured": true,
     "pinned": false,
-    "overview": "ChefMate helps users discover recipes from available ingredients. It combines NLP preprocessing, fuzzy matching, and classification models for practical real-time recommendations.",
-    "problem": "User-entered ingredients are often noisy, misspelled, or inconsistent, making strict keyword matching unreliable for recipe discovery.",
-    "solution": "Built an end-to-end Flask app with spaCy lemmatization and synonym handling, FuzzyWuzzy typo-tolerant matching, and scikit-learn prediction workflows trained on a large recipe dataset.",
-    "architecture": "Python + Flask app, NLP preprocessing with spaCy, matching layer with FuzzyWuzzy, model training and inference with scikit-learn and Pandas-driven data preparation.",
+    "overview": "Most recipe sites work backwards: pick a dish, then go shopping. ChefMate starts from the ingredients already on hand and finds the closest matches, showing what is missing for each so the trade-off is visible before committing to a dish.",
+    "problem": "Free-text ingredient input breaks naive matching immediately. \"Tomatoes\", \"tomato\", and a typo like \"tomatos\" are three different strings, and regional names diverge further — aubergine and eggplant are the same vegetable. Exact matching fragments the search space and returns nothing useful.",
+    "solution": "A normalisation stage runs before any matching. spaCy lemmatises each token to its base form, a hand-curated synonym map reconciles regional names, and rapidfuzz corrects remaining typos against the known ingredient vocabulary at an 80% similarity threshold. Only the cleaned tokens reach the retrieval step, so the model never sees the raw mess.",
+    "architecture": "Cuisine, diet, and meal-type filters are applied to the dataframe first, which shrinks the candidate set before any vectorisation happens. The surviving recipes are transformed by a fitted TF-IDF vectoriser and queried with k-nearest-neighbours; the model, vectoriser, and dataframe are pickled together so a request only pays for lookup, not training.",
     "features": [
       {
-        "title": "NLP Preprocessing",
-        "description": "Normalized ingredient text through lemmatization and synonym handling to improve matching quality."
+        "title": "Lemmatisation and synonym mapping",
+        "description": "spaCy's en_core_web_sm reduces each ingredient to its lemma, then a curated map folds regional variants together — courgette to zucchini, garbanzo bean to chickpea, scallion to green onion."
       },
       {
-        "title": "Typo-Tolerant Matching",
-        "description": "Used FuzzyWuzzy matching to maintain robust behavior against noisy and partial user input."
+        "title": "Fuzzy correction against known vocabulary",
+        "description": "rapidfuzz matches a mistyped ingredient to the closest term actually present in the dataset, accepting it only above an 80% similarity score so wrong corrections are rejected rather than guessed."
       },
       {
-        "title": "ML-Based Prediction",
-        "description": "Trained classifiers on a 643MB Kaggle dataset to predict cuisines and recipe names with confidence output."
+        "title": "Filter-then-retrieve ordering",
+        "description": "Cuisine, diet, and meal-type filters narrow the dataframe before vectorisation, so kNN searches a small relevant set instead of the whole corpus."
       },
       {
-        "title": "Interactive Web UI",
-        "description": "Delivered real-time response UX with cuisine, diet, and meal-type filters."
+        "title": "Transparent match scoring",
+        "description": "Each result reports matched ingredients, missing ingredients, and a percentage computed from their overlap, so a low-ranked recipe explains itself."
       }
     ],
     "challenges": [
       {
-        "challenge": "Handling inconsistent ingredient vocabulary from users",
-        "learned": "Layered normalization and fuzzy matching significantly improved robustness over plain token matching."
+        "challenge": "The same ingredient arrives under many spellings, and exact matching treats each as unrelated.",
+        "learned": "Normalisation had to be a distinct pipeline stage rather than a helper sprinkled through the matching code. Once every input passed through one funnel — lemma, then synonym, then fuzzy — the retrieval logic got simpler because it could assume clean tokens."
       },
       {
-        "challenge": "Training practical models on a large dataset",
-        "learned": "Data cleaning and feature preparation quality had more impact than model complexity for this task."
+        "challenge": "Fitting the vectoriser per request made responses slow enough to feel broken.",
+        "learned": "Pickled the trained model, the fitted vectoriser, and the recipe dataframe as one artefact loaded at predict time. Keeping them together matters more than it looks: a vectoriser separated from the data it was fitted on produces silently wrong vectors."
       }
     ],
     "results": [
       {
-        "metric": "Recognition Gain",
-        "value": "~70%",
-        "description": "Improved ingredient recognition on noisy and varied inputs"
+        "metric": "Pipeline Stages",
+        "value": "3",
+        "description": "Lemmatisation, synonym mapping, and fuzzy correction before any matching"
       },
       {
-        "metric": "Dataset",
-        "value": "643MB",
-        "description": "Kaggle recipe data used for training and evaluation"
+        "metric": "Fuzzy Threshold",
+        "value": "80%",
+        "description": "Similarity floor below which a correction is rejected rather than guessed"
       },
       {
-        "metric": "Delivery",
-        "value": "End-to-End",
-        "description": "Implemented preprocessing, model training, inference, and web interface solo"
+        "metric": "Result Detail",
+        "value": "Matched + missing",
+        "description": "Every recipe shows both lists alongside its overlap score"
       }
     ],
     "architectureDiagram": {
-      "caption": "ChefMate normalises free-text ingredients in an NLP stage before any matching runs, so typos and plurals do not fragment the search.",
+      "caption": "ChefMate normalises free text before retrieval, and filters the candidate set before vectorising it.",
       "layers": [
         {
-          "title": "Input",
-          "edgeLabel": "raw ingredient list",
+          "title": "Input - Flask",
+          "edgeLabel": "raw comma-separated text",
           "nodes": [
             {
-              "label": "Flask UI",
+              "label": "Ingredient Form",
               "detail": "cuisine / diet / meal filters"
             }
           ]
         },
         {
-          "title": "NLP Normalisation - spaCy",
-          "edgeLabel": "canonical ingredient tokens",
+          "title": "Normalisation",
+          "edgeLabel": "clean canonical tokens",
           "nodes": [
             {
-              "label": "Lemmatisation",
-              "detail": "plural to singular form"
+              "label": "spaCy Lemmatiser",
+              "detail": "en_core_web_sm"
             },
             {
               "label": "Synonym Map",
-              "detail": "hand-curated"
+              "detail": "regional name variants"
             },
             {
-              "label": "Fuzzy Match",
-              "detail": "tolerates typos"
+              "label": "rapidfuzz",
+              "detail": "80% similarity floor"
             }
           ]
         },
         {
-          "title": "Inference",
-          "edgeLabel": "ranked candidates",
+          "title": "Candidate Selection",
+          "edgeLabel": "reduced dataframe",
           "nodes": [
             {
-              "label": "Cuisine Classifier",
-              "detail": "trained on ~643MB Kaggle set"
+              "label": "Column Filters",
+              "detail": "cuisine, diet, meal type"
             },
             {
-              "label": "Recipe Scorer",
-              "detail": "ingredient overlap"
+              "label": "Deduplicate",
+              "detail": "by recipe name"
+            }
+          ]
+        },
+        {
+          "title": "Retrieval - pickled artefact",
+          "edgeLabel": "ranked neighbours",
+          "nodes": [
+            {
+              "label": "TF-IDF Vectoriser",
+              "detail": "fitted, persisted"
+            },
+            {
+              "label": "kNN Lookup",
+              "detail": "kneighbors over candidates"
             }
           ]
         },
@@ -802,8 +911,8 @@
           "title": "Output",
           "nodes": [
             {
-              "label": "Ranked Recipes",
-              "detail": "shown with match score"
+              "label": "Scored Recipes",
+              "detail": "matched + missing + overlap %"
             }
           ]
         }
@@ -814,61 +923,66 @@
     "id": "7",
     "slug": "integrated-healthcare",
     "title": "Integrated Healthcare Management System",
-    "description": "A multi-role web system connecting patients, doctors, and blood banks to streamline medical workflows and records.",
+    "description": "Hospital management system covering appointments, prescriptions, ambulance dispatch, and a blood-donor registry across patient, doctor, and admin roles.",
     "role": "Full-Stack Developer",
-    "impact": "Unified patient care, doctor management, and blood bank coordination into a single system — eliminating fragmented paper and multi-channel workflows.",
+    "impact": "Writing it without a framework meant confronting the problems frameworks normally hide: session fixation, output escaping, and role checks that must not be bypassable by navigating straight to a URL. Migration and demo-seed scripts keep the schema reproducible.",
     "image": "/images/projects/Integrated_healthcare.png",
     "color": "#ef4444",
     "tags": [
       "PHP",
       "MySQL",
-      "HTML",
-      "CSS"
+      "Sessions",
+      "Bootstrap",
+      "JavaScript"
     ],
     "sourceUrl": "https://github.com/Tanjamul-Azad/IHMS",
     "featured": false,
     "pinned": false,
-    "overview": "A PHP/MySQL web application that brings patients, doctors, and blood banks onto one platform. Manages appointments, medical records, prescriptions, and blood availability.",
-    "problem": "Healthcare management in smaller clinics was fragmented — paper records, separate contact for blood requests, and no unified patient history for doctors.",
-    "solution": "Built a structured multi-role web system in PHP with MySQL backend covering patient registration, doctor dashboards, medical records, prescriptions, and blood bank inventory.",
-    "architecture": "PHP server-side rendering with MySQL for relational data, modular page structure covering all three user roles (Patient, Doctor, Admin/Blood Bank).",
+    "overview": "Built on plain PHP and MySQL with no framework, which made every piece of plumbing — routing, sessions, access control, escaping — an explicit decision rather than something inherited. It covers the workflows a small hospital actually runs on, including the ones usually left out of student projects: ambulance booking and a blood bank.",
+    "problem": "Small clinics run on paper and phone calls. Appointments, prescriptions, ambulance requests, and blood-donor contacts each live in a different notebook, so nobody can answer a simple question like which donors match a patient's blood group right now.",
+    "solution": "One database behind role-separated interfaces. Patients book appointments and ambulances and read their own records; doctors manage schedules, prescriptions, and medical history; admins oversee doctors, ambulances, and reports. The blood bank is a self-contained module with its own donor registry, stock view, and request queue.",
+    "architecture": "Every page includes a session guard before it emits any output, so authorisation is decided before a query runs rather than after. A shared Security class centralises the primitives — password_hash at cost 12, random_bytes tokens, htmlspecialchars with ENT_QUOTES for output, filter_var for email — so no page invents its own escaping.",
     "features": [
       {
-        "title": "Multi-Role Access",
-        "description": "Separate workflows for patients, doctors, and blood bank administrators."
+        "title": "Three role-separated dashboards",
+        "description": "Patient, doctor, and admin each get their own directory of pages and their own permitted actions, checked per request."
       },
       {
-        "title": "Medical Records & Prescriptions",
-        "description": "Full history of patient visits, diagnoses, and prescriptions stored and accessible per role."
+        "title": "Blood bank module",
+        "description": "Donor registry with add, edit, and delete, searchable by blood group, plus a stock view and a request queue for matching donors to needs."
       },
       {
-        "title": "Blood Bank Coordination",
-        "description": "Tracks blood group availability and connects patients with the blood bank module."
+        "title": "Ambulance dispatch",
+        "description": "Patients submit booking requests and track their own; admins manage the fleet and assign vehicles."
       },
       {
-        "title": "Doctor Management",
-        "description": "Doctor profiles, availability, and patient assignment managed from the admin view."
+        "title": "Clinical records",
+        "description": "Appointments, prescriptions, medical history, health logs, and downloadable reports, each scoped to the patient they belong to."
+      },
+      {
+        "title": "Reproducible schema",
+        "description": "db_migrate.php and db_seed_demo.php rebuild the database and populate demo data, so a fresh checkout reaches a working state without manual SQL."
       }
     ],
     "results": [
       {
+        "metric": "Modules",
+        "value": "6",
+        "description": "Appointments, prescriptions, records, ambulance, blood bank, chatbot"
+      },
+      {
         "metric": "Roles",
         "value": "3",
-        "description": "Patient, Doctor, and Blood Bank/Admin roles"
+        "description": "Patient, doctor, and admin with separate page trees"
       },
       {
-        "metric": "Stack",
-        "value": "PHP + MySQL",
-        "description": "Full server-rendered web application"
-      },
-      {
-        "metric": "Scope",
-        "value": "End-to-End",
-        "description": "Records, prescriptions, blood bank, and appointments"
+        "metric": "Password Hashing",
+        "value": "cost 12",
+        "description": "password_hash with bcrypt work factor 12, never plaintext or MD5"
       }
     ],
     "architectureDiagram": {
-      "caption": "A server-rendered PHP stack: all three roles reach the same modules, with access resolved per session before any query runs.",
+      "caption": "IHMS resolves the session guard before any page emits output, so authorisation happens before a query runs.",
       "layers": [
         {
           "title": "Roles",
@@ -886,22 +1000,22 @@
           ]
         },
         {
-          "title": "Access Control",
+          "title": "Request Guard - includes/",
           "edgeLabel": "authorised request",
           "nodes": [
             {
-              "label": "Session Guard",
-              "detail": "role check per page"
+              "label": "session.php",
+              "detail": "role check, first include"
             },
             {
-              "label": "Input Sanitisation",
-              "detail": "prepared statements"
+              "label": "security.php",
+              "detail": "hashing, tokens, escaping"
             }
           ]
         },
         {
-          "title": "Application - PHP",
-          "edgeLabel": "SQL",
+          "title": "Modules",
+          "edgeLabel": "prepared statements",
           "nodes": [
             {
               "label": "Appointments"
@@ -910,7 +1024,13 @@
               "label": "Prescriptions"
             },
             {
-              "label": "Medical Records"
+              "label": "Ambulance"
+            },
+            {
+              "label": "Blood Bank"
+            },
+            {
+              "label": "Chatbot"
             }
           ]
         },
@@ -919,11 +1039,29 @@
           "nodes": [
             {
               "label": "MySQL",
-              "detail": "relational schema"
+              "detail": "shared schema"
+            },
+            {
+              "label": "Migration + Seed",
+              "detail": "db_migrate.php, db_seed_demo.php"
             }
           ]
         }
       ]
-    }
+    },
+    "challenges": [
+      {
+        "challenge": "Without a framework, an unguarded page is a complete authorisation bypass — the URL is the only thing standing between a patient and another patient's records.",
+        "learned": "Made the session guard the first include on every page, before any output. Doing the check after rendering has begun is too late to redirect, and that ordering constraint is exactly what a framework's middleware normally enforces for you."
+      },
+      {
+        "challenge": "Escaping applied ad hoc at each output site gets missed somewhere, and one miss is an XSS hole.",
+        "learned": "Centralised it in a Security class with htmlspecialchars(ENT_QUOTES, UTF-8) and recursive array handling, so nested form input is covered by the same call. Consistency matters more than cleverness here — the risk is the site you forget, not the one you write carefully."
+      },
+      {
+        "challenge": "Six modules touching one schema drift apart quickly when the database is set up by hand.",
+        "learned": "Added migration and seed scripts so the schema has a single source of truth in the repository. Being able to reset to a known state turns schema bugs into reproducible ones."
+      }
+    ]
   }
 ]
