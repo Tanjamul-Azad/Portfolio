@@ -11,6 +11,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger, SheetClose } from "@/com
 import { siteConfig, navLinks } from "@/config";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/common";
+import { AdminEditIcon } from "@/components/common/admin-edit-icon";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -123,6 +124,7 @@ export function Navbar() {
               </Link>
             ))}
 
+            <AdminEditIcon />
             <ThemeToggle />
 
             <InteractiveHoverButton
@@ -140,6 +142,7 @@ export function Navbar() {
 
         {/* Mobile Navigation */}
         <div className="md:hidden flex items-center gap-2">
+          <AdminEditIcon />
           <ThemeToggle />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>

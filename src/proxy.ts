@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 //      production only when ADMIN_PASSWORD, ADMIN_SESSION_SECRET and
 //      GITHUB_TOKEN are all set. Otherwise every /admin route 404s.
 //   2. When enabled, routes require the signed session cookie, except the login
-//      page and the login/logout endpoints.
+//      page, the login/logout endpoints, and the status check.
 
 const COOKIE = "admin_session";
 
@@ -79,11 +79,15 @@ export async function proxy(req: NextRequest) {
     return new NextResponse(null, { status: 404 });
   }
 
-  // 2. Let the login surfaces through unauthenticated.
+  // 2. Let the login surfaces through unauthenticated. /api/admin/status is
+  //    included so the navbar (rendered before any login) can decide whether
+  //    to show the edit icon at all — it reveals only whether /admin exists,
+  //    which the route's own 307/404 already discloses.
   if (
     pathname === "/admin/login" ||
     pathname === "/api/admin/login" ||
-    pathname === "/api/admin/logout"
+    pathname === "/api/admin/logout" ||
+    pathname === "/api/admin/status"
   ) {
     return NextResponse.next();
   }

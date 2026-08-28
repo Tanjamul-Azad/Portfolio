@@ -22,6 +22,65 @@ class ChatError extends Error {
   }
 }
 
+/** Lines the header subtitle cycles through, one character at a time. */
+const HEADER_QUOTES = [
+  `Ask me about ${siteConfig.author.name}'s projects.`,
+  "The best way to predict the future is to build it.",
+  "Curious about the tech stack? Just ask.",
+  "Want the resume link? I have it.",
+];
+
+/**
+ * One-line typewriter, cycling through `lines` forever. Pauses at full length,
+ * erases, and moves to the next line — same rhythm as a terminal prompt.
+ */
+function TypewriterLine({ lines }: { lines: string[] }) {
+  const [lineIndex, setLineIndex] = useState(0);
+  const [charCount, setCharCount] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    const current = lines[lineIndex];
+    const atEnd = charCount === current.length;
+    const atStart = charCount === 0;
+
+    let delay = deleting ? 28 : 42;
+    if (atEnd && !deleting) delay = 1800;
+    if (atStart && deleting) delay = 300;
+
+    const timer = window.setTimeout(() => {
+      if (atEnd && !deleting) {
+        setDeleting(true);
+        return;
+      }
+      if (atStart && deleting) {
+        setDeleting(false);
+        setLineIndex((i) => (i + 1) % lines.length);
+        return;
+      }
+      setCharCount((c) => c + (deleting ? -1 : 1));
+    }, delay);
+
+    return () => window.clearTimeout(timer);
+  }, [charCount, deleting, lineIndex, lines]);
+
+  return (
+    <span className="inline-flex items-center">
+      {lines[lineIndex].slice(0, charCount)}
+      <span className="ml-0.5 inline-block h-3 w-px animate-pulse bg-current" aria-hidden="true" />
+    </span>
+  );
+}
+
+/** Suggested first questions, shown only before the visitor has sent one. */
+const QUICK_REPLIES = [
+  `Who is ${siteConfig.name}?`,
+  "Show me your projects",
+  "What's your tech stack?",
+  "Send me the resume",
+  "How can I reach you?",
+];
+
 const ERROR_COPY: Record<string, string> = {
   rate_limited:
     "That's a lot of questions at once — give it a minute and try again.",
@@ -268,9 +327,11 @@ export function AiChat() {
                   className="object-cover"
                 />
               </div>
-              <div className="grow">
+              <div className="min-w-0 grow">
                 <h3 className="font-semibold text-sm text-neutral-900 dark:text-white">AI Assistant</h3>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">Ask me about {siteConfig.author.name}</p>
+                <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
+                  <TypewriterLine lines={HEADER_QUOTES} />
+                </p>
               </div>
               <div className="flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
@@ -353,7 +414,22 @@ export function AiChat() {
               )}
             </div>
 
-            {/* Suggested Questions Area Removed */}
+            {/* Quick replies — only while the conversation hasn't started, so a
+                returning visitor mid-conversation doesn't see them re-appear. */}
+            {messages.length === 1 && !isLoading && (
+              <div className="flex flex-wrap gap-1.5 border-t border-neutral-200/50 px-3 pb-2 pt-3 dark:border-neutral-800/50">
+                {QUICK_REPLIES.map((reply) => (
+                  <button
+                    key={reply}
+                    type="button"
+                    onClick={() => sendMessage(reply)}
+                    className="rounded-full border border-neutral-200 bg-white/70 px-3 py-1.5 text-xs font-medium text-neutral-700 transition-colors hover:border-amber-400/60 hover:text-accent dark:border-neutral-700 dark:bg-neutral-800/70 dark:text-neutral-300"
+                  >
+                    {reply}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Input */}
             <form

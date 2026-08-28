@@ -8,7 +8,6 @@ import {
   ThemeProvider,
 } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
-import { EditPortfolioLink } from "@/components/common/edit-portfolio-link";
 import { siteConfig } from "@/config";
 import {
   AiChat,
@@ -191,7 +190,6 @@ export default function RootLayout({
               <PageTransition>{children}</PageTransition>
             </div>
           </RouteTransitionProvider>
-          <EditPortfolioLink />
           <Toaster position="bottom-right" />
           <Analytics />
         </ThemeProvider>
