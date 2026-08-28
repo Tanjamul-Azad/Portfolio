@@ -103,7 +103,7 @@ export function ContactForm() {
                   autoComplete="name"
                   maxLength={NAME_MAX}
                   {...field}
-                  className="bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-amber-500/50 focus:ring-amber-500/20"
+                  className="bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-neutral-900 dark:focus:border-white focus:ring-neutral-900/10 dark:focus:ring-white/10"
                 />
               </FormControl>
               <FormMessage />
@@ -123,7 +123,7 @@ export function ContactForm() {
                   autoComplete="email"
                   inputMode="email"
                   {...field}
-                  className="bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-amber-500/50 focus:ring-amber-500/20"
+                  className="bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-neutral-900 dark:focus:border-white focus:ring-neutral-900/10 dark:focus:ring-white/10"
                 />
               </FormControl>
               <FormMessage />
@@ -152,7 +152,7 @@ export function ContactForm() {
                   placeholder="Tell me how I can help"
                   autoComplete="off"
                   maxLength={MESSAGE_MAX}
-                  className="min-h-25 resize-y bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-amber-500/50 focus:ring-amber-500/20"
+                  className="min-h-25 resize-y bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-neutral-900 dark:focus:border-white focus:ring-neutral-900/10 dark:focus:ring-white/10"
                   {...field}
                 />
               </FormControl>
@@ -163,10 +163,9 @@ export function ContactForm() {
         
         <Button
           type="submit"
-          className="group w-full rounded-full bg-linear-to-r from-amber-400 to-orange-500 text-black font-semibold shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/40 hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] transition-all duration-300 relative overflow-hidden"
+          className="group w-full rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 relative overflow-hidden"
           disabled={form.formState.isSubmitting}
         >
-          <span className="absolute inset-0 bg-linear-to-r from-amber-300 to-orange-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <span className="relative flex items-center justify-center">
             {form.formState.isSubmitting ? (
               <>
