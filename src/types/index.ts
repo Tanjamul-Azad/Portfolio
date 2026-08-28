@@ -69,6 +69,10 @@ export interface Achievement {
   /** Photo taken at the moment of receiving it — shown on hover-flip and in the detail view. */
   momentImage?: string;
   description: string;
+  /** Longer write-up shown only in the detail view, below the short description. */
+  details?: string;
+  /** Extra photos (beyond image/momentImage) shown as a gallery in the detail view. */
+  gallery?: string[];
   credentialUrl?: string;
   skills: string[];
 }

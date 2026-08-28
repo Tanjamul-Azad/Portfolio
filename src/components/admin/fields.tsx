@@ -373,3 +373,101 @@ export function ImageField({
     </Field>
   );
 }
+
+
+/** A reorderable list of uploaded images — a gallery editor. */
+export function ImageListField({
+  label,
+  value,
+  onChange,
+  folder,
+  hint,
+}: {
+  label?: string;
+  value: string[];
+  onChange: (v: string[]) => void;
+  folder: string;
+  hint?: string;
+}) {
+  const [uploading, setUploading] = useState(false);
+
+  const remove = (i: number) => onChange(value.filter((_, j) => j !== i));
+  const move = (i: number, dir: -1 | 1) => {
+    const j = i + dir;
+    if (j < 0 || j >= value.length) return;
+    const next = [...value];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
+
+  const onPick = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    try {
+      const uploaded: string[] = [];
+      for (const file of Array.from(files)) {
+        uploaded.push(await uploadFile(file, folder));
+      }
+      onChange([...value, ...uploaded]);
+      toast.success(uploaded.length > 1 ? `Uploaded ${uploaded.length} photos.` : "Uploaded.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <Field label={label} hint={hint}>
+      {value.length > 0 && (
+        <div className="mb-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
+          {value.map((src, i) => (
+            <div
+              key={`${src}-${i}`}
+              className="group relative aspect-square overflow-hidden rounded-md border border-input bg-neutral-100 dark:bg-neutral-900"
+            >
+               
+              <img src={src} alt="" className="h-full w-full object-cover" />
+              <div className="absolute inset-0 flex items-center justify-center gap-1 bg-black/0 opacity-0 transition-all group-hover:bg-black/50 group-hover:opacity-100">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="icon-xs"
+                  onClick={() => move(i, -1)}
+                  disabled={i === 0}
+                >
+                  <ArrowUp className="size-3" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="icon-xs"
+                  onClick={() => move(i, 1)}
+                  disabled={i === value.length - 1}
+                >
+                  <ArrowDown className="size-3" />
+                </Button>
+                <Button type="button" variant="destructive" size="icon-xs" onClick={() => remove(i)}>
+                  <Trash2 className="size-3" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      <Button type="button" variant="outline" size="sm" disabled={uploading} asChild>
+        <label className="cursor-pointer">
+          <Upload className="size-3.5" />
+          {uploading ? "Uploading…" : "Add photos"}
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={(e) => onPick(e.target.files)}
+          />
+        </label>
+      </Button>
+    </Field>
+  );
+}

@@ -6,6 +6,7 @@ import { EditorPage } from "@/components/admin/editor-page";
 import { CollectionEditor } from "@/components/admin/collection-editor";
 import {
   ImageField,
+  ImageListField,
   SelectField,
   TagsField,
   TextAreaField,
@@ -83,6 +84,21 @@ export default function AchievementsEditor() {
                 value={a.description}
                 onChange={(v) => update({ description: v })}
                 rows={3}
+                hint="Short — this is what shows on the card itself."
+              />
+              <TextAreaField
+                label="Full story (optional)"
+                value={a.details ?? ""}
+                onChange={(v) => update({ details: v })}
+                rows={5}
+                hint="Longer write-up shown only when someone opens the detail view — what it involved, the challenge, the impact."
+              />
+              <ImageListField
+                label="Gallery (optional)"
+                folder="achievements"
+                value={a.gallery ?? []}
+                onChange={(v) => update({ gallery: v })}
+                hint="Extra photos shown in the detail view, beyond the thumbnail and moment photo above."
               />
               <TextField
                 label="Credential URL (optional)"

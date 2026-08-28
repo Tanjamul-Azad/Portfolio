@@ -57,6 +57,8 @@ const achievement = z.object({
   image: str.optional(),
   momentImage: str.optional(),
   description: str,
+  details: str.optional(),
+  gallery: strArr.optional(),
   credentialUrl: str.optional(),
   skills: strArr,
 });

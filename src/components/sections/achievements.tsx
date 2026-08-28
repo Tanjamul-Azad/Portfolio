@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, ExternalLink, Award, Medal, Trophy, Star, ChevronDown, RotateCw } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Award, Medal, Trophy, Star, ChevronDown, RotateCw, X as XIcon } from "lucide-react";
 import Image from "next/image";
 import { achievements } from "@/data";
 import type { Achievement } from "@/types";
@@ -196,6 +197,20 @@ function AchievementDialog({
   onClose: () => void;
 }) {
   const TypeIcon = achievement ? TYPE_ICON[achievement.type] : Star;
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  // The lightbox is local to whichever achievement is open, so switching
+  // achievements (or closing) can't leave a stale image behind.
+  useEffect(() => {
+    setLightboxSrc(null);
+  }, [achievement]);
+
+  // Portal target: document.body only exists on the client, so this flips true
+  // one tick after mount rather than being read during render.
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <Dialog open={!!achievement} onOpenChange={(open) => !open && onClose()}>
@@ -249,6 +264,32 @@ function AchievementDialog({
               </div>
             )}
 
+            {achievement.gallery && achievement.gallery.length > 0 && (
+              <div className="border-t border-neutral-200 p-4 dark:border-neutral-800">
+                <p className="mb-2 text-[10px] uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
+                  Gallery
+                </p>
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                  {achievement.gallery.map((src, i) => (
+                    <button
+                      key={`${src}-${i}`}
+                      type="button"
+                      onClick={() => setLightboxSrc(src)}
+                      className="relative aspect-square overflow-hidden rounded-lg bg-neutral-100 outline-none transition-transform hover:scale-[1.03] focus-visible:ring-2 focus-visible:ring-amber-500/70 dark:bg-neutral-950"
+                    >
+                      <Image
+                        src={src}
+                        alt={`${achievement.title} — photo ${i + 1}`}
+                        fill
+                        sizes="120px"
+                        className="object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="p-6">
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/25 bg-amber-500/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-accent">
@@ -272,6 +313,12 @@ function AchievementDialog({
               <p className="mt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
                 {achievement.description}
               </p>
+
+              {achievement.details && (
+                <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
+                  {achievement.details}
+                </p>
+              )}
 
               <div className="mt-5">
                 <p className="mb-2 text-[10px] uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
@@ -308,6 +355,55 @@ function AchievementDialog({
           </>
         )}
       </DialogContent>
+
+      {/* Full-screen preview for a gallery photo, portaled straight to
+          document.body. Rendered inline it inherited the CSS transform on the
+          section's scroll-reveal wrapper a few ancestors up, which retargets
+          `position: fixed` to that ancestor instead of the viewport — the
+          overlay was fixed, just not to the screen. Kept as a sibling of
+          DialogContent rather than nested inside it: Radix Dialog only
+          manages one focus trap, and a second dialog-like layer inside it
+          isn't worth fighting that for something this simple. Escape and a
+          backdrop click both close it. */}
+      {mounted && createPortal(
+      <AnimatePresence>
+        {lightboxSrc && (
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Photo preview"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-100 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+            onClick={() => setLightboxSrc(null)}
+            onKeyDown={(e) => e.key === "Escape" && setLightboxSrc(null)}
+            tabIndex={-1}
+            ref={(node) => node?.focus()}
+          >
+            <motion.div
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              className="relative h-[85vh] w-full max-w-3xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image src={lightboxSrc} alt="" fill sizes="768px" className="object-contain" />
+            </motion.div>
+            <button
+              type="button"
+              onClick={() => setLightboxSrc(null)}
+              aria-label="Close photo preview"
+              className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md hover:bg-white/20"
+            >
+              <XIcon className="h-5 w-5" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>,
+      document.body
+      )}
     </Dialog>
   );
 }
