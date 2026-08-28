@@ -427,7 +427,7 @@
     "description": "Recipe finder that takes whatever is actually in your kitchen, in plain English, and ranks real recipes by how much of each one you can already make.",
     "role": "Solo Developer",
     "impact": "Turned a text-matching problem into a retrieval one. Every result carries an explicit match score plus the matched and missing ingredient lists, so the ranking is legible instead of being a number the user has to trust.",
-    "image": "/images/projects/chefmate.png",
+    "image": "/images/projects/chefmate-1787919182986.png",
     "color": "#f97316",
     "tags": [
       "Python",
