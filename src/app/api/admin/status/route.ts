@@ -16,8 +16,14 @@ export const runtime = "nodejs";
  * there is nothing here an anonymous visitor could not already learn.
  */
 export async function GET() {
+  // In production, isAdminEnabled() being true already guarantees GITHUB_TOKEN
+  // is set (that's one of its three requirements) — so "enabled in production"
+  // and "saves commit to GitHub" are the same fact. Reported here so the save
+  // UI can say where a save actually goes, rather than guessing.
+  const storage = process.env.NODE_ENV === "production" ? "github" : "local";
+
   return NextResponse.json(
-    { enabled: isAdminEnabled() },
+    { enabled: isAdminEnabled(), storage },
     { headers: { "Cache-Control": "no-store" } }
   );
 }

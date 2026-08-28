@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { SaveBar } from "./save-bar";
 
@@ -21,6 +21,26 @@ export function EditorPage({
   onSave: () => void;
   children: ReactNode;
 }) {
+  // Determines whether the hint under Save should say "GitHub" or "local
+  // files" — previously this was never wired up at all, so it always claimed
+  // local files even when running against the deployed, GitHub-backed editor.
+  const [storage, setStorage] = useState<"local" | "github">("local");
+  useEffect(() => {
+    let active = true;
+    fetch("/api/admin/status", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (active && data?.storage === "github") setStorage("github");
+      })
+      .catch(() => {
+        // Stay on the "local" assumption — worst case the hint undersells what
+        // actually happens, rather than overselling.
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <div className="mx-auto max-w-3xl">
       <header className="mb-6">
@@ -40,7 +60,7 @@ export function EditorPage({
       ) : (
         <>
           <div className="space-y-6">{children}</div>
-          <SaveBar onSave={onSave} saving={saving} />
+          <SaveBar onSave={onSave} saving={saving} deployed={storage === "github"} />
         </>
       )}
     </div>
