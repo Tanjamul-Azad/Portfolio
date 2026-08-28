@@ -11,6 +11,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config";
 import {
   AiChat,
+  CursorDot,
   ScrollProgress,
   StickyEmail,
 } from "@/components/effects";
@@ -179,6 +180,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
 
+          <CursorDot />
           <RouteTransitionProvider>
             <HashScrollManager />
             <ScrollProgress />
