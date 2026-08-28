@@ -370,7 +370,7 @@
     "liveUrl": "https://tanjamul-azad.github.io/ConvoVerse/",
     "sourceUrl": "https://github.com/Tanjamul-Azad/ConvoVerse",
     "featured": true,
-    "pinned": true,
+    "pinned": false,
     "overview": "An academic Human-Computer Interaction project built on a specific claim: many capable students stay quiet not from lack of knowledge but from lack of rehearsal. ConvoVerse gives them a private space to practise, positioning AI as a facilitator that helps someone feel ready to participate — explicitly not as a substitute for talking to people.",
     "problem": "Educational platforms optimise for delivering content and assume participation follows. For students who freeze in discussions, the barrier is social readiness, and every existing option asks them to practise in exactly the public setting they are avoiding.",
     "solution": "Difficulty is scaffolded in stages instead of thrown at the user. Observer Mode lets them watch agents converse without participating; then one-on-one with a single peer agent; then a small group where a Peer, a Group Member, and a Facilitator compete for turns. Rewind and Retry lets any exchange be restarted with no penalty.",
