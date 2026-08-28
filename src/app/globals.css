@@ -4,25 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Lenis smooth-scroll base styles — keeps native scroll-behavior from fighting
-   Lenis, and lets nested scroll areas marked [data-lenis-prevent] scroll on their own. */
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -66,7 +47,10 @@ html.lenis body {
 
   /* Smooth scroll behavior for page-like sections */
   html {
-    scroll-behavior: auto;
+    /* Native smooth scrolling. A JS scroll library re-drives the page from a
+       rAF loop, which adds a frame of latency to every wheel tick; the browser
+       does this on the compositor for free. Overridden under reduced motion below. */
+    scroll-behavior: smooth;
     scroll-padding-top: 80px;
     scrollbar-width: thin;
     scrollbar-color: rgba(120, 120, 120, 0.3) transparent;

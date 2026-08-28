@@ -154,12 +154,9 @@ function AchievementDialog({
 
   return (
     <Dialog open={!!achievement} onOpenChange={(open) => !open && onClose()}>
-      {/* data-lenis-prevent: without it the smooth-scroll layer swallows wheel
-          events inside the modal and the certificate can't be scrolled.
-          overflow was set twice on the same element (hidden + y-auto), which
-          axis won depended on generated CSS order — now stated per-axis. */}
+      {/* overflow was set twice on the same element (hidden + y-auto); which
+          axis won depended on generated CSS order, so it is now per-axis. */}
       <DialogContent
-        data-lenis-prevent
         className="max-h-[90vh] max-w-2xl gap-0 overflow-x-hidden overflow-y-auto overscroll-contain p-0"
       >
         {achievement && (

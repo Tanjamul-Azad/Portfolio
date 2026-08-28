@@ -13,7 +13,6 @@ import {
   AiChat,
   ScrollProgress,
   StickyEmail,
-  SmoothScroll,
 } from "@/components/effects";
 import { Analytics } from "@vercel/analytics/next";
 
@@ -182,7 +181,6 @@ export default function RootLayout({
 
           <RouteTransitionProvider>
             <HashScrollManager />
-            <SmoothScroll />
             <ScrollProgress />
             <StickyEmail />
             <AiChat />

@@ -512,7 +512,6 @@ export function Projects() {
                 role="list"
                 aria-label="Project list — use arrow keys to navigate"
                 tabIndex={0}
-                data-lenis-prevent
                 onKeyDown={(event) => {
                   if (event.key === "ArrowDown") {
                     event.preventDefault();

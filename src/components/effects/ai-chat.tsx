@@ -256,7 +256,6 @@ export function AiChat() {
             {/* Messages */}
             <div
               ref={listRef}
-              data-lenis-prevent
               role="log"
               aria-live="polite"
               aria-atomic="false"
