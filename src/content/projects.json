@@ -6,7 +6,7 @@
     "description": "Offline-first AI radiology triage platform for district hospitals — dual CV/VLM pipelines turn a chest X-ray into a guideline-grounded report on CPU, GPU, or Apple Silicon alike.",
     "role": "Full-Stack Developer",
     "impact": "Built the FastAPI backend that turns a hackathon model demo into an operable system: a retrying async inference queue, a per-endpoint latency/error observability panel, and a 7-day confidence-drift report comparing recent cases against baseline — the parts a research pipeline needs before anyone would trust it on a ward.",
-    "image": "/images/projects/Radflow.PNG",
+    "image": "/images/projects/radflow-png-1787931382724.png",
     "color": "#0ea5e9",
     "tags": [
       "FastAPI",
@@ -22,6 +22,7 @@
       "Vite",
       "Tailwind CSS"
     ],
+    "liveUrl": "https://radflow-edge.vercel.app/",
     "sourceUrl": "https://github.com/Tanjamul-Azad/RadFlow",
     "featured": true,
     "pinned": true,
@@ -29,6 +30,66 @@
     "problem": "A district hospital can own imaging hardware without owning imaging expertise — the read is the bottleneck, not the scan. Cloud-based triage tools assume reliable connectivity and a specific GPU, neither of which holds in a resource-constrained facility, and a missed abnormality on a chest film has a direct clinical cost.",
     "solution": "Every radiograph moves through a 4-stage pipeline — DenseNet121 screens for 18 pathologies, GradCAM localizes and crops the abnormal region, a ChromaDB-backed RAG step retrieves the matching clinical guideline, and CheXagent-8b drafts the final report grounded in that guideline rather than free-associating. A second pipeline, the Foveal Engine, trades some of that depth for speed: an OpenCV contrast pass crops a high-resolution region of interest in milliseconds and a token router (D-RoVA) drops irrelevant visual tokens before the VLM ever sees them, cutting token count by roughly 80% while keeping the crop diagnostic.",
     "architecture": "A FastAPI backend fronts both pipelines behind one API and owns the parts that make it operable rather than a demo: an InferenceJob queue processed by a background worker thread with retries, per-job cancellation, and status polling, so a slow VLM call never blocks the request path. Every completed inference is written to an append-only InferenceLedger, which powers an admin drift report comparing the last 7 days of case mix and calibrated confidence against the 7 days before — the kind of check a clinical tool needs and a hackathon demo usually skips. A hardware router picks CUDA + bitsandbytes 4-bit quantization, Apple MLX, or Intel IPEX at startup, so the same code path runs on whatever machine is actually in the building.",
+    "architectureDiagram": {
+      "caption": "A radiograph moves through detection, localization, guideline retrieval, and VLM drafting — queued, retried, and logged for drift review rather than returned as a single blocking call.",
+      "layers": [
+        {
+          "title": "Client - React 18 + TypeScript",
+          "nodes": [
+            {
+              "label": "Worklist UI",
+              "detail": "case queue + escalation"
+            },
+            {
+              "label": "Report Viewer",
+              "detail": "guided sections"
+            }
+          ],
+          "edgeLabel": "upload + poll"
+        },
+        {
+          "title": "API - FastAPI",
+          "nodes": [
+            {
+              "label": "Inference Queue",
+              "detail": "worker thread, retries, cancel"
+            },
+            {
+              "label": "Observability",
+              "detail": "latency + error tracking"
+            }
+          ],
+          "edgeLabel": "async job"
+        },
+        {
+          "title": "Pipelines",
+          "nodes": [
+            {
+              "label": "RadFlow-Edge",
+              "detail": "DenseNet121 -> GradCAM -> RAG -> CheXagent-8b"
+            },
+            {
+              "label": "Foveal Engine",
+              "detail": "Vision Hack crop -> D-RoVA token routing"
+            }
+          ],
+          "edgeLabel": "hardware-routed"
+        },
+        {
+          "title": "Persistence",
+          "nodes": [
+            {
+              "label": "SQLite",
+              "detail": "cases, findings, inference ledger"
+            },
+            {
+              "label": "ChromaDB",
+              "detail": "clinical guideline vectors"
+            }
+          ]
+        }
+      ]
+    },
     "features": [
       {
         "title": "RadFlow-Edge: 4-stage clinical pipeline",
@@ -90,67 +151,7 @@
         "value": "18",
         "description": "DenseNet121 detector output classes feeding the localization stage"
       }
-    ],
-    "architectureDiagram": {
-      "caption": "A radiograph moves through detection, localization, guideline retrieval, and VLM drafting — queued, retried, and logged for drift review rather than returned as a single blocking call.",
-      "layers": [
-        {
-          "title": "Client - React 18 + TypeScript",
-          "edgeLabel": "upload + poll",
-          "nodes": [
-            {
-              "label": "Worklist UI",
-              "detail": "case queue + escalation"
-            },
-            {
-              "label": "Report Viewer",
-              "detail": "guided sections"
-            }
-          ]
-        },
-        {
-          "title": "API - FastAPI",
-          "edgeLabel": "async job",
-          "nodes": [
-            {
-              "label": "Inference Queue",
-              "detail": "worker thread, retries, cancel"
-            },
-            {
-              "label": "Observability",
-              "detail": "latency + error tracking"
-            }
-          ]
-        },
-        {
-          "title": "Pipelines",
-          "edgeLabel": "hardware-routed",
-          "nodes": [
-            {
-              "label": "RadFlow-Edge",
-              "detail": "DenseNet121 -> GradCAM -> RAG -> CheXagent-8b"
-            },
-            {
-              "label": "Foveal Engine",
-              "detail": "Vision Hack crop -> D-RoVA token routing"
-            }
-          ]
-        },
-        {
-          "title": "Persistence",
-          "nodes": [
-            {
-              "label": "SQLite",
-              "detail": "cases, findings, inference ledger"
-            },
-            {
-              "label": "ChromaDB",
-              "detail": "clinical guideline vectors"
-            }
-          ]
-        }
-      ]
-    }
+    ]
   },
   {
     "id": "9",
@@ -175,14 +176,70 @@
       "Gemini",
       "DeepSeek"
     ],
-    "sourceUrl": "https://github.com/Tanjamul-Azad/OrchestratorCLI",
     "liveUrl": "https://orchestrator.ahbab.dev",
+    "sourceUrl": "https://github.com/Tanjamul-Azad/OrchestratorCLI",
     "featured": true,
     "pinned": true,
     "overview": "A desktop Electron app, led by teammate Md Ahbab, that treats every AI coding CLI a developer might have installed — Claude Code, Gemini, Copilot, Codex, Cline, and others — as an interchangeable backend behind one orchestrator. A central planner (Grok, Gemini, or DeepSeek, in that fallback order) plans and dispatches work across them in parallel, over real PTY-backed terminal sessions rather than screen-scraped output.",
     "problem": "Juggling several AI coding CLIs by hand means manually noticing when one hits a rate limit, re-typing context into whichever tool is free, and getting no parallelism even when a task splits cleanly across agents. Packaging that as a desktop app adds its own failure class: process spawning, credential storage, and terminal I/O all behave differently on Windows than on the POSIX systems most CLI tooling is written for.",
     "solution": "The orchestrator plans a task, splits it into divisions, and dispatches each division to a CLI agent through a PTY session it owns end to end — spawn, resize, kill, and process-tree teardown all go through one service. Providers are health-sorted (online before limited before offline) so failover is visible in the UI, not just silent. A user-defined CLI registry lets someone register a coding agent the app doesn't know about out of the box, validated the same way the built-in ones are.",
     "architecture": "Electron wraps a React/TypeScript frontend and a local FastAPI + SQLite backend, so the desktop build and the browser dev build share the same code paths. Real-time terminal I/O and orchestrator events stream over WebSocket; REST covers sessions, providers, and settings. On Windows specifically, PTY spawning goes through pywinpty's low-level API, which — unlike the POSIX path — expects the process environment as a single null-terminated block string rather than a list of key/value pairs.",
+    "architectureDiagram": {
+      "caption": "A central planner dispatches divisions of one task to parallel CLI agents, each running in a real PTY session the backend owns end to end.",
+      "layers": [
+        {
+          "title": "Client - Electron + React",
+          "nodes": [
+            {
+              "label": "Chat / Planner UI",
+              "detail": "task intake"
+            },
+            {
+              "label": "Terminal Grid",
+              "detail": "live PTY streams"
+            }
+          ],
+          "edgeLabel": "REST + WebSocket"
+        },
+        {
+          "title": "Orchestration - FastAPI",
+          "nodes": [
+            {
+              "label": "Central Planner",
+              "detail": "Grok -> Gemini -> DeepSeek"
+            },
+            {
+              "label": "CLI Registry",
+              "detail": "built-in + custom agents"
+            }
+          ],
+          "edgeLabel": "health-sorted dispatch"
+        },
+        {
+          "title": "Execution",
+          "nodes": [
+            {
+              "label": "PTY Service",
+              "detail": "cross-platform process lifecycle"
+            }
+          ],
+          "edgeLabel": "spawn / resize / kill"
+        },
+        {
+          "title": "Persistence",
+          "nodes": [
+            {
+              "label": "SQLite",
+              "detail": "sessions, providers, custom CLI"
+            },
+            {
+              "label": "Encrypted Store",
+              "detail": "provider API keys"
+            }
+          ]
+        }
+      ]
+    },
     "features": [
       {
         "title": "Multi-provider planning with automatic failover",
@@ -244,63 +301,7 @@
         "value": "10s",
         "description": "Hard budget added to PTY spawn so a stuck Windows terminal fails visibly"
       }
-    ],
-    "architectureDiagram": {
-      "caption": "A central planner dispatches divisions of one task to parallel CLI agents, each running in a real PTY session the backend owns end to end.",
-      "layers": [
-        {
-          "title": "Client - Electron + React",
-          "edgeLabel": "REST + WebSocket",
-          "nodes": [
-            {
-              "label": "Chat / Planner UI",
-              "detail": "task intake"
-            },
-            {
-              "label": "Terminal Grid",
-              "detail": "live PTY streams"
-            }
-          ]
-        },
-        {
-          "title": "Orchestration - FastAPI",
-          "edgeLabel": "health-sorted dispatch",
-          "nodes": [
-            {
-              "label": "Central Planner",
-              "detail": "Grok -> Gemini -> DeepSeek"
-            },
-            {
-              "label": "CLI Registry",
-              "detail": "built-in + custom agents"
-            }
-          ]
-        },
-        {
-          "title": "Execution",
-          "edgeLabel": "spawn / resize / kill",
-          "nodes": [
-            {
-              "label": "PTY Service",
-              "detail": "cross-platform process lifecycle"
-            }
-          ]
-        },
-        {
-          "title": "Persistence",
-          "nodes": [
-            {
-              "label": "SQLite",
-              "detail": "sessions, providers, custom CLI"
-            },
-            {
-              "label": "Encrypted Store",
-              "detail": "provider API keys"
-            }
-          ]
-        }
-      ]
-    }
+    ]
   },
   {
     "id": "1",
