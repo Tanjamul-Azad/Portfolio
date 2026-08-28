@@ -16,13 +16,20 @@ export async function fetchContent<T>(type: string): Promise<T> {
   return (await res.json()).data as T;
 }
 
-export async function saveContent(type: string, data: unknown): Promise<void> {
+export interface SaveResult {
+  /** True when the change was committed and a rebuild is publishing it. */
+  pendingDeploy?: boolean;
+  commitUrl?: string | null;
+}
+
+export async function saveContent(type: string, data: unknown): Promise<SaveResult> {
   const res = await fetch(`/api/admin/content/${type}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error(await readError(res));
+  return (await res.json().catch(() => ({}))) as SaveResult;
 }
 
 export async function uploadFile(file: File, folder: string): Promise<string> {

@@ -52,9 +52,14 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ type: strin
   }
 
   try {
-    await writeContent(type, parsed.data);
-    return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Could not save content." }, { status: 500 });
+    const result = await writeContent(type, parsed.data);
+    return NextResponse.json({ success: true, ...result });
+  } catch (error) {
+    // GitHub failures carry an actionable message (stale file, bad token); keep
+    // it, since the person seeing it is the one who can fix it.
+    const message =
+      error instanceof Error && error.message ? error.message : "Could not save content.";
+    console.error("[admin] save failed:", error);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

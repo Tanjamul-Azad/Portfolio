@@ -36,8 +36,12 @@ export function useContent<T>(type: string) {
       if (payload == null) return;
       setSaving(true);
       try {
-        await saveContent(type, payload);
-        toast.success("Saved — refresh the site to preview, then commit & push to publish.");
+        const result = await saveContent(type, payload);
+        if (result?.pendingDeploy) {
+          toast.success("Committed to GitHub — the site rebuilds and goes live in about a minute.");
+        } else {
+          toast.success("Saved to your local files. Refresh to preview, then push to publish.");
+        }
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Save failed");
         throw e;

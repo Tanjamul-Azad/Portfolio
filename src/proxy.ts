@@ -5,14 +5,17 @@ import { NextRequest, NextResponse } from "next/server";
 // redirect (layout-level notFound()/redirect() can't, because the HTTP status is
 // already flushed mid-stream).
 //
-//   1. Production (any non-development runtime, incl. Vercel): every /admin and
-//      /api/admin route 404s — the editor is never exposed on the live site.
-//   2. Development: routes require the signed session cookie, except the login
+//   1. The editor is off unless configured: always available locally, and in
+//      production only when ADMIN_PASSWORD, ADMIN_SESSION_SECRET and
+//      GITHUB_TOKEN are all set. Otherwise every /admin route 404s.
+//   2. When enabled, routes require the signed session cookie, except the login
 //      page and the login/logout endpoints.
 
 const COOKIE = "admin_session";
 
 function getSecret(): string {
+  // Must match src/lib/admin/auth.ts. Production always has an explicit secret,
+  // because the gate above refuses to enable the editor without one.
   return (
     process.env.ADMIN_SESSION_SECRET ||
     process.env.ADMIN_PASSWORD ||
@@ -58,8 +61,21 @@ async function verifySession(token: string | undefined): Promise<boolean> {
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // 1. Disabled entirely outside local development.
-  if (process.env.NODE_ENV !== "development") {
+  // 1. Disabled unless the editor is deliberately configured.
+  //    Locally it is always on. In production every piece must be present —
+  //    password, a session secret distinct from it, and a GitHub token — or the
+  //    routes 404. This mirrors isAdminEnabled(); it is duplicated rather than
+  //    imported because the proxy runs on the edge runtime, where the Node-only
+  //    crypto import in that module is unavailable.
+  const enabled =
+    process.env.NODE_ENV === "development" ||
+    Boolean(
+      process.env.ADMIN_PASSWORD &&
+        process.env.ADMIN_SESSION_SECRET &&
+        process.env.GITHUB_TOKEN
+    );
+
+  if (!enabled) {
     return new NextResponse(null, { status: 404 });
   }
 

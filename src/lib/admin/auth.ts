@@ -6,14 +6,29 @@ const SESSION_TTL_MS = 1000 * 60 * 60 * 12; // 12 hours
 export const SESSION_MAX_AGE = SESSION_TTL_MS / 1000;
 
 /**
- * The editor is intentionally local-only: it is fully disabled in production so
- * nothing editable is ever exposed on the deployed (Vercel) site. Edits happen
- * during `npm run dev`, then get published via `git push`.
+ * The editor runs locally always, and on the deployed site only when it is fully
+ * configured to do so.
+ *
+ * Exposing an editor publicly turns it into an attack surface, so production
+ * requires every piece to be present and deliberate: a password, a session
+ * secret that is not derived from that password, and a GitHub token (without
+ * which a save could not persist anyway). Missing any one of them and the admin
+ * routes 404 exactly as before — the safe state is the default, not something
+ * you have to remember to switch on.
  */
 export function isAdminEnabled(): boolean {
-  // Enabled only during local development (`next dev`). Every production build or
-  // runtime — including Vercel — reports "production", so all admin routes 404.
-  return process.env.NODE_ENV === "development";
+  if (process.env.NODE_ENV === "development") return true;
+
+  return Boolean(
+    process.env.ADMIN_PASSWORD &&
+      process.env.ADMIN_SESSION_SECRET &&
+      process.env.GITHUB_TOKEN
+  );
+}
+
+/** True when running on the deployed site rather than `next dev`. */
+export function isProductionRuntime(): boolean {
+  return process.env.NODE_ENV === "production";
 }
 
 export function isPasswordConfigured(): boolean {
@@ -21,11 +36,15 @@ export function isPasswordConfigured(): boolean {
 }
 
 function getSecret(): string {
-  return (
-    process.env.ADMIN_SESSION_SECRET ||
-    process.env.ADMIN_PASSWORD ||
-    "insecure-dev-secret-change-me"
-  );
+  const explicit = process.env.ADMIN_SESSION_SECRET;
+  if (explicit) return explicit;
+
+  // Falling back to the password would make one leak compromise both the login
+  // and every existing session, so production requires a separate secret.
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("ADMIN_SESSION_SECRET must be set when the editor is enabled in production.");
+  }
+  return process.env.ADMIN_PASSWORD || "insecure-dev-secret-change-me";
 }
 
 function sign(payload: string): string {
