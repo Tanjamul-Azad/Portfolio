@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X, Send, Bot, User, Sparkles, Loader2 } from "lucide-react";
+import { X, Send, Bot, User, Loader2 } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config";
 
@@ -193,34 +194,52 @@ export function AiChat() {
           ref={triggerRef}
           onClick={() => setIsOpen((open) => !open)}
           aria-expanded={isOpen}
-          className="w-14 h-14 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/90 dark:bg-neutral-900/90 text-accent shadow-lg shadow-neutral-900/10 dark:shadow-black/30 backdrop-blur-xl flex items-center justify-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          aria-label={isOpen ? "Close AI assistant" : "Open AI assistant"}
+          layout
+          transition={{ layout: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } }}
+          className="flex h-14 items-center gap-2.5 rounded-full border border-neutral-200/80 bg-white/90 pr-4 pl-1.5 text-accent shadow-lg shadow-neutral-900/10 backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl dark:border-neutral-800/80 dark:bg-neutral-900/90 dark:shadow-black/30"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          aria-label={isOpen ? "Close AI assistant" : "Open AI assistant — ask about the portfolio"}
         >
-          <AnimatePresence mode="wait">
-            {isOpen ? (
-              <motion.div
-                key="close"
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
+          <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full ring-1 ring-black/5 dark:ring-white/10">
+            <Image
+              src={siteConfig.author.avatar || "/images/profile.jpg"}
+              alt=""
+              fill
+              sizes="44px"
+              className="object-cover"
+            />
+            {/* Online indicator, matched to the header's status dot. */}
+            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-400 dark:border-neutral-900" />
+          </span>
+
+          {/* Collapses away once the panel is open, leaving just the avatar as a
+              close affordance — the text would be redundant next to an open panel. */}
+          <AnimatePresence initial={false}>
+            {!isOpen && (
+              <motion.span
+                key="label"
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: "auto" }}
+                exit={{ opacity: 0, width: 0 }}
                 transition={{ duration: 0.2 }}
+                className="overflow-hidden whitespace-nowrap text-sm font-semibold text-neutral-800 dark:text-neutral-100"
               >
-                <X className="w-6 h-6" />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="chat"
-                initial={{ rotate: 90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: -90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <MessageCircle className="w-6 h-6" />
-              </motion.div>
+                AI Portfolio
+              </motion.span>
             )}
           </AnimatePresence>
+
+          {isOpen && (
+            <motion.span
+              initial={{ opacity: 0, rotate: -90 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              transition={{ duration: 0.2 }}
+              className="shrink-0"
+            >
+              <X className="h-5 w-5" />
+            </motion.span>
+          )}
         </motion.button>
       </div>
 
@@ -240,8 +259,14 @@ export function AiChat() {
           >
             {/* Header */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-accent flex items-center justify-center">
-                <Sparkles className="w-5 h-5" />
+              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-black/5 dark:ring-white/10">
+                <Image
+                  src={siteConfig.author.avatar || "/images/profile.jpg"}
+                  alt=""
+                  fill
+                  sizes="40px"
+                  className="object-cover"
+                />
               </div>
               <div className="grow">
                 <h3 className="font-semibold text-sm text-neutral-900 dark:text-white">AI Assistant</h3>

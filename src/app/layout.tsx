@@ -8,7 +8,7 @@ import {
   ThemeProvider,
 } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
-import { EditPortfolioLink } from "@/components/common";
+import { EditPortfolioLink } from "@/components/common/edit-portfolio-link";
 import { siteConfig } from "@/config";
 import {
   AiChat,

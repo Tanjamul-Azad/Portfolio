@@ -133,6 +133,8 @@ export interface SiteConfig {
     role: string;
     location: string;
     twitterHandle: string;
+    /** Shown on the AI chat launcher and inside the panel header. */
+    avatar?: string;
   };
 }
 
