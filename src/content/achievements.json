@@ -22,6 +22,7 @@
     "date": "2025",
     "type": "award",
     "icon": "🥉",
+    "image": "/images/achievements/soft-1787915363592.jpg",
     "description": "Recognised in Software Engineering category for full-stack development of Complete Legal Aid.",
     "skills": [
       "Software Engineering",
@@ -36,6 +37,7 @@
     "date": "2024",
     "type": "award",
     "icon": "🏅",
+    "image": "/images/achievements/electronics-1787915463043.jpg",
     "description": "Recognised for AI + IoT innovation with the Care Companion smart healthcare rover.",
     "skills": [
       "AI",
