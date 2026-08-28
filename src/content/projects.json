@@ -6,7 +6,7 @@
     "description": "Bilingual legal-aid platform connecting Bangladeshi citizens with verified lawyers — escrow payments, encrypted evidence, and four AI agents on one real-time stack.",
     "role": "Full-Stack Developer & AI Integration Lead",
     "impact": "Produced a deployable justice platform rather than a demo: Docker Compose brings up PostgreSQL, Redis, Daphne, nginx, and certbot with automatic TLS, and production settings actively refuse to start with DEBUG on, SQLite, or default passwords.",
-    "image": "/images/projects/Complete_legal_aid.png",
+    "image": "/images/projects/complete_legal_aid-1787918564663.png",
     "color": "#3b82f6",
     "tags": [
       "React 19",
@@ -23,7 +23,9 @@
       "Docker",
       "JWT"
     ],
-    "liveUrl": "https://completelegalaid.systems/",
+    "liveUrl": "https://complete-legal-aid-beta.vercel.app/",
+    "sourceUrl": "https://github.com/Tanjamul-Azad/Complete-Legal-Aid",
+    "videoUrl": "https://drive.google.com/file/d/1zrjia-IavEF5-NyQJsUkYX3Q8uPbcd13/view?usp=sharing",
     "featured": true,
     "pinned": true,
     "overview": "Legal help in Bangladesh is hard to price, hard to verify, and hard to reach. CLA puts citizens, verified lawyers, and administrators on one platform in both Bangla and English, and treats the awkward parts of the problem — proving a lawyer is real, holding money safely until work is done, and keeping evidence private — as first-class features rather than afterthoughts.",
@@ -95,101 +97,7 @@
         "value": "5 services",
         "description": "PostgreSQL 16, Redis 7, Daphne, nginx, and certbot via one Docker Compose deploy"
       }
-    ],
-    "architectureDiagram": {
-      "caption": "Complete Legal Aid pushes state changes outward through Redis and Django Channels; the browser subscribes rather than polls.",
-      "layers": [
-        {
-          "title": "Clients - React 19 + Vite",
-          "edgeLabel": "JWT over HTTPS and WSS",
-          "nodes": [
-            {
-              "label": "Citizen",
-              "detail": "cases, booking, vault"
-            },
-            {
-              "label": "Lawyer",
-              "detail": "drafting, earnings"
-            },
-            {
-              "label": "Admin",
-              "detail": "verification, ledger"
-            }
-          ]
-        },
-        {
-          "title": "Edge - nginx",
-          "edgeLabel": "proxies /api /ws /admin",
-          "nodes": [
-            {
-              "label": "TLS + SPA",
-              "detail": "certbot auto-renewal"
-            },
-            {
-              "label": "Media Policy",
-              "detail": "default-deny, signed links only"
-            }
-          ]
-        },
-        {
-          "title": "Application - Django 4.2 on Daphne (ASGI)",
-          "edgeLabel": "service calls",
-          "nodes": [
-            {
-              "label": "DRF Views",
-              "detail": "HTTP layer"
-            },
-            {
-              "label": "Channels Consumers",
-              "detail": "notifications, dashboard, presence"
-            },
-            {
-              "label": "Agent Runtime",
-              "detail": "SSE, tool allow-list"
-            }
-          ]
-        },
-        {
-          "title": "Services",
-          "edgeLabel": "persisted",
-          "nodes": [
-            {
-              "label": "Wallet",
-              "detail": "escrow + immutable ledger"
-            },
-            {
-              "label": "Document",
-              "detail": "bilingual generation"
-            },
-            {
-              "label": "AI",
-              "detail": "Gemini + FAISS RAG"
-            },
-            {
-              "label": "Search",
-              "detail": "statutes, case law, news"
-            }
-          ]
-        },
-        {
-          "title": "Infrastructure",
-          "nodes": [
-            {
-              "label": "PostgreSQL 16",
-              "detail": "SQLite for local dev"
-            },
-            {
-              "label": "Redis 7",
-              "detail": "channel layer"
-            },
-            {
-              "label": "Secure Media Store",
-              "detail": "signed-link access"
-            }
-          ]
-        }
-      ]
-    }
+    ]
   },
   {
     "id": "5",
@@ -242,6 +150,20 @@
         "description": "Each domain owns its components, services, and types together, so a feature can be read or removed without tracing through shared folders."
       }
     ],
+    "challenges": [
+      {
+        "challenge": "A hosted embedding API is a single point of failure for the one feature the product is built around.",
+        "learned": "Made the provider a configuration choice with an automatic local fallback rather than a hard dependency. Designing the degraded path first meant the feature had a defined behaviour without a key, instead of an exception."
+      },
+      {
+        "challenge": "Getting a Spring Boot backend and a Vite frontend running together locally involves MySQL, ports, and migration order.",
+        "learned": "Automated it — a pre-start script detects and starts MySQL, waits for port 3306, and ensures the database exists before the backend boots. Setup friction is a real cost on a team project; removing it is worth the scripting."
+      },
+      {
+        "challenge": "Thin controllers are easy to describe and easy to erode once deadlines arrive.",
+        "learned": "Keeping the service as an interface with a separate implementation made the boundary structural rather than a convention. It is harder to leak business logic into a controller when doing so means bypassing a type you would have to go around deliberately."
+      }
+    ],
     "results": [
       {
         "metric": "Matching",
@@ -257,92 +179,6 @@
         "metric": "Schema",
         "value": "Flyway",
         "description": "Versioned SQL applied automatically on first run"
-      }
-    ],
-    "architectureDiagram": {
-      "caption": "SkillEx request path: a React feature slice calls through a single API client into a layered Spring Boot backend.",
-      "layers": [
-        {
-          "title": "Client - React 19 + Vite",
-          "edgeLabel": "HTTP JSON, proxied by Vite in dev",
-          "nodes": [
-            {
-              "label": "Feature Slice",
-              "detail": "vertical, per-domain"
-            },
-            {
-              "label": "Feature Service",
-              "detail": "authService.login()"
-            },
-            {
-              "label": "ApiClient",
-              "detail": "singleton + JWT header"
-            }
-          ]
-        },
-        {
-          "title": "Edge",
-          "edgeLabel": "verified request",
-          "nodes": [
-            {
-              "label": "JwtAuthFilter",
-              "detail": "token verification"
-            },
-            {
-              "label": "CORS + Error Handler",
-              "detail": "Spring Security config"
-            }
-          ]
-        },
-        {
-          "title": "Application - Spring Boot 3 / Java 21",
-          "edgeLabel": "Spring Data JPA",
-          "nodes": [
-            {
-              "label": "RestController",
-              "detail": "routing only"
-            },
-            {
-              "label": "Service Interface",
-              "detail": "abstraction"
-            },
-            {
-              "label": "ServiceImpl",
-              "detail": "business logic"
-            }
-          ]
-        },
-        {
-          "title": "Persistence",
-          "nodes": [
-            {
-              "label": "JPA Repository",
-              "detail": "query derivation"
-            },
-            {
-              "label": "MySQL 8.0",
-              "detail": "Flyway-versioned schema"
-            },
-            {
-              "label": "Gemini Embedding API",
-              "detail": "falls back to local vectors"
-            }
-          ]
-        }
-      ]
-    },
-    "challenges": [
-      {
-        "challenge": "A hosted embedding API is a single point of failure for the one feature the product is built around.",
-        "learned": "Made the provider a configuration choice with an automatic local fallback rather than a hard dependency. Designing the degraded path first meant the feature had a defined behaviour without a key, instead of an exception."
-      },
-      {
-        "challenge": "Getting a Spring Boot backend and a Vite frontend running together locally involves MySQL, ports, and migration order.",
-        "learned": "Automated it — a pre-start script detects and starts MySQL, waits for port 3306, and ensures the database exists before the backend boots. Setup friction is a real cost on a team project; removing it is worth the scripting."
-      },
-      {
-        "challenge": "Thin controllers are easy to describe and easy to erode once deadlines arrive.",
-        "learned": "Keeping the service as an interface with a separate implementation made the boundary structural rather than a convention. It is harder to leak business logic into a controller when doing so means bypassing a type you would have to go around deliberately."
       }
     ]
   },
@@ -419,63 +255,7 @@
         "value": "None",
         "description": "Reflective feedback only — a deliberate design constraint"
       }
-    ],
-    "architectureDiagram": {
-      "caption": "ConvoVerse raises social difficulty in stages, each backed by a different arrangement of the same LLM agents.",
-      "layers": [
-        {
-          "title": "Stage 1 - Observe",
-          "edgeLabel": "user opts in when ready",
-          "nodes": [
-            {
-              "label": "Observer Mode",
-              "detail": "watch agents converse, no input"
-            }
-          ]
-        },
-        {
-          "title": "Stage 2 - Participate",
-          "edgeLabel": "complexity increases",
-          "nodes": [
-            {
-              "label": "One-on-One",
-              "detail": "single peer agent"
-            },
-            {
-              "label": "Rewind and Retry",
-              "detail": "no penalty for restarting"
-            }
-          ]
-        },
-        {
-          "title": "Stage 3 - Group",
-          "edgeLabel": "session ends",
-          "nodes": [
-            {
-              "label": "Peer Agent",
-              "detail": "conversational equal"
-            },
-            {
-              "label": "Group Member",
-              "detail": "competes for turns"
-            },
-            {
-              "label": "Facilitator",
-              "detail": "keeps discussion moving"
-            }
-          ]
-        },
-        {
-          "title": "Close",
-          "nodes": [
-            {
-              "label": "Reflective Feedback",
-              "detail": "non-evaluative, no score"
-            }
-          ]
-        }
-      ]
-    }
+    ]
   },
   {
     "id": "4",
@@ -561,91 +341,7 @@
         "value": "Local first",
         "description": "Hazards sound on-device before any network call"
       }
-    ],
-    "architectureDiagram": {
-      "caption": "Care Companion separates real-time sensing on the microcontroller from decision-making on the Pi, with the dashboard reading only from the database.",
-      "layers": [
-        {
-          "title": "Sensing - Arduino UNO",
-          "edgeLabel": "serial",
-          "nodes": [
-            {
-              "label": "DHT11",
-              "detail": "temperature"
-            },
-            {
-              "label": "Pulse Sensor",
-              "detail": "heart rate"
-            },
-            {
-              "label": "MQ-2",
-              "detail": "gas"
-            },
-            {
-              "label": "IR Flame",
-              "detail": "fire"
-            }
-          ]
-        },
-        {
-          "title": "Control - Raspberry Pi 4 (8GB)",
-          "edgeLabel": "GPIO / PWM",
-          "nodes": [
-            {
-              "label": "Vitals Pipeline",
-              "detail": "thresholds + alerting"
-            },
-            {
-              "label": "Camera v3",
-              "detail": "person detection"
-            },
-            {
-              "label": "Voice Commands",
-              "detail": "wake-word control"
-            }
-          ]
-        },
-        {
-          "title": "Actuation",
-          "edgeLabel": "events + readings",
-          "nodes": [
-            {
-              "label": "L298N + TT Motors",
-              "detail": "rover mobility"
-            },
-            {
-              "label": "SG90 Servo",
-              "detail": "medicine drawer"
-            },
-            {
-              "label": "Buzzer + LCD",
-              "detail": "local alerts"
-            }
-          ]
-        },
-        {
-          "title": "Application",
-          "nodes": [
-            {
-              "label": "Django + DRF",
-              "detail": "REST API"
-            },
-            {
-              "label": "Django Channels",
-              "detail": "WebSocket push"
-            },
-            {
-              "label": "Celery + Redis",
-              "detail": "reminder scheduling"
-            },
-            {
-              "label": "MySQL 8.0",
-              "detail": "vitals history"
-            }
-          ]
-        }
-      ]
-    }
+    ]
   },
   {
     "id": "6",
@@ -669,6 +365,7 @@
       "Zod",
       "Vitest"
     ],
+    "liveUrl": "https://unishare-app.vercel.app/",
     "sourceUrl": "https://github.com/Tanjamul-Azad/UniShare",
     "featured": false,
     "pinned": true,
@@ -694,6 +391,16 @@
         "description": "Vitest with React Testing Library and JSDOM cover the UI, and GitHub Actions handles deployment."
       }
     ],
+    "challenges": [
+      {
+        "challenge": "Live updates and a client cache disagree easily — the socket says one thing while the cache still holds another.",
+        "learned": "Stopped treating socket payloads as state and treated them as invalidation signals instead. Letting the query layer refetch keeps one source of truth; patching the cache directly from an event is where the two views drift apart."
+      },
+      {
+        "challenge": "Choosing a database for a project that must be trivial to run locally but still relational.",
+        "learned": "Better-SQLite3 is synchronous and embedded, so there is no pool, no daemon, and no await on every query. At campus scale the simplicity is worth more than the concurrency a server-based database would add."
+      }
+    ],
     "results": [
       {
         "metric": "Transport",
@@ -709,71 +416,6 @@
         "metric": "CI",
         "value": "Automated",
         "description": "Vitest suite plus GitHub Actions deployment"
-      }
-    ],
-    "liveUrl": "https://unishare-app.vercel.app/",
-    "architectureDiagram": {
-      "caption": "UniShare holds one Socket.IO connection per client, so listings, chat, and notifications all update without polling.",
-      "layers": [
-        {
-          "title": "Client - React 19 + Vite",
-          "edgeLabel": "REST for reads, WebSocket for live updates",
-          "nodes": [
-            {
-              "label": "React Router DOM",
-              "detail": "route-level code split"
-            },
-            {
-              "label": "TanStack Query",
-              "detail": "cache + invalidation"
-            },
-            {
-              "label": "Zod Schemas",
-              "detail": "runtime validation"
-            }
-          ]
-        },
-        {
-          "title": "Transport",
-          "edgeLabel": "single duplex channel",
-          "nodes": [
-            {
-              "label": "Express REST",
-              "detail": "CRUD"
-            },
-            {
-              "label": "Socket.IO",
-              "detail": "chat + notifications"
-            }
-          ]
-        },
-        {
-          "title": "Server - Node.js",
-          "nodes": [
-            {
-              "label": "Route Handlers",
-              "detail": "listings, groups, saves"
-            },
-            {
-              "label": "Socket Event Bus",
-              "detail": "room-scoped broadcast"
-            },
-            {
-              "label": "Better-SQLite3",
-              "detail": "synchronous, embedded"
-            }
-          ]
-        }
-      ]
-    },
-    "challenges": [
-      {
-        "challenge": "Live updates and a client cache disagree easily — the socket says one thing while the cache still holds another.",
-        "learned": "Stopped treating socket payloads as state and treated them as invalidation signals instead. Letting the query layer refetch keeps one source of truth; patching the cache directly from an event is where the two views drift apart."
-      },
-      {
-        "challenge": "Choosing a database for a project that must be trivial to run locally but still relational.",
-        "learned": "Better-SQLite3 is synchronous and embedded, so there is no pool, no daemon, and no await on every query. At campus scale the simplicity is worth more than the concurrency a server-based database would add."
       }
     ]
   },
@@ -847,77 +489,7 @@
         "value": "Matched + missing",
         "description": "Every recipe shows both lists alongside its overlap score"
       }
-    ],
-    "architectureDiagram": {
-      "caption": "ChefMate normalises free text before retrieval, and filters the candidate set before vectorising it.",
-      "layers": [
-        {
-          "title": "Input - Flask",
-          "edgeLabel": "raw comma-separated text",
-          "nodes": [
-            {
-              "label": "Ingredient Form",
-              "detail": "cuisine / diet / meal filters"
-            }
-          ]
-        },
-        {
-          "title": "Normalisation",
-          "edgeLabel": "clean canonical tokens",
-          "nodes": [
-            {
-              "label": "spaCy Lemmatiser",
-              "detail": "en_core_web_sm"
-            },
-            {
-              "label": "Synonym Map",
-              "detail": "regional name variants"
-            },
-            {
-              "label": "rapidfuzz",
-              "detail": "80% similarity floor"
-            }
-          ]
-        },
-        {
-          "title": "Candidate Selection",
-          "edgeLabel": "reduced dataframe",
-          "nodes": [
-            {
-              "label": "Column Filters",
-              "detail": "cuisine, diet, meal type"
-            },
-            {
-              "label": "Deduplicate",
-              "detail": "by recipe name"
-            }
-          ]
-        },
-        {
-          "title": "Retrieval - pickled artefact",
-          "edgeLabel": "ranked neighbours",
-          "nodes": [
-            {
-              "label": "TF-IDF Vectoriser",
-              "detail": "fitted, persisted"
-            },
-            {
-              "label": "kNN Lookup",
-              "detail": "kneighbors over candidates"
-            }
-          ]
-        },
-        {
-          "title": "Output",
-          "nodes": [
-            {
-              "label": "Scored Recipes",
-              "detail": "matched + missing + overlap %"
-            }
-          ]
-        }
-      ]
-    }
+    ]
   },
   {
     "id": "7",
@@ -964,6 +536,20 @@
         "description": "db_migrate.php and db_seed_demo.php rebuild the database and populate demo data, so a fresh checkout reaches a working state without manual SQL."
       }
     ],
+    "challenges": [
+      {
+        "challenge": "Without a framework, an unguarded page is a complete authorisation bypass — the URL is the only thing standing between a patient and another patient's records.",
+        "learned": "Made the session guard the first include on every page, before any output. Doing the check after rendering has begun is too late to redirect, and that ordering constraint is exactly what a framework's middleware normally enforces for you."
+      },
+      {
+        "challenge": "Escaping applied ad hoc at each output site gets missed somewhere, and one miss is an XSS hole.",
+        "learned": "Centralised it in a Security class with htmlspecialchars(ENT_QUOTES, UTF-8) and recursive array handling, so nested form input is covered by the same call. Consistency matters more than cleverness here — the risk is the site you forget, not the one you write carefully."
+      },
+      {
+        "challenge": "Six modules touching one schema drift apart quickly when the database is set up by hand.",
+        "learned": "Added migration and seed scripts so the schema has a single source of truth in the repository. Being able to reset to a known state turns schema bugs into reproducible ones."
+      }
+    ],
     "results": [
       {
         "metric": "Modules",
@@ -979,88 +565,6 @@
         "metric": "Password Hashing",
         "value": "cost 12",
         "description": "password_hash with bcrypt work factor 12, never plaintext or MD5"
-      }
-    ],
-    "architectureDiagram": {
-      "caption": "IHMS resolves the session guard before any page emits output, so authorisation happens before a query runs.",
-      "layers": [
-        {
-          "title": "Roles",
-          "edgeLabel": "session-scoped request",
-          "nodes": [
-            {
-              "label": "Patient"
-            },
-            {
-              "label": "Doctor"
-            },
-            {
-              "label": "Admin"
-            }
-          ]
-        },
-        {
-          "title": "Request Guard - includes/",
-          "edgeLabel": "authorised request",
-          "nodes": [
-            {
-              "label": "session.php",
-              "detail": "role check, first include"
-            },
-            {
-              "label": "security.php",
-              "detail": "hashing, tokens, escaping"
-            }
-          ]
-        },
-        {
-          "title": "Modules",
-          "edgeLabel": "prepared statements",
-          "nodes": [
-            {
-              "label": "Appointments"
-            },
-            {
-              "label": "Prescriptions"
-            },
-            {
-              "label": "Ambulance"
-            },
-            {
-              "label": "Blood Bank"
-            },
-            {
-              "label": "Chatbot"
-            }
-          ]
-        },
-        {
-          "title": "Persistence",
-          "nodes": [
-            {
-              "label": "MySQL",
-              "detail": "shared schema"
-            },
-            {
-              "label": "Migration + Seed",
-              "detail": "db_migrate.php, db_seed_demo.php"
-            }
-          ]
-        }
-      ]
-    },
-    "challenges": [
-      {
-        "challenge": "Without a framework, an unguarded page is a complete authorisation bypass — the URL is the only thing standing between a patient and another patient's records.",
-        "learned": "Made the session guard the first include on every page, before any output. Doing the check after rendering has begun is too late to redirect, and that ordering constraint is exactly what a framework's middleware normally enforces for you."
-      },
-      {
-        "challenge": "Escaping applied ad hoc at each output site gets missed somewhere, and one miss is an XSS hole.",
-        "learned": "Centralised it in a Security class with htmlspecialchars(ENT_QUOTES, UTF-8) and recursive array handling, so nested form input is covered by the same call. Consistency matters more than cleverness here — the risk is the site you forget, not the one you write carefully."
-      },
-      {
-        "challenge": "Six modules touching one schema drift apart quickly when the database is set up by hand.",
-        "learned": "Added migration and seed scripts so the schema has a single source of truth in the repository. Being able to reset to a known state turns schema bugs into reproducible ones."
       }
     ]
   }
