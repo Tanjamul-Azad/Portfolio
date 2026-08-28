@@ -801,7 +801,7 @@
       "pandas"
     ],
     "sourceUrl": "https://github.com/Tanjamul-Azad/ChefMate",
-    "featured": true,
+    "featured": false,
     "pinned": false,
     "overview": "Most recipe sites work backwards: pick a dish, then go shopping. ChefMate starts from the ingredients already on hand and finds the closest matches, showing what is missing for each so the trade-off is visible before committing to a dish.",
     "problem": "Free-text ingredient input breaks naive matching immediately. \"Tomatoes\", \"tomato\", and a typo like \"tomatos\" are three different strings, and regional names diverge further — aubergine and eggplant are the same vegetable. Exact matching fragments the search space and returns nothing useful.",
