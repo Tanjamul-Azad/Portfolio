@@ -809,7 +809,7 @@
     ],
     "sourceUrl": "https://github.com/Tanjamul-Azad/Silicon-Squad-",
     "featured": false,
-    "pinned": true,
+    "pinned": false,
     "overview": "A microprocessor project that ended up a working prototype: a mobile assistant for patients and elderly people living at home, combining continuous vitals monitoring with physical actions — moving to the patient, opening a medicine drawer, sounding an alarm.",
     "problem": "Home care depends on someone being present. Missed medication, an unnoticed fever, a gas leak, or a fall can all go undetected for hours, and commercial monitoring systems are priced out of reach for most households.",
     "solution": "Split the work across two processors by what each is good at. An Arduino UNO owns the sensors, where tight timing loops matter; the Raspberry Pi 4 handles vision, voice, decisions, and the web layer. They talk over serial, so a slow decision on the Pi never delays a sensor read.",
