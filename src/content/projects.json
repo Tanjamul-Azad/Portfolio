@@ -97,7 +97,75 @@
         "value": "5 services",
         "description": "PostgreSQL 16, Redis 7, Daphne, nginx, and certbot via one Docker Compose deploy"
       }
-    ]
+    ],
+    "architectureDiagram": {
+      "caption": "Complete Legal Aid routes three roles through one Django backend, keeping real-time consultation and AI drafting on separate paths.",
+      "layers": [
+        {
+          "title": "Roles - React 19 + TypeScript",
+          "edgeLabel": "JWT-authenticated",
+          "nodes": [
+            {
+              "label": "Citizen",
+              "detail": "case intake"
+            },
+            {
+              "label": "Lawyer",
+              "detail": "consultation"
+            },
+            {
+              "label": "Admin",
+              "detail": "verification"
+            }
+          ]
+        },
+        {
+          "title": "Transport",
+          "edgeLabel": "routed by concern",
+          "nodes": [
+            {
+              "label": "Django REST",
+              "detail": "CRUD + auth"
+            },
+            {
+              "label": "Django Channels",
+              "detail": "WebSocket messaging"
+            }
+          ]
+        },
+        {
+          "title": "Domain Services",
+          "edgeLabel": "persisted",
+          "nodes": [
+            {
+              "label": "Consultation Booking",
+              "detail": "multi-modal"
+            },
+            {
+              "label": "AI Drafting",
+              "detail": "bilingual bn / en"
+            },
+            {
+              "label": "Evidence Vault",
+              "detail": "encrypted at rest"
+            }
+          ]
+        },
+        {
+          "title": "Persistence",
+          "nodes": [
+            {
+              "label": "MySQL",
+              "detail": "cases, users, messages"
+            },
+            {
+              "label": "Encrypted Store",
+              "detail": "documents"
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "id": "5",
@@ -180,7 +248,79 @@
         "value": "Flyway",
         "description": "Versioned SQL applied automatically on first run"
       }
-    ]
+    ],
+    "architectureDiagram": {
+      "caption": "SkillEx request path: a React feature slice calls through a single API client into a layered Spring Boot backend.",
+      "layers": [
+        {
+          "title": "Client - React 19 + Vite",
+          "edgeLabel": "HTTP JSON, proxied by Vite in dev",
+          "nodes": [
+            {
+              "label": "Feature Slice",
+              "detail": "vertical, per-domain"
+            },
+            {
+              "label": "Feature Service",
+              "detail": "authService.login()"
+            },
+            {
+              "label": "ApiClient",
+              "detail": "singleton + JWT header"
+            }
+          ]
+        },
+        {
+          "title": "Edge",
+          "edgeLabel": "verified request",
+          "nodes": [
+            {
+              "label": "JwtAuthFilter",
+              "detail": "token verification"
+            },
+            {
+              "label": "CORS + Error Handler",
+              "detail": "Spring Security config"
+            }
+          ]
+        },
+        {
+          "title": "Application - Spring Boot 3 / Java 21",
+          "edgeLabel": "Spring Data JPA",
+          "nodes": [
+            {
+              "label": "RestController",
+              "detail": "routing only"
+            },
+            {
+              "label": "Service Interface",
+              "detail": "abstraction"
+            },
+            {
+              "label": "ServiceImpl",
+              "detail": "business logic"
+            }
+          ]
+        },
+        {
+          "title": "Persistence",
+          "nodes": [
+            {
+              "label": "JPA Repository",
+              "detail": "query derivation"
+            },
+            {
+              "label": "MySQL 8.0",
+              "detail": "Flyway-versioned schema"
+            },
+            {
+              "label": "Gemini Embedding API",
+              "detail": "falls back to local vectors"
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "id": "3",
@@ -256,7 +396,63 @@
         "value": "None",
         "description": "Reflective feedback only — a deliberate design constraint"
       }
-    ]
+    ],
+    "architectureDiagram": {
+      "caption": "ConvoVerse raises social difficulty in stages, each backed by a different arrangement of the same LLM agents.",
+      "layers": [
+        {
+          "title": "Stage 1 - Observe",
+          "edgeLabel": "user opts in when ready",
+          "nodes": [
+            {
+              "label": "Observer Mode",
+              "detail": "watch agents converse, no input"
+            }
+          ]
+        },
+        {
+          "title": "Stage 2 - Participate",
+          "edgeLabel": "complexity increases",
+          "nodes": [
+            {
+              "label": "One-on-One",
+              "detail": "single peer agent"
+            },
+            {
+              "label": "Rewind and Retry",
+              "detail": "no penalty for restarting"
+            }
+          ]
+        },
+        {
+          "title": "Stage 3 - Group",
+          "edgeLabel": "session ends",
+          "nodes": [
+            {
+              "label": "Peer Agent",
+              "detail": "conversational equal"
+            },
+            {
+              "label": "Group Member",
+              "detail": "competes for turns"
+            },
+            {
+              "label": "Facilitator",
+              "detail": "keeps discussion moving"
+            }
+          ]
+        },
+        {
+          "title": "Close",
+          "nodes": [
+            {
+              "label": "Reflective Feedback",
+              "detail": "non-evaluative, no score"
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "id": "4",
@@ -342,7 +538,91 @@
         "value": "Local first",
         "description": "Hazards sound on-device before any network call"
       }
-    ]
+    ],
+    "architectureDiagram": {
+      "caption": "Care Companion separates real-time sensing on the microcontroller from decision-making on the Pi, with the dashboard reading only from the database.",
+      "layers": [
+        {
+          "title": "Sensing - Arduino UNO",
+          "edgeLabel": "serial",
+          "nodes": [
+            {
+              "label": "DHT11",
+              "detail": "temperature"
+            },
+            {
+              "label": "Pulse Sensor",
+              "detail": "heart rate"
+            },
+            {
+              "label": "MQ-2",
+              "detail": "gas"
+            },
+            {
+              "label": "IR Flame",
+              "detail": "fire"
+            }
+          ]
+        },
+        {
+          "title": "Control - Raspberry Pi 4 (8GB)",
+          "edgeLabel": "GPIO / PWM",
+          "nodes": [
+            {
+              "label": "Vitals Pipeline",
+              "detail": "thresholds + alerting"
+            },
+            {
+              "label": "Camera v3",
+              "detail": "person detection"
+            },
+            {
+              "label": "Voice Commands",
+              "detail": "wake-word control"
+            }
+          ]
+        },
+        {
+          "title": "Actuation",
+          "edgeLabel": "events + readings",
+          "nodes": [
+            {
+              "label": "L298N + TT Motors",
+              "detail": "rover mobility"
+            },
+            {
+              "label": "SG90 Servo",
+              "detail": "medicine drawer"
+            },
+            {
+              "label": "Buzzer + LCD",
+              "detail": "local alerts"
+            }
+          ]
+        },
+        {
+          "title": "Application",
+          "nodes": [
+            {
+              "label": "Django + DRF",
+              "detail": "REST API"
+            },
+            {
+              "label": "Django Channels",
+              "detail": "WebSocket push"
+            },
+            {
+              "label": "Celery + Redis",
+              "detail": "reminder scheduling"
+            },
+            {
+              "label": "MySQL 8.0",
+              "detail": "vitals history"
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "id": "6",
@@ -418,7 +698,61 @@
         "value": "Automated",
         "description": "Vitest suite plus GitHub Actions deployment"
       }
-    ]
+    ],
+    "architectureDiagram": {
+      "caption": "UniShare holds one Socket.IO connection per client, so listings, chat, and notifications all update without polling.",
+      "layers": [
+        {
+          "title": "Client - React 19 + Vite",
+          "edgeLabel": "REST for reads, WebSocket for live updates",
+          "nodes": [
+            {
+              "label": "React Router DOM",
+              "detail": "route-level code split"
+            },
+            {
+              "label": "TanStack Query",
+              "detail": "cache + invalidation"
+            },
+            {
+              "label": "Zod Schemas",
+              "detail": "runtime validation"
+            }
+          ]
+        },
+        {
+          "title": "Transport",
+          "edgeLabel": "single duplex channel",
+          "nodes": [
+            {
+              "label": "Express REST",
+              "detail": "CRUD"
+            },
+            {
+              "label": "Socket.IO",
+              "detail": "chat + notifications"
+            }
+          ]
+        },
+        {
+          "title": "Server - Node.js",
+          "nodes": [
+            {
+              "label": "Route Handlers",
+              "detail": "listings, groups, saves"
+            },
+            {
+              "label": "Socket Event Bus",
+              "detail": "room-scoped broadcast"
+            },
+            {
+              "label": "Better-SQLite3",
+              "detail": "synchronous, embedded"
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "id": "2",
@@ -490,7 +824,63 @@
         "value": "Matched + missing",
         "description": "Every recipe shows both lists alongside its overlap score"
       }
-    ]
+    ],
+    "architectureDiagram": {
+      "caption": "ChefMate normalises free-text ingredients in an NLP stage before any matching runs, so typos and plurals do not fragment the search.",
+      "layers": [
+        {
+          "title": "Input",
+          "edgeLabel": "raw ingredient list",
+          "nodes": [
+            {
+              "label": "Flask UI",
+              "detail": "cuisine / diet / meal filters"
+            }
+          ]
+        },
+        {
+          "title": "NLP Normalisation - spaCy",
+          "edgeLabel": "canonical ingredient tokens",
+          "nodes": [
+            {
+              "label": "Lemmatisation",
+              "detail": "plural to singular form"
+            },
+            {
+              "label": "Synonym Map",
+              "detail": "hand-curated"
+            },
+            {
+              "label": "Fuzzy Match",
+              "detail": "tolerates typos"
+            }
+          ]
+        },
+        {
+          "title": "Inference",
+          "edgeLabel": "ranked candidates",
+          "nodes": [
+            {
+              "label": "Cuisine Classifier",
+              "detail": "trained on ~643MB Kaggle set"
+            },
+            {
+              "label": "Recipe Scorer",
+              "detail": "ingredient overlap"
+            }
+          ]
+        },
+        {
+          "title": "Output",
+          "nodes": [
+            {
+              "label": "Ranked Recipes",
+              "detail": "shown with match score"
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "id": "7",
@@ -567,6 +957,64 @@
         "value": "cost 12",
         "description": "password_hash with bcrypt work factor 12, never plaintext or MD5"
       }
-    ]
+    ],
+    "architectureDiagram": {
+      "caption": "A server-rendered PHP stack: all three roles reach the same modules, with access resolved per session before any query runs.",
+      "layers": [
+        {
+          "title": "Roles",
+          "edgeLabel": "session-scoped request",
+          "nodes": [
+            {
+              "label": "Patient"
+            },
+            {
+              "label": "Doctor"
+            },
+            {
+              "label": "Admin"
+            }
+          ]
+        },
+        {
+          "title": "Access Control",
+          "edgeLabel": "authorised request",
+          "nodes": [
+            {
+              "label": "Session Guard",
+              "detail": "role check per page"
+            },
+            {
+              "label": "Input Sanitisation",
+              "detail": "prepared statements"
+            }
+          ]
+        },
+        {
+          "title": "Application - PHP",
+          "edgeLabel": "SQL",
+          "nodes": [
+            {
+              "label": "Appointments"
+            },
+            {
+              "label": "Prescriptions"
+            },
+            {
+              "label": "Medical Records"
+            }
+          ]
+        },
+        {
+          "title": "Persistence",
+          "nodes": [
+            {
+              "label": "MySQL",
+              "detail": "relational schema"
+            }
+          ]
+        }
+      ]
+    }
   }
 ]

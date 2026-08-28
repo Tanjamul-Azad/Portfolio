@@ -12,6 +12,22 @@ const projectFeature = z.object({
 const challenge = z.object({ challenge: str, learned: str });
 const result = z.object({ metric: str, value: str, description: str.optional() });
 
+// Matches ArchitectureDiagram in src/types/index.ts. The admin editor has no
+// UI to author or change this yet, but the field still has to round-trip
+// through a save: Zod's z.object() strips any key it doesn't know about, so
+// without this every save from the Projects editor was silently deleting the
+// diagram on all seven projects — confirmed live, restored from git history.
+const architectureNode = z.object({ label: str, detail: str.optional() });
+const architectureLayer = z.object({
+  title: str,
+  nodes: z.array(architectureNode),
+  edgeLabel: str.optional(),
+});
+const architectureDiagram = z.object({
+  caption: str,
+  layers: z.array(architectureLayer),
+});
+
 const project = z.object({
   id: str,
   slug: str,
@@ -31,6 +47,7 @@ const project = z.object({
   problem: str.optional(),
   solution: str.optional(),
   architecture: str.optional(),
+  architectureDiagram: architectureDiagram.optional(),
   features: z.array(projectFeature).optional(),
   challenges: z.array(challenge).optional(),
   results: z.array(result).optional(),
@@ -119,9 +136,14 @@ const site = z.object({
   contact: z.object({ email: str, whatsapp: str }),
   author: z.object({
     name: str,
+    // Both added after this schema was first written — missing here meant a
+    // save from the admin Site editor would silently strip them, the same
+    // failure mode as the architectureDiagram gap above.
+    alternateNames: strArr.optional(),
     role: str,
     location: str,
     twitterHandle: str,
+    avatar: str.optional(),
   }),
 });
 
@@ -131,6 +153,7 @@ const hero = z.object({
   typewriter: str,
   actions: z.array(z.object({ label: str, href: str })),
   profileVideo: str,
+  profilePoster: str.optional(),
 });
 
 const about = z.object({
