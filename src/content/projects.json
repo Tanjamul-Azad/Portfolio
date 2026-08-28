@@ -930,7 +930,7 @@
     "description": "Hospital management system covering appointments, prescriptions, ambulance dispatch, and a blood-donor registry across patient, doctor, and admin roles.",
     "role": "Full-Stack Developer",
     "impact": "Writing it without a framework meant confronting the problems frameworks normally hide: session fixation, output escaping, and role checks that must not be bypassable by navigating straight to a URL. Migration and demo-seed scripts keep the schema reproducible.",
-    "image": "/images/projects/Integrated_healthcare.png",
+    "image": "/images/projects/integrated_healthcare-1787921928143.png",
     "color": "#ef4444",
     "tags": [
       "PHP",
@@ -939,6 +939,7 @@
       "Bootstrap",
       "JavaScript"
     ],
+    "liveUrl": "https://ihms-frontend-preview.vercel.app/",
     "sourceUrl": "https://github.com/Tanjamul-Azad/IHMS",
     "featured": false,
     "pinned": false,
