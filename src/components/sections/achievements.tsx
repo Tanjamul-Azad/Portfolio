@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, ExternalLink, Award, Medal, Trophy, Star, ChevronDown } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Award, Medal, Trophy, Star, ChevronDown, RotateCw } from "lucide-react";
 import Image from "next/image";
 import { achievements } from "@/data";
 import type { Achievement } from "@/types";
@@ -25,9 +25,54 @@ const TYPE_LABEL = {
   achievement: "Achievement",
 } as const;
 
-/** Thumbnail image with a branded fallback when no picture is set. */
+/**
+ * Thumbnail image with a branded fallback when no picture is set.
+ *
+ * When a `momentImage` (a photo from the actual ceremony/ ­submission moment)
+ * is also present, hovering flips the card to reveal it — a 3D rotation built
+ * from two backface-hidden faces rather than a crossfade, so it reads as one
+ * physical card turning over rather than two images swapping. Touch devices
+ * have no hover, so the same photo is offered again in the detail dialog
+ * (AchievementDialog) rather than only living behind a gesture nobody there
+ * can make.
+ */
 function AchievementThumb({ achievement }: { achievement: Achievement }) {
   const TypeIcon = TYPE_ICON[achievement.type];
+
+  if (achievement.image && achievement.momentImage) {
+    return (
+      <div className="absolute inset-0 [perspective:1200px]">
+        <div className="relative h-full w-full transition-transform duration-700 ease-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+          <div className="absolute inset-0 [backface-visibility:hidden]">
+            <Image
+              src={achievement.image}
+              alt={achievement.title}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover"
+            />
+          </div>
+          <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)]">
+            <Image
+              src={achievement.momentImage}
+              alt=""
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover"
+            />
+          </div>
+        </div>
+        {/* Hints that there's a second side, for anyone who hasn't hovered yet. */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-3 right-3 flex items-center gap-1 rounded-full bg-black/55 px-2 py-1 text-[9px] font-medium text-white opacity-80 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-0"
+        >
+          <RotateCw className="h-3 w-3" />
+          Hover to flip
+        </span>
+      </div>
+    );
+  }
 
   if (achievement.image) {
     return (
@@ -186,6 +231,23 @@ function AchievementDialog({
                 </div>
               )}
             </div>
+
+            {/* The ceremony/moment photo, offered again here so touch visitors —
+                who have no hover — still get to see it, not just the certificate. */}
+            {achievement.momentImage && (
+              <div className="relative aspect-video w-full border-t border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-950">
+                <Image
+                  src={achievement.momentImage}
+                  alt={`${achievement.title} — the moment`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 42rem"
+                  className="object-cover"
+                />
+                <span className="absolute left-3 top-3 rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-white backdrop-blur-sm">
+                  The moment
+                </span>
+              </div>
+            )}
 
             <div className="p-6">
               <div className="mb-3 flex flex-wrap items-center gap-2">

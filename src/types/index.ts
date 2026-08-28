@@ -66,6 +66,8 @@ export interface Achievement {
   type: "certification" | "award" | "achievement";
   icon: string;
   image?: string;
+  /** Photo taken at the moment of receiving it — shown on hover-flip and in the detail view. */
+  momentImage?: string;
   description: string;
   credentialUrl?: string;
   skills: string[];

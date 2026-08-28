@@ -71,6 +71,13 @@ export default function AchievementsEditor() {
                 onChange={(v) => update({ image: v })}
                 hint="Shown as the card thumbnail and as the full image in the detail popup. Upload or paste a URL."
               />
+              <ImageField
+                label="Moment photo (optional)"
+                folder="achievements"
+                value={a.momentImage ?? ""}
+                onChange={(v) => update({ momentImage: v })}
+                hint="A photo from receiving it. When set, hovering the card flips it to reveal this photo, and it also appears in the detail popup for touch visitors."
+              />
               <TextAreaField
                 label="Description"
                 value={a.description}
