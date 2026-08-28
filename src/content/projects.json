@@ -189,7 +189,7 @@
     "description": "HCI research prototype where introverted learners rehearse conversations with LLM agents before facing the real thing.",
     "role": "System Designer & Frontend Developer",
     "impact": "Contributes a reusable interaction pattern rather than a product: staged exposure, reversible actions, and non-evaluative feedback, applicable to any system supporting participation.",
-    "image": "/images/projects/ConvoVerse.png",
+    "image": "/images/projects/convoverse-1787918778769.png",
     "color": "#8b5cf6",
     "tags": [
       "React",
@@ -200,6 +200,7 @@
       "Interaction Design",
       "Prototype"
     ],
+    "liveUrl": "https://tanjamul-azad.github.io/ConvoVerse/",
     "sourceUrl": "https://github.com/Tanjamul-Azad/ConvoVerse",
     "featured": true,
     "pinned": true,
