@@ -12,6 +12,8 @@ export interface Project {
   tags: string[];
   liveUrl?: string;
   sourceUrl?: string;
+  /** Repo is private — render a "Request Source Code" mailto action instead of a direct GitHub link. */
+  sourcePrivate?: boolean;
   videoUrl?: string;
   featured?: boolean;
   pinned?: boolean;

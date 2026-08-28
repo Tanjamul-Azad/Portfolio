@@ -1,5 +1,308 @@
 [
   {
+    "id": "8",
+    "slug": "radflow",
+    "title": "RadFlow",
+    "description": "Offline-first AI radiology triage platform for district hospitals — dual CV/VLM pipelines turn a chest X-ray into a guideline-grounded report on CPU, GPU, or Apple Silicon alike.",
+    "role": "Full-Stack Developer",
+    "impact": "Built the FastAPI backend that turns a hackathon model demo into an operable system: a retrying async inference queue, a per-endpoint latency/error observability panel, and a 7-day confidence-drift report comparing recent cases against baseline — the parts a research pipeline needs before anyone would trust it on a ward.",
+    "image": "/images/projects/Radflow.PNG",
+    "color": "#0ea5e9",
+    "tags": [
+      "FastAPI",
+      "React",
+      "TypeScript",
+      "PyTorch",
+      "DenseNet121",
+      "CheXagent-8b",
+      "GradCAM",
+      "ChromaDB",
+      "RAG",
+      "SQLAlchemy",
+      "Vite",
+      "Tailwind CSS"
+    ],
+    "sourceUrl": "https://github.com/Tanjamul-Azad/RadFlow",
+    "featured": true,
+    "pinned": true,
+    "overview": "Built at the Harvard Health Systems Innovation Lab Hackathon 2026 by a four-person team, RadFlow targets a specific gap: district and rural hospitals that own an X-ray machine but have no radiologist on site. It runs two complete AI pipelines end to end — detection, localization, guideline retrieval, and report drafting — entirely offline, and auto-adapts to whatever hardware the hospital actually has.",
+    "problem": "A district hospital can own imaging hardware without owning imaging expertise — the read is the bottleneck, not the scan. Cloud-based triage tools assume reliable connectivity and a specific GPU, neither of which holds in a resource-constrained facility, and a missed abnormality on a chest film has a direct clinical cost.",
+    "solution": "Every radiograph moves through a 4-stage pipeline — DenseNet121 screens for 18 pathologies, GradCAM localizes and crops the abnormal region, a ChromaDB-backed RAG step retrieves the matching clinical guideline, and CheXagent-8b drafts the final report grounded in that guideline rather than free-associating. A second pipeline, the Foveal Engine, trades some of that depth for speed: an OpenCV contrast pass crops a high-resolution region of interest in milliseconds and a token router (D-RoVA) drops irrelevant visual tokens before the VLM ever sees them, cutting token count by roughly 80% while keeping the crop diagnostic.",
+    "architecture": "A FastAPI backend fronts both pipelines behind one API and owns the parts that make it operable rather than a demo: an InferenceJob queue processed by a background worker thread with retries, per-job cancellation, and status polling, so a slow VLM call never blocks the request path. Every completed inference is written to an append-only InferenceLedger, which powers an admin drift report comparing the last 7 days of case mix and calibrated confidence against the 7 days before — the kind of check a clinical tool needs and a hackathon demo usually skips. A hardware router picks CUDA + bitsandbytes 4-bit quantization, Apple MLX, or Intel IPEX at startup, so the same code path runs on whatever machine is actually in the building.",
+    "features": [
+      {
+        "title": "RadFlow-Edge: 4-stage clinical pipeline",
+        "description": "DenseNet121 detection over 18 pathologies, GradCAM localization and cropping, ChromaDB-backed guideline retrieval, and a CheXagent-8b VLM analyzer that drafts the final report grounded in the retrieved guideline."
+      },
+      {
+        "title": "Foveal Engine: sub-second triage path",
+        "description": "An OpenCV 'Vision Hack' crops a 512x512 region of interest by contrast alone, and a D-RoVA token router drops irrelevant visual tokens before the VLM call — roughly an 80% token reduction with the crop still diagnostic."
+      },
+      {
+        "title": "Async inference queue with retry and cancel",
+        "description": "Analysis requests enqueue as an InferenceJob worked by a background thread with up to 2 retries and a live status/progress endpoint, so a slow or failed VLM call degrades gracefully instead of timing out the request."
+      },
+      {
+        "title": "Observability and drift panels",
+        "description": "Per-endpoint call count, average and p95 latency, and error rate are tracked in-process; a separate drift report compares the last 7 days of pathology mix and calibrated confidence against the prior 7-day baseline."
+      },
+      {
+        "title": "Hardware-agile inference",
+        "description": "Auto-detects NVIDIA CUDA (with 4-bit bitsandbytes quantization), Apple Silicon (MLX/MPS), or Intel ARC (IPEX) at startup so the identical pipeline runs on a hospital's existing hardware without a rebuild."
+      },
+      {
+        "title": "Dynamic clinical worklist",
+        "description": "A full case worklist with escalation events and an EHR-style timeline per patient, backed by SQLAlchemy models (Case, Finding, Escalation) rather than being bolted onto the inference response."
+      }
+    ],
+    "challenges": [
+      {
+        "challenge": "A VLM call (CheXagent-8b) can legitimately take long enough to make a synchronous request path feel broken, and a hackathon demo can't afford a hung request.",
+        "learned": "Moved inference behind a queue: a POST returns a job ID immediately, a worker thread processes it with retries, and the frontend polls status. Cancellation and a hard retry cap made the failure modes explicit instead of a request that just never returns."
+      },
+      {
+        "challenge": "Reducing visual tokens by 80% (the Foveal Engine's core bet) is only useful if the crop that remains is still the diagnostically relevant one.",
+        "learned": "Kept the contrast-based crop (Vision Hack) as a distinct, inspectable stage before any token-dropping, so the tradeoff between speed and detail is a visible pipeline boundary rather than a black box the VLM has to compensate for."
+      },
+      {
+        "challenge": "A model that quietly degrades — starts favoring different pathologies, or grows less confident — is worse than one that fails loudly, and nothing in a single-request API surfaces that.",
+        "learned": "Added the drift endpoint specifically to compare rolling windows against each other from data already being logged, so the question 'has this gotten worse' has an answer without exporting the database somewhere else first."
+      }
+    ],
+    "results": [
+      {
+        "metric": "AI Pipelines",
+        "value": "2",
+        "description": "RadFlow-Edge (depth) and Foveal Engine (speed), sharing the same model weights directory"
+      },
+      {
+        "metric": "Token Reduction",
+        "value": "~80%",
+        "description": "Foveal Engine's contrast-crop + D-RoVA routing vs. full-resolution VLM input"
+      },
+      {
+        "metric": "Hardware Backends",
+        "value": "3",
+        "description": "CUDA (4-bit), Apple MLX/MPS, and Intel IPEX, auto-selected at startup"
+      },
+      {
+        "metric": "Pathologies Screened",
+        "value": "18",
+        "description": "DenseNet121 detector output classes feeding the localization stage"
+      }
+    ],
+    "architectureDiagram": {
+      "caption": "A radiograph moves through detection, localization, guideline retrieval, and VLM drafting — queued, retried, and logged for drift review rather than returned as a single blocking call.",
+      "layers": [
+        {
+          "title": "Client - React 18 + TypeScript",
+          "edgeLabel": "upload + poll",
+          "nodes": [
+            {
+              "label": "Worklist UI",
+              "detail": "case queue + escalation"
+            },
+            {
+              "label": "Report Viewer",
+              "detail": "guided sections"
+            }
+          ]
+        },
+        {
+          "title": "API - FastAPI",
+          "edgeLabel": "async job",
+          "nodes": [
+            {
+              "label": "Inference Queue",
+              "detail": "worker thread, retries, cancel"
+            },
+            {
+              "label": "Observability",
+              "detail": "latency + error tracking"
+            }
+          ]
+        },
+        {
+          "title": "Pipelines",
+          "edgeLabel": "hardware-routed",
+          "nodes": [
+            {
+              "label": "RadFlow-Edge",
+              "detail": "DenseNet121 -> GradCAM -> RAG -> CheXagent-8b"
+            },
+            {
+              "label": "Foveal Engine",
+              "detail": "Vision Hack crop -> D-RoVA token routing"
+            }
+          ]
+        },
+        {
+          "title": "Persistence",
+          "nodes": [
+            {
+              "label": "SQLite",
+              "detail": "cases, findings, inference ledger"
+            },
+            {
+              "label": "ChromaDB",
+              "detail": "clinical guideline vectors"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "9",
+    "slug": "orchestrator-cli",
+    "title": "AI Orchestrator (OrchestratorCLI)",
+    "description": "Desktop app that routes coding tasks to whichever AI CLI — Claude Code, Gemini, Copilot, Codex, Cline — is actually available, with automatic failover before any of them hits a rate limit.",
+    "role": "Contributor — Windows Runtime & Packaging",
+    "impact": "Fixed the bug that crashed every terminal spawned by the Windows-packaged build (pywinpty needs a null-terminated environment-block string, not a list), added a 10-second spawn timeout so a stuck PTY fails loudly instead of hanging the UI, and extended the desktop build pipeline to bundle backend Python dependencies into the installer.",
+    "image": "/images/projects/orchestrator-cli.png",
+    "color": "#a855f7",
+    "tags": [
+      "Electron",
+      "React",
+      "TypeScript",
+      "FastAPI",
+      "Python",
+      "WebSocket",
+      "SQLite",
+      "PTY",
+      "Multi-Agent AI",
+      "Claude Code",
+      "Gemini",
+      "DeepSeek"
+    ],
+    "sourceUrl": "https://github.com/Tanjamul-Azad/OrchestratorCLI",
+    "liveUrl": "https://orchestrator.ahbab.dev",
+    "featured": true,
+    "pinned": true,
+    "overview": "A desktop Electron app, led by teammate Md Ahbab, that treats every AI coding CLI a developer might have installed — Claude Code, Gemini, Copilot, Codex, Cline, and others — as an interchangeable backend behind one orchestrator. A central planner (Grok, Gemini, or DeepSeek, in that fallback order) plans and dispatches work across them in parallel, over real PTY-backed terminal sessions rather than screen-scraped output.",
+    "problem": "Juggling several AI coding CLIs by hand means manually noticing when one hits a rate limit, re-typing context into whichever tool is free, and getting no parallelism even when a task splits cleanly across agents. Packaging that as a desktop app adds its own failure class: process spawning, credential storage, and terminal I/O all behave differently on Windows than on the POSIX systems most CLI tooling is written for.",
+    "solution": "The orchestrator plans a task, splits it into divisions, and dispatches each division to a CLI agent through a PTY session it owns end to end — spawn, resize, kill, and process-tree teardown all go through one service. Providers are health-sorted (online before limited before offline) so failover is visible in the UI, not just silent. A user-defined CLI registry lets someone register a coding agent the app doesn't know about out of the box, validated the same way the built-in ones are.",
+    "architecture": "Electron wraps a React/TypeScript frontend and a local FastAPI + SQLite backend, so the desktop build and the browser dev build share the same code paths. Real-time terminal I/O and orchestrator events stream over WebSocket; REST covers sessions, providers, and settings. On Windows specifically, PTY spawning goes through pywinpty's low-level API, which — unlike the POSIX path — expects the process environment as a single null-terminated block string rather than a list of key/value pairs.",
+    "features": [
+      {
+        "title": "Multi-provider planning with automatic failover",
+        "description": "A central planner (Grok, falling back to Gemini, then DeepSeek) breaks a task into divisions and routes each to a coding CLI agent, retrying against the next healthy provider rather than surfacing a rate-limit error to the user."
+      },
+      {
+        "title": "Real PTY-backed terminal sessions",
+        "description": "Each dispatched agent runs in an actual pseudo-terminal the orchestrator manages — spawn, resize, and kill all go through one PtySession service, with process-tree teardown (taskkill /T on Windows, process groups on POSIX) so a killed session doesn't leave orphans."
+      },
+      {
+        "title": "Custom CLI registry",
+        "description": "Users can register their own coding CLI (slug, command template, verb map) through a Settings tab; custom entries are validated and merged into the same registry the built-in agents use."
+      },
+      {
+        "title": "Health-sorted provider display",
+        "description": "Providers are ordered online > limited > offline (then by name) everywhere they're listed — the providers panel, the collapsed sidebar, and onboarding — so which agent is actually usable right now is visible at a glance."
+      },
+      {
+        "title": "Encrypted local credential storage",
+        "description": "API keys for each provider are encrypted at rest, with production configuration required to fail fast rather than silently mint a throwaway encryption key that would brick stored credentials later."
+      },
+      {
+        "title": "Cross-platform desktop packaging",
+        "description": "electron-builder produces signed Windows, macOS, and Linux installers with the FastAPI backend bundled via extraResources rather than PyInstaller, plus an auto-updater wired through IPC."
+      }
+    ],
+    "challenges": [
+      {
+        "challenge": "Every terminal spawned by the Windows-packaged build crashed, because pywinpty's low-level spawn call expected the process environment as a single null-terminated block string, not the list of \"KEY=VALUE\" strings the POSIX path uses.",
+        "learned": "Rebuilt the Windows branch to join the environment into a `\\0`-joined block with a trailing terminator, guarding against embedded nulls in any key or value. The fix only surfaces on an actual packaged Windows build, not in dev, which is exactly the kind of platform gap that's invisible until someone runs the installer."
+      },
+      {
+        "challenge": "A PTY spawn could hang indefinitely on Windows with no timeout, leaving a runtime stuck in a 'starting' state that the UI had no way to recover from.",
+        "learned": "Wrapped the spawn call in `asyncio.wait_for` with a 10-second budget, and on timeout explicitly marked the runtime row 'failed' in the database instead of leaving it in limbo — a hang and a crash need different handling, and only one of them was covered before."
+      },
+      {
+        "challenge": "The session-creation path had a double-checked-locking bug: the existence check ran inside one lock scope but the session got constructed and inserted outside it, so two near-simultaneous requests for the same runtime could each build a full PTY session before either was registered.",
+        "learned": "Moved session construction inside the same lock as the existence check, and added an explicit kill-and-replace path for the loser instead of leaking an unregistered process. Narrowing the lock window is only safe once every write it's supposed to protect is actually inside it."
+      }
+    ],
+    "results": [
+      {
+        "metric": "CLI Agents Orchestrated",
+        "value": "8+",
+        "description": "Claude Code, Gemini, Copilot, Codex, Cline, and other registered CLIs, dispatched in parallel"
+      },
+      {
+        "metric": "Planner Fallback Chain",
+        "value": "3 providers",
+        "description": "Grok, then Gemini, then DeepSeek — automatic on rate limit or failure"
+      },
+      {
+        "metric": "Desktop Platforms",
+        "value": "Win / macOS / Linux",
+        "description": "Electron installers built via electron-builder with a bundled Python backend"
+      },
+      {
+        "metric": "Spawn Timeout",
+        "value": "10s",
+        "description": "Hard budget added to PTY spawn so a stuck Windows terminal fails visibly"
+      }
+    ],
+    "architectureDiagram": {
+      "caption": "A central planner dispatches divisions of one task to parallel CLI agents, each running in a real PTY session the backend owns end to end.",
+      "layers": [
+        {
+          "title": "Client - Electron + React",
+          "edgeLabel": "REST + WebSocket",
+          "nodes": [
+            {
+              "label": "Chat / Planner UI",
+              "detail": "task intake"
+            },
+            {
+              "label": "Terminal Grid",
+              "detail": "live PTY streams"
+            }
+          ]
+        },
+        {
+          "title": "Orchestration - FastAPI",
+          "edgeLabel": "health-sorted dispatch",
+          "nodes": [
+            {
+              "label": "Central Planner",
+              "detail": "Grok -> Gemini -> DeepSeek"
+            },
+            {
+              "label": "CLI Registry",
+              "detail": "built-in + custom agents"
+            }
+          ]
+        },
+        {
+          "title": "Execution",
+          "edgeLabel": "spawn / resize / kill",
+          "nodes": [
+            {
+              "label": "PTY Service",
+              "detail": "cross-platform process lifecycle"
+            }
+          ]
+        },
+        {
+          "title": "Persistence",
+          "nodes": [
+            {
+              "label": "SQLite",
+              "detail": "sessions, providers, custom CLI"
+            },
+            {
+              "label": "Encrypted Store",
+              "detail": "provider API keys"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
     "id": "1",
     "slug": "complete-legal-aid",
     "title": "Complete Legal Aid",
@@ -25,6 +328,7 @@
     ],
     "liveUrl": "https://complete-legal-aid-beta.vercel.app/",
     "sourceUrl": "https://github.com/Tanjamul-Azad/Complete-Legal-Aid",
+    "sourcePrivate": true,
     "videoUrl": "https://drive.google.com/file/d/1zrjia-IavEF5-NyQJsUkYX3Q8uPbcd13/view?usp=sharing",
     "featured": true,
     "pinned": true,

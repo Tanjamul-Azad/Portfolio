@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowUpRight, Github, ExternalLink, Layers, Lightbulb, Target, Trophy, Zap } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Github, ExternalLink, Layers, Lightbulb, Lock, Target, Trophy, Zap } from "lucide-react";
+import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getProjectBySlug, projects } from "@/data/projects";
@@ -110,12 +111,20 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
                     </a>
                   </Button>
                 )}
-                {project.sourceUrl && project.sourceUrl !== "#" && (
+                {project.sourcePrivate ? (
                   <Button asChild size="default" variant="outline" className="rounded-full bg-white/50 dark:bg-black/50 backdrop-blur-sm border-neutral-200 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900">
-                    <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer">
-                      Source Code <Github className="w-4 h-4 ml-2" />
+                    <a href={`mailto:${siteConfig.contact.email}?subject=${encodeURIComponent(`Source code request — ${project.title}`)}`}>
+                      Request Source Code <Lock className="w-4 h-4 ml-2" />
                     </a>
                   </Button>
+                ) : (
+                  project.sourceUrl && project.sourceUrl !== "#" && (
+                    <Button asChild size="default" variant="outline" className="rounded-full bg-white/50 dark:bg-black/50 backdrop-blur-sm border-neutral-200 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900">
+                      <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer">
+                        Source Code <Github className="w-4 h-4 ml-2" />
+                      </a>
+                    </Button>
+                  )
                 )}
               </div>
             </motion.div>

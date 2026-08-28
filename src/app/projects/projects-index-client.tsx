@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight, ChevronLeft, ChevronRight, ExternalLink, Github, Search, Video, X } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, ExternalLink, Github, Lock, Search, Video, X } from "lucide-react";
+import { siteConfig } from "@/config/site";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import type { Project } from "@/types";
@@ -341,13 +342,22 @@ export default function ProjectsPageClient() {
                         </Button>
                       )}
 
-                      {project.sourceUrl && project.sourceUrl !== "#" && (
+                      {project.sourcePrivate ? (
                         <Button asChild size="xs" variant="outline" className="rounded-full max-[360px]:h-8 max-[360px]:px-2.5 max-[360px]:text-[11px]">
-                          <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer">
-                            <Github className="h-3 w-3" />
-                            Source Code
+                          <a href={`mailto:${siteConfig.contact.email}?subject=${encodeURIComponent(`Source code request — ${project.title}`)}`}>
+                            <Lock className="h-3 w-3" />
+                            Request Source Code
                           </a>
                         </Button>
+                      ) : (
+                        project.sourceUrl && project.sourceUrl !== "#" && (
+                          <Button asChild size="xs" variant="outline" className="rounded-full max-[360px]:h-8 max-[360px]:px-2.5 max-[360px]:text-[11px]">
+                            <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer">
+                              <Github className="h-3 w-3" />
+                              Source Code
+                            </a>
+                          </Button>
+                        )
                       )}
 
                       {project.videoUrl && project.videoUrl !== "#" && (

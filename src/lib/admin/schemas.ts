@@ -40,6 +40,7 @@ const project = z.object({
   tags: strArr,
   liveUrl: str.optional(),
   sourceUrl: str.optional(),
+  sourcePrivate: z.boolean().optional(),
   videoUrl: str.optional(),
   featured: z.boolean().optional(),
   pinned: z.boolean().optional(),

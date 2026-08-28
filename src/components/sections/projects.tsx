@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMotionTemplate, useScroll } from "framer-motion";
-import { ArrowUpRight, ExternalLink, Github, FileText, Play } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Github, FileText, Lock, Play } from "lucide-react";
+import { siteConfig } from "@/config/site";
 import { getPinnedProjects, projects as allProjects } from "@/data/projects";
 import type { Project } from "@/types";
 import Image from "next/image";
@@ -229,18 +230,30 @@ function MobileProjectCard({ project, index, isRouteTransitioning, failedImages,
                 <FileText className="w-3.5 h-3.5 mr-1.5" /> Case Study
               </Link>
             </Button>
-            {project.sourceUrl && project.sourceUrl !== '#' && (
+            {project.sourcePrivate ? (
               <Button asChild size="icon" variant="ghost" className="self-end sm:self-auto rounded-full size-11 sm:size-9 shrink-0 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-95 transition-all duration-200">
                 <a
-                  href={project.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackEvent("projects_open_source", { project_slug: project.slug, source: "mobile_card" })}
+                  href={`mailto:${siteConfig.contact.email}?subject=${encodeURIComponent(`Source code request — ${project.title}`)}`}
+                  onClick={() => trackEvent("projects_request_source", { project_slug: project.slug, source: "mobile_card" })}
                 >
-                  <Github className="w-4 h-4" />
-                  <span className="sr-only">View source for {project.title} on GitHub</span>
+                  <Lock className="w-4 h-4" />
+                  <span className="sr-only">Request source code for {project.title}</span>
                 </a>
               </Button>
+            ) : (
+              project.sourceUrl && project.sourceUrl !== '#' && (
+                <Button asChild size="icon" variant="ghost" className="self-end sm:self-auto rounded-full size-11 sm:size-9 shrink-0 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-95 transition-all duration-200">
+                  <a
+                    href={project.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackEvent("projects_open_source", { project_slug: project.slug, source: "mobile_card" })}
+                  >
+                    <Github className="w-4 h-4" />
+                    <span className="sr-only">View source for {project.title} on GitHub</span>
+                  </a>
+                </Button>
+              )
             )}
           </div>
         </div>
@@ -718,7 +731,7 @@ export function Projects() {
                               </Link>
                             </Button>
                           </MagneticWrapper>
-                          {activeProject?.sourceUrl && activeProject.sourceUrl !== '#' && (
+                          {activeProject?.sourcePrivate ? (
                             <MagneticWrapper>
                               <Button
                                 asChild
@@ -727,23 +740,49 @@ export function Projects() {
                                 className="rounded-full w-12 h-12 bg-black/60 text-white hover:text-white hover:bg-black/90 active:scale-95 transition-all duration-200 shadow-2xl backdrop-blur-xl"
                               >
                                 <a
-                                  href={activeProject.sourceUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
+                                  href={`mailto:${siteConfig.contact.email}?subject=${encodeURIComponent(`Source code request — ${activeProject.title}`)}`}
                                   onClick={() =>
-                                    trackEvent("projects_open_source", {
+                                    trackEvent("projects_request_source", {
                                       project_slug: activeProject.slug,
                                       source: "desktop_preview",
                                     })
                                   }
                                 >
-                                  <Github className="w-5 h-5" />
+                                  <Lock className="w-5 h-5" />
                                   <span className="sr-only">
-                                    View source for {activeProject.title} on GitHub
+                                    Request source code for {activeProject.title}
                                   </span>
                                 </a>
                               </Button>
                             </MagneticWrapper>
+                          ) : (
+                            activeProject?.sourceUrl && activeProject.sourceUrl !== '#' && (
+                              <MagneticWrapper>
+                                <Button
+                                  asChild
+                                  size="icon"
+                                  variant="ghost"
+                                  className="rounded-full w-12 h-12 bg-black/60 text-white hover:text-white hover:bg-black/90 active:scale-95 transition-all duration-200 shadow-2xl backdrop-blur-xl"
+                                >
+                                  <a
+                                    href={activeProject.sourceUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={() =>
+                                      trackEvent("projects_open_source", {
+                                        project_slug: activeProject.slug,
+                                        source: "desktop_preview",
+                                      })
+                                    }
+                                  >
+                                    <Github className="w-5 h-5" />
+                                    <span className="sr-only">
+                                      View source for {activeProject.title} on GitHub
+                                    </span>
+                                  </a>
+                                </Button>
+                              </MagneticWrapper>
+                            )
                           )}
                         </div>
                       </motion.div>
