@@ -200,7 +200,7 @@
     "description": "Peer skill-exchange platform where people trade what they can teach for what they want to learn — matched semantically, with no money involved.",
     "role": "Full-Stack Developer",
     "impact": "The OOP brief pushed toward structure that earned its keep: one client boundary on the frontend and an interface-per-service split on the backend meant the embedding provider could be swapped for a local fallback without touching a controller.",
-    "image": "/images/projects/skilllex-1787918946774.png",
+    "image": "/images/projects/skilllex-1787918946774-1787921203042.png",
     "color": "#10b981",
     "tags": [
       "React 19",
