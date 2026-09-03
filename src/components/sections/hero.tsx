@@ -251,18 +251,18 @@ export function Hero() {
     >
       <div className="absolute inset-0 z-0 bg-white dark:bg-black transition-colors duration-500" />
 
-      <div className="container max-w-7xl px-4 sm:px-6 relative z-10 pt-24 pb-12">
-        <div className="relative grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-10 sm:gap-12 items-center">
+      <div className="container max-w-7xl px-4 sm:px-6 relative z-10 pt-20 pb-12 sm:pt-24">
+        <div className="relative grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-8 sm:gap-10 lg:gap-12 items-center">
           <motion.div
             style={{ opacity: heroOpacity, y: heroY }}
-            className="max-w-150 order-1"
+            className="max-w-150 order-2 lg:order-1"
             variants={HERO_SEQUENCE.container}
             initial="hidden"
             animate="visible"
           >
             <motion.div
               variants={HERO_SEQUENCE.item}
-              className="flex items-center gap-3 mb-10"
+              className="flex items-center gap-3 mb-6 lg:mb-10"
             >
               <div className="flex items-center gap-2.5 px-4 py-2 rounded-full border border-neutral-300/70 dark:border-white/15 bg-white/70 dark:bg-black/55 backdrop-blur-md w-fit transition-colors duration-300">
                 <span className="text-[10px] font-semibold tracking-[0.16em] text-green-600 dark:text-green-400 uppercase">
@@ -296,7 +296,7 @@ export function Hero() {
 
             <motion.div
               variants={HERO_SEQUENCE.item}
-              className="mb-10 text-sm md:text-base italic tracking-[0.04em] leading-relaxed text-neutral-700 dark:text-neutral-200 max-w-136 min-h-[3.2rem] md:min-h-12 transition-colors duration-300"
+              className="mb-7 lg:mb-10 text-sm md:text-base italic tracking-[0.04em] leading-relaxed text-neutral-700 dark:text-neutral-200 max-w-136 min-h-[3.2rem] md:min-h-12 transition-colors duration-300"
             >
               <TypewriterText
                 text={heroContent.typewriter}
@@ -309,7 +309,7 @@ export function Hero() {
 
             <motion.div
               variants={HERO_SEQUENCE.item}
-              className="flex flex-wrap gap-4"
+              className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-4"
             >
               {heroContent.actions.map((action, i) => (
                 <InteractiveHoverButton
@@ -319,8 +319,8 @@ export function Hero() {
                   aria-label={action.label}
                   classes={
                     i === 0
-                      ? "h-12 sm:h-14 px-6 sm:px-8 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black text-xs sm:text-sm font-semibold hover-lift"
-                      : "h-12 sm:h-14 px-6 sm:px-8 rounded-full text-xs sm:text-sm font-semibold border-neutral-300 text-neutral-800 dark:border-white/35 dark:text-white bg-transparent hover-lift"
+                      ? "h-12 sm:h-14 w-full min-w-0 sm:w-auto sm:min-w-40 px-3 sm:px-8 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black text-[11px] sm:text-sm font-semibold whitespace-nowrap hover-lift"
+                      : "h-12 sm:h-14 w-full min-w-0 sm:w-auto sm:min-w-40 px-3 sm:px-8 rounded-full text-[11px] sm:text-sm font-semibold whitespace-nowrap border-neutral-300 text-neutral-800 dark:border-white/35 dark:text-white bg-transparent hover-lift"
                   }
                 />
               ))}
@@ -329,7 +329,7 @@ export function Hero() {
             {heroContent.stats.length > 0 && (
               <motion.div
                 variants={HERO_SEQUENCE.item}
-                className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-neutral-200 dark:border-white/10 pt-6 transition-colors duration-300"
+                className="mt-8 lg:mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-neutral-200 dark:border-white/10 pt-6 transition-colors duration-300"
               >
                 {heroContent.stats.map((stat, i) => (
                   <div key={`${stat.label}-${i}`} className="flex flex-col">
@@ -344,7 +344,7 @@ export function Hero() {
               </motion.div>
             )}
 
-            <div className="mt-8" />
+            <div className="mt-4 lg:mt-8" />
           </motion.div>
 
           <motion.div
@@ -352,10 +352,10 @@ export function Hero() {
             variants={HERO_SEQUENCE.media}
             initial="hidden"
             animate="visible"
-            className="absolute top-0 right-0 lg:static lg:order-2 lg:justify-self-end"
+            className="order-1 lg:order-2 justify-self-center lg:justify-self-end"
           >
             <motion.div
-              className="relative w-24 h-32 sm:w-32 sm:h-44 md:w-40 md:h-52 lg:w-136 lg:h-176 xl:w-152 xl:h-200 lg:mx-auto lg:ml-auto lg:-mr-12 xl:-mr-24"
+              className="relative w-48 h-64 sm:w-64 sm:h-84 md:w-72 md:h-96 lg:w-136 lg:h-176 xl:w-152 xl:h-200 mx-auto lg:ml-auto lg:-mr-12 xl:-mr-24"
             >
               <div className="relative h-full w-full overflow-hidden rounded-2xl bg-neutral-200 dark:bg-neutral-900 shadow-xl dark:shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transition-colors duration-300">
                 <HeroMedia reducedMotion={prefersReducedMotion} />
