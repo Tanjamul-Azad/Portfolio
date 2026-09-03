@@ -291,7 +291,7 @@ export function Hero() {
               variants={HERO_SEQUENCE.item}
               className="mb-3 text-sm md:text-base font-medium tracking-[0.08em] uppercase text-neutral-500 dark:text-neutral-400 transition-colors duration-300"
             >
-              {siteConfig.author.name}
+              {heroContent.tagline}
             </motion.p>
 
             <motion.div

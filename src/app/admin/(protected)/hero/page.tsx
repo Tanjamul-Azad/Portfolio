@@ -50,6 +50,12 @@ export default function HeroEditor() {
 
           <FormSection title="Sub-headline" />
           <TextField
+            label="Tagline"
+            value={data.tagline}
+            onChange={(v) => set({ tagline: v })}
+            hint="Small line shown right under the headline."
+          />
+          <TextField
             label="Typewriter text"
             value={data.typewriter}
             onChange={(v) => set({ typewriter: v })}

@@ -5,19 +5,17 @@
   },
   "headlineLines": [
     {
-      "text": "Crafting"
+      "text": "Md."
     },
     {
-      "text": "digital",
+      "text": "Tanzamul",
       "muted": true
     },
     {
-      "text": "experiences"
-    },
-    {
-      "text": "that matter."
+      "text": "Azad"
     }
   ],
+  "tagline": "Crafting digital experiences that matter.",
   "typewriter": "Full-Stack Developer | ML Researcher | BSc CSE Undergrad (Data Science)",
   "actions": [
     {
