@@ -60,10 +60,28 @@
     "description": "Utility-first responsive styling"
   },
   {
+    "name": "Electron",
+    "icon": "🖥️",
+    "category": "frontend",
+    "description": "Cross-platform desktop apps from a React/TypeScript codebase"
+  },
+  {
+    "name": "TanStack Query",
+    "icon": "🔄",
+    "category": "frontend",
+    "description": "Server-state caching with socket-driven invalidation"
+  },
+  {
     "name": "Django",
     "icon": "🎯",
     "category": "backend",
     "description": "Production Python web framework and REST APIs"
+  },
+  {
+    "name": "FastAPI",
+    "icon": "⚡",
+    "category": "backend",
+    "description": "Async Python APIs for AI inference services"
   },
   {
     "name": "Flask",
@@ -76,6 +94,18 @@
     "icon": "🌿",
     "category": "backend",
     "description": "Java enterprise backend development"
+  },
+  {
+    "name": "Node.js",
+    "icon": "🟢",
+    "category": "backend",
+    "description": "Express APIs and Socket.IO real-time servers"
+  },
+  {
+    "name": "Celery",
+    "icon": "🌾",
+    "category": "backend",
+    "description": "Background task scheduling with Redis as broker"
   },
   {
     "name": "scikit-learn",
@@ -112,6 +142,36 @@
     "icon": "🐬",
     "category": "database",
     "description": "Relational data storage and querying"
+  },
+  {
+    "name": "PostgreSQL",
+    "icon": "🐘",
+    "category": "database",
+    "description": "Production relational database with Docker deploys"
+  },
+  {
+    "name": "Redis",
+    "icon": "🟥",
+    "category": "database",
+    "description": "Caching, pub/sub channel layers, and task brokering"
+  },
+  {
+    "name": "SQLite",
+    "icon": "🪶",
+    "category": "database",
+    "description": "Embedded database for desktop apps and lightweight services"
+  },
+  {
+    "name": "ChromaDB",
+    "icon": "🧩",
+    "category": "ai",
+    "description": "Vector store for retrieval-augmented generation"
+  },
+  {
+    "name": "Gemini",
+    "icon": "✨",
+    "category": "ai",
+    "description": "LLM APIs for agents, embeddings, and RAG features"
   },
   {
     "name": "Firebase",
