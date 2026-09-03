@@ -175,6 +175,8 @@ export interface HeroContent {
   tagline: string;
   typewriter: string;
   actions: { label: string; href: string }[];
+  /** Short proof-of-work numbers shown beneath the CTA buttons. */
+  stats: { value: string; label: string }[];
   profileVideo: string;
   /** Optional still shown before the video decodes, and in place of it when the
    *  visitor has asked for reduced motion. */

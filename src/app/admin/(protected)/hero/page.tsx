@@ -8,6 +8,7 @@ import { CheckboxField, ImageField, TextField } from "@/components/admin/fields"
 
 type HeadlineLine = HeroContent["headlineLines"][number];
 type HeroAction = HeroContent["actions"][number];
+type HeroStat = HeroContent["stats"][number];
 
 export default function HeroEditor() {
   const { data, setData, loading, error, saving, save } = useContent<HeroContent>("hero");
@@ -72,6 +73,21 @@ export default function HeroEditor() {
               <div className="grid gap-2 sm:grid-cols-2">
                 <TextField label="Label" value={a.label} onChange={(v) => u({ label: v })} />
                 <TextField label="Link" value={a.href} onChange={(v) => u({ href: v })} hint="#section or URL" />
+              </div>
+            )}
+          />
+
+          <FormSection title="Proof stats" />
+          <ObjectListField<HeroStat>
+            hint="Short verifiable numbers shown under the buttons, e.g. '9' / 'Projects Shipped'."
+            value={data.stats}
+            onChange={(v) => set({ stats: v })}
+            newItem={() => ({ value: "", label: "" })}
+            addLabel="Add stat"
+            renderRow={(stat, u) => (
+              <div className="grid gap-2 sm:grid-cols-[6rem_1fr]">
+                <TextField label="Value" value={stat.value} onChange={(v) => u({ value: v })} hint="e.g. 9" />
+                <TextField label="Label" value={stat.label} onChange={(v) => u({ label: v })} />
               </div>
             )}
           />

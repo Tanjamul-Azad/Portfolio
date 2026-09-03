@@ -154,6 +154,7 @@ const hero = z.object({
   tagline: str,
   typewriter: str,
   actions: z.array(z.object({ label: str, href: str })),
+  stats: z.array(z.object({ value: str, label: str })),
   profileVideo: str,
   profilePoster: str.optional(),
 });

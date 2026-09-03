@@ -23,6 +23,20 @@
       "href": "#contact"
     }
   ],
+  "stats": [
+    {
+      "value": "9",
+      "label": "Projects Shipped"
+    },
+    {
+      "value": "4",
+      "label": "AI Agents in Production"
+    },
+    {
+      "value": "3",
+      "label": "Competition Podiums"
+    }
+  ],
   "profileVideo": "/PROFILE VIDEO/profile vid.mp4",
   "profilePoster": "/images/profile.jpg"
 }

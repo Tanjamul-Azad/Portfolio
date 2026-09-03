@@ -252,7 +252,7 @@ export function Hero() {
       <div className="absolute inset-0 z-0 bg-white dark:bg-black transition-colors duration-500" />
 
       <div className="container max-w-7xl px-4 sm:px-6 relative z-10 pt-24 pb-12">
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-10 sm:gap-12 items-center">
+        <div className="relative grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-10 sm:gap-12 items-center">
           <motion.div
             style={{ opacity: heroOpacity, y: heroY }}
             className="max-w-150 order-1"
@@ -326,6 +326,24 @@ export function Hero() {
               ))}
             </motion.div>
 
+            {heroContent.stats.length > 0 && (
+              <motion.div
+                variants={HERO_SEQUENCE.item}
+                className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-neutral-200 dark:border-white/10 pt-6 transition-colors duration-300"
+              >
+                {heroContent.stats.map((stat, i) => (
+                  <div key={`${stat.label}-${i}`} className="flex flex-col">
+                    <span className="font-heading text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white transition-colors duration-300">
+                      {stat.value}
+                    </span>
+                    <span className="text-[11px] sm:text-xs font-medium uppercase tracking-[0.1em] text-neutral-500 dark:text-neutral-400">
+                      {stat.label}
+                    </span>
+                  </div>
+                ))}
+              </motion.div>
+            )}
+
             <div className="mt-8" />
           </motion.div>
 
@@ -334,10 +352,10 @@ export function Hero() {
             variants={HERO_SEQUENCE.media}
             initial="hidden"
             animate="visible"
-            className="block order-2 justify-self-center lg:justify-self-end"
+            className="absolute top-0 right-0 lg:static lg:order-2 lg:justify-self-end"
           >
             <motion.div
-              className="relative w-56 h-72 sm:w-72 sm:h-96 md:w-96 md:h-136 lg:w-136 lg:h-176 xl:w-152 xl:h-200 mx-auto lg:ml-auto lg:-mr-12 xl:-mr-24"
+              className="relative w-24 h-32 sm:w-32 sm:h-44 md:w-40 md:h-52 lg:w-136 lg:h-176 xl:w-152 xl:h-200 lg:mx-auto lg:ml-auto lg:-mr-12 xl:-mr-24"
             >
               <div className="relative h-full w-full overflow-hidden rounded-2xl bg-neutral-200 dark:bg-neutral-900 shadow-xl dark:shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transition-colors duration-300">
                 <HeroMedia reducedMotion={prefersReducedMotion} />
