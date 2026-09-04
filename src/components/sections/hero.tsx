@@ -254,17 +254,18 @@ export function Hero() {
       <div className="absolute inset-0 z-0 bg-white dark:bg-black transition-colors duration-500" />
 
       <div className="container max-w-7xl px-4 sm:px-6 relative z-10 pt-20 pb-12 sm:pt-24">
-        <div className="relative grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-8 sm:gap-10 lg:gap-12 items-center">
-          <motion.div
-            style={{ opacity: heroOpacity, y: heroY }}
-            className="max-w-150 order-2 lg:order-1"
-            variants={HERO_SEQUENCE.container}
-            initial="hidden"
-            animate="visible"
-          >
+        {/* Below lg the name and portrait share a 50/50 row, so both are in the
+            first screen. At lg the portrait becomes the full-height right column. */}
+        <motion.div
+          style={{ opacity: heroOpacity, y: heroY }}
+          variants={HERO_SEQUENCE.container}
+          initial="hidden"
+          animate="visible"
+          className="relative grid grid-cols-2 items-center gap-x-4 gap-y-6 sm:gap-x-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-x-12 lg:gap-y-0"
+        >
             <motion.div
               variants={HERO_SEQUENCE.item}
-              className="flex items-center gap-3 mb-6 lg:mb-10"
+              className="col-span-2 flex items-center gap-3 lg:col-span-1 lg:col-start-1 lg:mb-10"
             >
               <div className="flex items-center gap-2.5 px-4 py-2 rounded-full border border-neutral-300/70 dark:border-white/15 bg-white/70 dark:bg-black/55 backdrop-blur-md w-fit transition-colors duration-300">
                 <span className="text-[10px] font-semibold tracking-[0.16em] text-green-600 dark:text-green-400 uppercase">
@@ -276,7 +277,7 @@ export function Hero() {
               </div>
             </motion.div>
 
-            <h1 className="display-heading text-[clamp(2.25rem,11vw,6.5rem)] leading-[0.92] mb-6 text-neutral-900 dark:text-white transition-colors duration-300">
+            <h1 className="col-start-1 col-span-1 display-heading text-[clamp(1.9rem,9vw,6.5rem)] leading-[0.92] text-neutral-900 dark:text-white transition-colors duration-300 lg:col-start-1 lg:mb-6">
               {heroContent.headlineLines.map((line, i) => (
                 <div key={`${line.text}-${i}`}>
                   <SplitText
@@ -289,6 +290,25 @@ export function Hero() {
               ))}
             </h1>
 
+          <motion.div
+            style={{ scale: imageScale }}
+            variants={HERO_SEQUENCE.media}
+            className="col-start-2 row-start-2 lg:col-start-2 lg:row-start-1 lg:row-span-3 lg:justify-self-end"
+          >
+            <motion.div
+              className="relative mx-auto aspect-[3/4] w-full max-w-[15rem] lg:aspect-auto lg:mx-0 lg:ml-auto lg:w-136 lg:h-176 lg:max-w-none lg:-mr-12 xl:w-152 xl:h-200 xl:-mr-24"
+            >
+              <div className="relative h-full w-full overflow-hidden rounded-2xl bg-neutral-200 dark:bg-neutral-900 shadow-xl dark:shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transition-colors duration-300">
+                <HeroMedia reducedMotion={prefersReducedMotion} />
+                <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_0_80px_rgba(0,0,0,0.6)]" />
+              </div>
+            </motion.div>
+          </motion.div>
+
+          <motion.div
+            variants={HERO_SEQUENCE.container}
+            className="col-span-2 max-w-150 lg:col-span-1 lg:col-start-1"
+          >
             <motion.p
               variants={HERO_SEQUENCE.item}
               className="mb-3 text-sm md:text-base font-medium tracking-[0.08em] uppercase text-neutral-500 dark:text-neutral-400 transition-colors duration-300"
@@ -348,25 +368,7 @@ export function Hero() {
 
             <div className="mt-4 lg:mt-8" />
           </motion.div>
-
-          <motion.div
-            style={{ scale: imageScale }}
-            variants={HERO_SEQUENCE.media}
-            initial="hidden"
-            animate="visible"
-            className="order-1 lg:order-2 justify-self-center lg:justify-self-end"
-          >
-            <motion.div
-              className="relative w-48 h-64 sm:w-64 sm:h-84 md:w-72 md:h-96 lg:w-136 lg:h-176 xl:w-152 xl:h-200 mx-auto lg:ml-auto lg:-mr-12 xl:-mr-24"
-            >
-              <div className="relative h-full w-full overflow-hidden rounded-2xl bg-neutral-200 dark:bg-neutral-900 shadow-xl dark:shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transition-colors duration-300">
-                <HeroMedia reducedMotion={prefersReducedMotion} />
-                <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_0_80px_rgba(0,0,0,0.6)]" />
-              </div>
-            </motion.div>
-
-          </motion.div>
-        </div>
+        </motion.div>
       </div>
 
       <motion.div
