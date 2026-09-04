@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMotionTemplate, useScroll } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useReducedMotion, useSpring, useTransform, useMotionTemplate, useScroll } from "framer-motion";
 import { ArrowUpRight, ExternalLink, Github, FileText, Lock, Play } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { getPinnedProjects, projects as allProjects } from "@/data/projects";
@@ -71,20 +71,36 @@ function ProjectThumb({
   );
 }
   
+/**
+ * Nudges its child toward the pointer.
+ *
+ * The offset rides on motion values rather than React state: storing it in
+ * state re-rendered this subtree on every mousemove, which is a lot of React
+ * work to move a button a few pixels and is what made the pull feel notchy.
+ * Springs read the motion values directly, so a pointer move costs no render.
+ *
+ * Under prefers-reduced-motion the element simply does not move.
+ */
 function MagneticWrapper({ children, className }: { children: React.ReactNode, className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const prefersReducedMotion = useReducedMotion() ?? false;
+
+  const offsetX = useMotionValue(0);
+  const offsetY = useMotionValue(0);
+  const springConfig = { stiffness: 150, damping: 15, mass: 0.2 };
+  const x = useSpring(offsetX, springConfig);
+  const y = useSpring(offsetY, springConfig);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
+    if (!ref.current || prefersReducedMotion) return;
     const { left, top, width, height } = ref.current.getBoundingClientRect();
-    const x = e.clientX - (left + width / 2);
-    const y = e.clientY - (top + height / 2);
-    setPosition({ x: x * 0.2, y: y * 0.2 });
+    offsetX.set((e.clientX - (left + width / 2)) * 0.2);
+    offsetY.set((e.clientY - (top + height / 2)) * 0.2);
   };
 
   const handleMouseLeave = () => {
-    setPosition({ x: 0, y: 0 });
+    offsetX.set(0);
+    offsetY.set(0);
   };
 
   return (
@@ -92,8 +108,7 @@ function MagneticWrapper({ children, className }: { children: React.ReactNode, c
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      animate={{ x: position.x, y: position.y }}
-      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
+      style={prefersReducedMotion ? undefined : { x, y }}
       className={className}
     >
       {children}

@@ -297,6 +297,15 @@
     animation-play-state: paused !important;
   }
 
+  /* Hovering or keyboard-focusing a marquee holds it still so its items can be
+     read and clicked. Written as real CSS because Tailwind has no
+     `animation-play-state` utility to hang a `group-hover:` variant off. */
+  .group:hover .animate-marquee,
+  .group:focus-within .animate-marquee,
+  .animate-marquee:hover {
+    animation-play-state: paused;
+  }
+
   /* Theme-aware accent text. Use instead of literal amber-500/600 text colours
      so light and dark each get a shade that actually passes contrast. */
   .text-accent {

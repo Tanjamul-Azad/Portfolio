@@ -17,15 +17,34 @@ import { Button } from "@/components/ui/button";
  * anywhere reachable from a client component breaks the client bundle, which is
  * exactly what happened building this feature the first time.
  */
+/**
+ * Shared across every mount of this icon.
+ *
+ * Navbar renders one in the desktop bar and one in the mobile menu, so without
+ * this each page load fired the same uncached request twice.
+ */
+let statusRequest: Promise<boolean> | null = null;
+
+function fetchAdminEnabled() {
+  statusRequest ??= fetch("/api/admin/status", { cache: "no-store" })
+    .then((res) => (res.ok ? res.json() : { enabled: false }))
+    .then((data) => Boolean(data?.enabled))
+    .catch(() => {
+      // Let a failed check be retried by the next mount rather than caching it.
+      statusRequest = null;
+      return false;
+    });
+  return statusRequest;
+}
+
 export function AdminEditIcon() {
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
     let active = true;
-    fetch("/api/admin/status", { cache: "no-store" })
-      .then((res) => (res.ok ? res.json() : { enabled: false }))
-      .then((data) => {
-        if (active) setEnabled(Boolean(data?.enabled));
+    fetchAdminEnabled()
+      .then((isEnabled) => {
+        if (active) setEnabled(isEnabled);
       })
       .catch(() => {
         // Editor unreachable or unconfigured — stay hidden, same as disabled.

@@ -229,9 +229,9 @@ export function TechStack() {
             Tech Stack
           </span>
 
-          <h3 className="font-heading text-2xl sm:text-3xl font-semibold text-neutral-900 dark:text-white md:text-4xl">
+          <h2 className="font-heading text-2xl sm:text-3xl font-semibold text-neutral-900 dark:text-white md:text-4xl">
             Tools I Work With
-          </h3>
+          </h2>
 
           <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
             The languages, frameworks, and tools I reach for across frontend, backend, AI, and hardware work.
@@ -307,7 +307,7 @@ export function TechStack() {
           <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-24 bg-linear-to-r from-neutral-100 dark:from-black via-neutral-100/90 dark:via-black/90 to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-24 bg-linear-to-l from-neutral-100 dark:from-black via-neutral-100/90 dark:via-black/90 to-transparent" />
 
-          <div className="animate-marquee flex w-max min-w-full items-center gap-4 group-hover:paused">
+          <div className="animate-marquee flex w-max min-w-full items-center gap-4">
             {marqueeTech.map((tech, index) => {
               const isWhite = tech.color.toLowerCase() === "#ffffff";
               

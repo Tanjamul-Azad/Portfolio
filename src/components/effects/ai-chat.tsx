@@ -255,7 +255,7 @@ export function AiChat() {
           aria-expanded={isOpen}
           layout
           transition={{ layout: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } }}
-          className="flex h-14 items-center gap-2.5 rounded-full border border-neutral-200/80 bg-white/90 pr-4 pl-1.5 text-accent shadow-lg shadow-neutral-900/10 backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl dark:border-neutral-800/80 dark:bg-neutral-900/90 dark:shadow-black/30"
+          className="flex h-14 items-center gap-2.5 rounded-full border border-neutral-200/80 bg-white/90 pr-1.5 pl-1.5 text-accent shadow-lg shadow-neutral-900/10 backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl sm:pr-4 dark:border-neutral-800/80 dark:bg-neutral-900/90 dark:shadow-black/30"
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
           aria-label={isOpen ? "Close AI assistant" : "Open AI assistant — ask about the portfolio"}
@@ -282,7 +282,7 @@ export function AiChat() {
                 animate={{ opacity: 1, width: "auto" }}
                 exit={{ opacity: 0, width: 0 }}
                 transition={{ duration: 0.2 }}
-                className="overflow-hidden whitespace-nowrap text-sm font-semibold text-neutral-800 dark:text-neutral-100"
+                className="hidden overflow-hidden whitespace-nowrap text-sm font-semibold text-neutral-800 sm:block dark:text-neutral-100"
               >
                 AI Portfolio
               </motion.span>

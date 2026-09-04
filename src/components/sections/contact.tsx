@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Mail, MessageCircle, Clock, Sparkles, ChevronDown } from "lucide-react";
 import { ContactForm } from "./contact-form";
 import { siteConfig } from "@/config";
@@ -12,6 +12,7 @@ export function Contact() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = useReducedMotion() ?? false;
 
   // Cursor-tracked glow layers use CSS vars written directly to the DOM
   // (not React state) so the 60fps mousemove never triggers a re-render.
@@ -46,12 +47,19 @@ export function Contact() {
         nodeOpacity={0.7}
       />
 
-      {/* Soft breathing aura behind the heading */}
+      {/* Soft breathing aura behind the heading.
+          Only opacity animates: scaling a 110px blur forces the browser to
+          re-rasterise the whole blurred layer every frame, forever, while
+          opacity stays on the compositor. */}
       <motion.div
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 w-[28rem] h-[28rem] rounded-full bg-neutral-400/10 dark:bg-neutral-200/[0.06] blur-[110px]"
-        animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        animate={prefersReducedMotion ? { opacity: 0.8 } : { opacity: [0.6, 1, 0.6] }}
+        transition={
+          prefersReducedMotion
+            ? { duration: 0 }
+            : { duration: 8, repeat: Infinity, ease: "easeInOut" }
+        }
       />
 
       {/* Ambient spotlight that follows the cursor across the section */}
