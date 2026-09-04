@@ -216,11 +216,13 @@ function HeroMedia({ reducedMotion }: { reducedMotion: boolean }) {
         onPause={() => setIsPlaying(false)}
         className="h-full w-full object-cover"
       />
+      {/* Kept out of sight so nothing sits on the portrait, but still reachable
+          by keyboard — auto-playing motion needs a way to stop it (WCAG 2.2.2). */}
       <button
         type="button"
         onClick={toggle}
         aria-label={isPlaying ? "Pause background video" : "Play background video"}
-        className="absolute bottom-3 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-black/45 text-white opacity-60 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-black/75 hover:opacity-100 focus-visible:opacity-100"
+        className="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:bottom-3 focus-visible:right-3 focus-visible:z-10 focus-visible:flex focus-visible:h-11 focus-visible:w-11 focus-visible:items-center focus-visible:justify-center focus-visible:rounded-full focus-visible:border focus-visible:border-white/25 focus-visible:bg-black/75 focus-visible:text-white focus-visible:backdrop-blur-md"
       >
         {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
       </button>
