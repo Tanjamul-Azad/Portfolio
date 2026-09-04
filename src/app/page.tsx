@@ -57,7 +57,7 @@ export default function Home() {
   };
 
   return (
-    <main className="scroll-container relative min-h-screen overflow-x-hidden">
+    <main className="scroll-container relative min-h-svh overflow-x-hidden">
       {/* The preloader is an overlay, not a gate.
           It used to be the other branch of an `AnimatePresence mode="wait"`, which
           meant the server-rendered HTML contained the loading screen and nothing

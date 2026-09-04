@@ -12,7 +12,7 @@ export default function BlogPageClient() {
   const featuredPosts = blogPosts.filter(p => p.featured);
 
   return (
-    <main className="bg-neutral-50 dark:bg-black min-h-screen">
+    <main className="bg-neutral-50 dark:bg-black min-h-svh">
       <Navbar />
       
       {/* Hero */}

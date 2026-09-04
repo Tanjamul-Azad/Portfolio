@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen bg-neutral-50 dark:bg-black flex items-center justify-center px-6">
+    <main className="min-h-svh bg-neutral-50 dark:bg-black flex items-center justify-center px-6">
       {/* Ambient blobs */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute top-[-20%] right-[-10%] w-150 h-150 bg-amber-100/40 dark:bg-amber-900/10 blur-[140px] rounded-full" />

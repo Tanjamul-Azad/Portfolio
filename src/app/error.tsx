@@ -18,7 +18,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="min-h-screen bg-neutral-50 dark:bg-black flex items-center justify-center px-6">
+    <main className="min-h-svh bg-neutral-50 dark:bg-black flex items-center justify-center px-6">
       {/* Ambient blobs */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-red-100/30 dark:bg-red-900/10 blur-[140px] rounded-full" />

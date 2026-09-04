@@ -186,7 +186,7 @@ export default function RootLayout({
             <ScrollProgress />
             <StickyEmail />
             <AiChat />
-            <div id="main-content" className="relative min-h-screen flex flex-col">
+            <div id="main-content" className="relative min-h-svh flex flex-col">
               <PageTransition>{children}</PageTransition>
             </div>
           </RouteTransitionProvider>

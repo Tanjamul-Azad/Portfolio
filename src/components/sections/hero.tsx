@@ -254,18 +254,19 @@ export function Hero() {
       <div className="absolute inset-0 z-0 bg-white dark:bg-black transition-colors duration-500" />
 
       <div className="container max-w-7xl px-4 sm:px-6 relative z-10 pt-20 pb-12 sm:pt-24">
-        {/* Below lg the name and portrait share a 50/50 row, so both are in the
-            first screen. At lg the portrait becomes the full-height right column. */}
+        {/* On a portrait phone the name and portrait share a 50/50 row, so both
+            are in the first screen. Once there is room across — desktop, or a
+            phone turned landscape — the portrait becomes the right column. */}
         <motion.div
           style={{ opacity: heroOpacity, y: heroY }}
           variants={HERO_SEQUENCE.container}
           initial="hidden"
           animate="visible"
-          className="relative grid grid-cols-2 items-center gap-x-4 gap-y-6 sm:gap-x-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-x-12 lg:gap-y-0"
+          className="relative grid grid-cols-2 items-center gap-x-4 gap-y-6 sm:gap-x-6 hero-wide:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] hero-wide:gap-x-12 hero-wide:gap-y-0"
         >
             <motion.div
               variants={HERO_SEQUENCE.item}
-              className="col-span-2 flex items-center gap-3 lg:col-span-1 lg:col-start-1 lg:mb-10"
+              className="col-span-2 flex items-center gap-3 hero-wide:col-span-1 hero-wide:col-start-1 hero-wide:mb-10"
             >
               <div className="flex items-center gap-2.5 px-4 py-2 rounded-full border border-neutral-300/70 dark:border-white/15 bg-white/70 dark:bg-black/55 backdrop-blur-md w-fit transition-colors duration-300">
                 <span className="text-[10px] font-semibold tracking-[0.16em] text-green-600 dark:text-green-400 uppercase">
@@ -277,7 +278,9 @@ export function Hero() {
               </div>
             </motion.div>
 
-            <h1 className="col-start-1 col-span-1 display-heading text-[clamp(1.9rem,9vw,6.5rem)] leading-[0.92] text-neutral-900 dark:text-white transition-colors duration-300 lg:col-start-1 lg:mb-6">
+            {/* The 14svh term keeps the name from eating a short landscape
+                screen, where 9vw alone would render it ~67px tall. */}
+            <h1 className="col-start-1 col-span-1 display-heading text-[clamp(1.9rem,min(9vw,14svh),6.5rem)] leading-[0.92] text-neutral-900 dark:text-white transition-colors duration-300 hero-wide:col-start-1 hero-wide:mb-6">
               {heroContent.headlineLines.map((line, i) => (
                 <div key={`${line.text}-${i}`}>
                   <SplitText
@@ -293,10 +296,13 @@ export function Hero() {
           <motion.div
             style={{ scale: imageScale }}
             variants={HERO_SEQUENCE.media}
-            className="col-start-2 row-start-2 lg:col-start-2 lg:row-start-1 lg:row-span-3 lg:justify-self-end"
+            className="col-start-2 row-start-2 hero-wide:col-start-2 hero-wide:row-start-1 hero-wide:row-span-3 hero-wide:justify-self-end"
           >
+            {/* Height-driven rather than fixed once it is the side column, so the
+                portrait scales to the viewport instead of overflowing short
+                windows (the old 800px card did not fit a 900px-tall screen). */}
             <motion.div
-              className="relative mx-auto aspect-[3/4] w-full max-w-[15rem] lg:aspect-auto lg:mx-0 lg:ml-auto lg:w-136 lg:h-176 lg:max-w-none lg:-mr-12 xl:w-152 xl:h-200 xl:-mr-24"
+              className="relative mx-auto aspect-[3/4] w-full max-w-[15rem] hero-wide:mx-0 hero-wide:ml-auto hero-wide:w-auto hero-wide:max-w-none hero-wide:h-[min(44rem,78svh)] hero-wide:-mr-12 xl:-mr-24"
             >
               <div className="relative h-full w-full overflow-hidden rounded-2xl bg-neutral-200 dark:bg-neutral-900 shadow-xl dark:shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transition-colors duration-300">
                 <HeroMedia reducedMotion={prefersReducedMotion} />
@@ -307,7 +313,7 @@ export function Hero() {
 
           <motion.div
             variants={HERO_SEQUENCE.container}
-            className="col-span-2 max-w-150 lg:col-span-1 lg:col-start-1"
+            className="col-span-2 max-w-150 hero-wide:col-span-1 hero-wide:col-start-1"
           >
             <motion.p
               variants={HERO_SEQUENCE.item}
@@ -351,7 +357,9 @@ export function Hero() {
             {heroContent.stats.length > 0 && (
               <motion.div
                 variants={HERO_SEQUENCE.item}
-                className="mt-8 lg:mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-neutral-200 dark:border-white/10 pt-6 transition-colors duration-300"
+                // Dropped on a landscape phone, where it is the difference
+                // between the buttons being on screen and below the fold.
+                className="mt-8 lg:mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-neutral-200 dark:border-white/10 pt-6 transition-colors duration-300 [@media(max-height:560px)]:hidden"
               >
                 {heroContent.stats.map((stat, i) => (
                   <div key={`${stat.label}-${i}`} className="flex flex-col">

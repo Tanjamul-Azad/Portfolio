@@ -175,7 +175,7 @@ export default function ProjectsPageClient() {
   };
 
   return (
-    <main className="min-h-screen bg-neutral-50 dark:bg-black">
+    <main className="min-h-svh bg-neutral-50 dark:bg-black">
       <Navbar />
 
       <section className="relative overflow-hidden pb-16 sm:pb-20 pt-24 sm:pt-28 md:pt-32">
