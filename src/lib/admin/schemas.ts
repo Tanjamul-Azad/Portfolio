@@ -35,7 +35,9 @@ const project = z.object({
   description: str,
   role: str,
   impact: str,
-  image: str,
+  // Optional: the card falls back to a branded letter tile without one, and
+  // requiring it here meant a project with no screenshot could not be saved.
+  image: str.optional(),
   color: str.optional(),
   tags: strArr,
   liveUrl: str.optional(),

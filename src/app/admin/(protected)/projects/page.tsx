@@ -99,7 +99,7 @@ export default function ProjectsEditor() {
               <ImageField
                 label="Cover image"
                 folder="projects"
-                value={p.image}
+                value={p.image ?? ""}
                 onChange={(v) => update({ image: v })}
                 hint="Upload or paste a URL. Leave blank for a lettered placeholder."
               />

@@ -7,7 +7,8 @@ export interface Project {
   description: string;
   role: string;
   impact: string;
-  image: string;
+  /** Optional: a project with no thumbnail renders the branded letter tile. */
+  image?: string;
   color?: string;
   tags: string[];
   liveUrl?: string;

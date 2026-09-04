@@ -793,7 +793,7 @@
     "description": "Raspberry Pi health rover that monitors vitals, dispenses medication on schedule, and raises alerts for gas, fire, or a panic button.",
     "role": "Software Developer & Team Lead",
     "impact": "Built entirely from commodity parts — Pi 4, Arduino UNO, DHT11, MQ-2, a pulse sensor, an L298N driver — keeping the whole prototype within a student budget while covering monitoring, reminders, hazard detection, and mobility.",
-    "image": "/images/projects/care-companion.png",
+    "color": "#14b8a6",
     "tags": [
       "Raspberry Pi 4",
       "Arduino UNO",

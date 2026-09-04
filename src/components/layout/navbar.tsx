@@ -151,11 +151,24 @@ export function Navbar() {
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent className="bg-white dark:bg-black border-l border-neutral-200 dark:border-neutral-800/60 w-[82vw] max-w-xs p-0">
-              <div className="flex flex-col h-full">
+            {/* A bottom sheet rather than a side drawer: the trigger has to live
+                in the navbar, but that puts it in the top corner a thumb reaches
+                last. Opening upward from the bottom edge lands the links
+                themselves in the easy part of the screen. */}
+            <SheetContent
+              side="bottom"
+              // The header below carries its own close button; the built-in one
+              // would sit a few pixels above it as a second, identical X.
+              showCloseButton={false}
+              className="bg-white dark:bg-black border-t border-neutral-200 dark:border-neutral-800/60 max-h-[85svh] rounded-t-3xl p-0"
+            >
+              <div className="flex max-h-[85svh] flex-col">
+                {/* Grab handle, the usual affordance for a sheet that can be
+                    dismissed by dragging or tapping away. */}
+                <div aria-hidden="true" className="mx-auto mt-3 h-1 w-10 shrink-0 rounded-full bg-neutral-300 dark:bg-neutral-700" />
 
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-neutral-100 dark:border-neutral-900">
+                <div className="flex items-center justify-between px-6 pt-4 pb-5 border-b border-neutral-100 dark:border-neutral-900">
                   <SheetTitle asChild>
                     <Link
                       href="/"
@@ -173,7 +186,7 @@ export function Navbar() {
                 </div>
 
                 {/* Nav links */}
-                <nav aria-label="Mobile" className="flex-1 px-4 py-6">
+                <nav aria-label="Mobile" className="flex-1 overflow-y-auto px-4 py-5">
                   <ul className="space-y-0.5">
                     {navLinks.map((link, i) => {
                       const sectionId = link.href.replace("#", "");
@@ -181,9 +194,9 @@ export function Navbar() {
                       return (
                         <motion.li
                           key={link.name}
-                          initial={{ opacity: 0, x: -16 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.055, duration: 0.25 }}
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.045, duration: 0.25 }}
                         >
                           <SheetClose asChild>
                             <Link
@@ -211,8 +224,9 @@ export function Navbar() {
                   </ul>
                 </nav>
 
-                {/* Footer */}
-                <div className="px-6 pb-8 pt-2 border-t border-neutral-100 dark:border-neutral-900">
+                {/* Footer. Bottom padding clears the home indicator on a
+                    gesture-navigation handset. */}
+                <div className="shrink-0 border-t border-neutral-100 px-6 pt-2 pb-[max(1.5rem,env(safe-area-inset-bottom))] dark:border-neutral-900">
                   <div className="flex items-center gap-2 mt-5 mb-5">
                     {[
                       { Icon: Github, href: siteConfig.links.github, label: "GitHub" },

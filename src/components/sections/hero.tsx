@@ -346,9 +346,12 @@ export function Hero() {
                   href={action.href}
                   aria-label={action.label}
                   classes={
+                    // One action leads. The second is a quieter, borderless
+                    // partner rather than a second filled pill of equal weight,
+                    // so the eye is not asked to choose between two equals.
                     i === 0
                       ? "h-12 sm:h-14 w-full min-w-0 sm:w-auto sm:min-w-40 px-3 sm:px-8 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black text-[11px] sm:text-sm font-semibold whitespace-nowrap hover-lift"
-                      : "h-12 sm:h-14 w-full min-w-0 sm:w-auto sm:min-w-40 px-3 sm:px-8 rounded-full text-[11px] sm:text-sm font-semibold whitespace-nowrap border-neutral-300 text-neutral-800 dark:border-white/35 dark:text-white bg-transparent hover-lift"
+                      : "h-12 sm:h-14 w-full min-w-0 sm:w-auto sm:min-w-40 px-3 sm:px-8 rounded-full border-transparent bg-transparent text-[11px] sm:text-sm font-medium whitespace-nowrap text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
                   }
                 />
               ))}
