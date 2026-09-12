@@ -6,7 +6,7 @@
   "ogImage": "https://i.postimg.cc/8JZRwxxV/og-image.jpg",
   "links": {
     "github": "https://github.com/Tanjamul-Azad",
-    "linkedin": "https://www.linkedin.com/in/tanjamul-azad/",
+    "linkedin": "https://www.linkedin.com/in/tanzamul-azad-tonmoy/",
     "facebook": "https://www.facebook.com/tanjamul.tonmoy69",
     "twitter": "https://x.com/TanjamulTonmoy",
     "resume": "/Md.%20Tanzamul%20Azad%20-%20CV.pdf"
@@ -17,9 +17,6 @@
   },
   "author": {
     "name": "Md. Tanzamul Azad",
-    "role": "Full-Stack Developer | ML Researcher | CSE Undergrad (Data Science)",
-    "location": "Dhaka, Bangladesh",
-    "twitterHandle": "@tanjamul",
     "alternateNames": [
       "Tanjamul Azad",
       "Tanzamul Azad",
@@ -30,6 +27,9 @@
       "Tonmoy",
       "Tanjamul Tonmoy"
     ],
+    "role": "Full-Stack Developer | ML Researcher | CSE Undergrad (Data Science)",
+    "location": "Dhaka, Bangladesh",
+    "twitterHandle": "@tanjamul",
     "avatar": "/images/profile.jpg"
   }
 }
