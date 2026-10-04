@@ -1,12 +1,13 @@
 # Portfolio
 
-A modern, high-performance portfolio website built with Next.js 15 and React 19.
+A modern, high-performance portfolio website built with Next.js 16 and React 19, with a built-in content editor at `/admin`.
 
 ## Tech Stack
 
-- **Framework:** Next.js 15 (App Router)
+- **Framework:** Next.js 16 (App Router, React Compiler)
 - **Language:** TypeScript
-- **Styling:** Tailwind CSS 4
+- **Styling:** Tailwind CSS 4 with a token-based design system (see below)
+- **Type:** Geist, Geist Mono, Instrument Serif (via `next/font`)
 - **Animations:** Framer Motion
 - **UI Components:** Radix UI
 - **Form Handling:** React Hook Form + Zod
@@ -54,8 +55,8 @@ src/
 
 ### Prerequisites
 
-- Node.js 18.17 or later
-- pnpm (recommended) or npm
+- Node.js 20 or later
+- npm
 
 ### Installation
 
@@ -65,10 +66,10 @@ git clone <repository-url>
 cd portfolio
 
 # Install dependencies
-pnpm install
+npm install
 
 # Start development server
-pnpm dev
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to view the site.
@@ -92,16 +93,25 @@ Update data files in `src/data/` to modify:
 
 ### Styling
 
-- Global styles: `src/app/globals.css`
-- Theme colors: CSS variables in globals.css
+All design tokens live in `src/app/globals.css`:
+
+- **Colors:** `background` → `surface` → `surface-2` layers and hairline `line` / `line-strong` borders, defined per theme (light and dark). Use `bg-surface`, `border-line`, `text-muted-foreground`, `text-accent` rather than literal `neutral-*` shades.
+- **Utilities:** `shell` (page container), `section-y` (section rhythm), `eyebrow` (mono label), `surface` (card), `chip` (tag), `display` (headline type), `accent-serif` (italic serif accent word).
+- **Section headers:** every home section uses `SectionHeading` (`src/components/common/section-heading.tsx`).
+
+### Editable content
+
+Most copy and lists live in `src/content/*.json` and can be edited from `/admin` (hero, about, projects, research, experience, achievements, blog, …).
 
 ## Scripts
 
 ```bash
-pnpm dev      # Start development server
-pnpm build    # Build for production
-pnpm start    # Start production server
-pnpm lint     # Run ESLint
+npm run dev        # Start development server
+npm run build      # Build for production
+npm run start      # Start production server
+npm run lint       # Run ESLint
+npm run typecheck  # TypeScript check
+npm run quality    # lint + typecheck + build
 ```
 
 ## Dev-Only Hydration Guard Checklist
@@ -160,7 +170,7 @@ export function Example() {
 Build the project and deploy the `.next` folder:
 
 ```bash
-pnpm build
+npm run build
 ```
 
 ## Backend Integration

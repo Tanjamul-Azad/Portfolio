@@ -49,10 +49,12 @@ export const HERO_SEQUENCE = {
       },
     },
   } satisfies Variants,
+  // Transform only — no opacity. The hero portrait is the page's largest
+  // paint, and an element that starts at opacity 0 cannot count as painted
+  // until JavaScript has hydrated and animated it in.
   media: {
-    hidden: { opacity: 0, x: 40, y: MOTION_TOKENS.distance.sm },
+    hidden: { x: 24, y: MOTION_TOKENS.distance.sm },
     visible: {
-      opacity: 1,
       x: 0,
       y: 0,
       transition: {

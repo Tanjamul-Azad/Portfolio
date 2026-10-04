@@ -10,7 +10,7 @@ import {
 import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config";
 import {
-  AiChat,
+  LazyAiChat,
   CursorDot,
   ScrollProgress,
   StickyEmail,
@@ -92,7 +92,7 @@ export const metadata: Metadata = {
         url: siteConfig.ogImage,
         width: 1200,
         height: 630,
-        alt: `${siteConfig.name} - Frontend Developer Portfolio`,
+        alt: `${siteConfig.author.name} — Full-Stack Developer & ML Researcher`,
       },
     ],
   },
@@ -195,7 +195,7 @@ export default function RootLayout({
             <HashScrollManager />
             <ScrollProgress />
             <StickyEmail />
-            <AiChat />
+            <LazyAiChat />
             <div id="main-content" className="relative min-h-svh flex flex-col">
               <PageTransition>{children}</PageTransition>
             </div>

@@ -76,6 +76,15 @@ export async function proxy(req: NextRequest) {
     );
 
   if (!enabled) {
+    // The navbar asks this on every page view to decide whether to show the
+    // edit icon. A 404 here logged a console error for every visitor of a site
+    // with the editor off; answering "disabled" reveals nothing a 404 would not.
+    if (pathname === "/api/admin/status") {
+      return NextResponse.json(
+        { enabled: false },
+        { headers: { "Cache-Control": "public, max-age=300" } }
+      );
+    }
     return new NextResponse(null, { status: 404 });
   }
 
