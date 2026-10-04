@@ -4,4 +4,5 @@ export * from "./tech-stack";
 export * from "./achievements";
 export * from "./testimonials";
 export * from "./now";
+export * from "./research";
 export * from "./blog";

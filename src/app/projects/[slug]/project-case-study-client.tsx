@@ -23,7 +23,7 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
 
   if (!project) {
     return (
-      <main className="min-h-screen bg-neutral-50 dark:bg-black flex items-center justify-center p-6">
+      <main className="min-h-screen bg-background flex items-center justify-center p-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Project Not Found</h1>
           <p className="text-neutral-600 dark:text-neutral-400 mb-8">
@@ -39,7 +39,7 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
 
   return (
     <main 
-      className="bg-neutral-50 dark:bg-black min-h-screen selection:bg-amber-500/30"
+      className="bg-background min-h-screen selection:bg-amber-500/30"
       style={{ '--project-color': project.color } as React.CSSProperties}
     >
       <Navbar />
@@ -389,7 +389,7 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
       )}
 
       {/* Next Project */}
-      <section className="py-20 bg-neutral-50 dark:bg-black">
+      <section className="py-20 bg-background">
         <div className="container px-4 sm:px-6 mx-auto">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-neutral-500 mb-4">Next Project</p>

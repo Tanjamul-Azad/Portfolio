@@ -96,14 +96,14 @@ export function ContactForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-neutral-600 dark:text-neutral-300">Name</FormLabel>
+              <FormLabel className="text-[13px] text-muted-foreground">Name</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Your name"
                   autoComplete="name"
                   maxLength={NAME_MAX}
                   {...field}
-                  className="bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-neutral-900 dark:focus:border-white focus:ring-neutral-900/10 dark:focus:ring-white/10"
+                  className="bg-surface-2/50 border-line text-foreground placeholder:text-muted-foreground/70 focus:border-neutral-900 dark:focus:border-white focus:ring-neutral-900/10 dark:focus:ring-white/10"
                 />
               </FormControl>
               <FormMessage />
@@ -115,7 +115,7 @@ export function ContactForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-neutral-600 dark:text-neutral-300">Email</FormLabel>
+              <FormLabel className="text-[13px] text-muted-foreground">Email</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Your email"
@@ -123,7 +123,7 @@ export function ContactForm() {
                   autoComplete="email"
                   inputMode="email"
                   {...field}
-                  className="bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-neutral-900 dark:focus:border-white focus:ring-neutral-900/10 dark:focus:ring-white/10"
+                  className="bg-surface-2/50 border-line text-foreground placeholder:text-muted-foreground/70 focus:border-neutral-900 dark:focus:border-white focus:ring-neutral-900/10 dark:focus:ring-white/10"
                 />
               </FormControl>
               <FormMessage />
@@ -136,7 +136,7 @@ export function ContactForm() {
           render={({ field }) => (
             <FormItem>
               <div className="flex items-baseline justify-between gap-3">
-                <FormLabel className="text-neutral-600 dark:text-neutral-300">Message</FormLabel>
+                <FormLabel className="text-[13px] text-muted-foreground">Message</FormLabel>
                 <span
                   className={`text-xs tabular-nums ${
                     messageLength > MESSAGE_MAX
@@ -152,7 +152,7 @@ export function ContactForm() {
                   placeholder="Tell me how I can help"
                   autoComplete="off"
                   maxLength={MESSAGE_MAX}
-                  className="min-h-25 resize-y bg-neutral-100/50 dark:bg-neutral-800/50 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-neutral-900 dark:focus:border-white focus:ring-neutral-900/10 dark:focus:ring-white/10"
+                  className="min-h-25 resize-y bg-surface-2/50 border-line text-foreground placeholder:text-muted-foreground/70 focus:border-neutral-900 dark:focus:border-white focus:ring-neutral-900/10 dark:focus:ring-white/10"
                   {...field}
                 />
               </FormControl>
@@ -163,7 +163,7 @@ export function ContactForm() {
         
         <Button
           type="submit"
-          className="group w-full rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 relative overflow-hidden"
+          className="group h-12 w-full rounded-full bg-foreground text-background font-semibold shadow-md hover:bg-foreground hover:shadow-lg sm:h-11 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 relative overflow-hidden"
           disabled={form.formState.isSubmitting}
         >
           <span className="relative flex items-center justify-center">

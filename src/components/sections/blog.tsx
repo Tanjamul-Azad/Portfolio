@@ -1,11 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Calendar, Clock, ArrowRight } from "lucide-react";
-import { blogPosts } from "@/data";
+import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
+import { blogPosts } from "@/data";
 import { SECTION_REVEAL } from "@/lib";
+import { SectionHeading } from "@/components/common";
 import { useRouteTransitioning } from "@/components/providers/page-transition";
 
 export function Blog() {
@@ -17,127 +17,77 @@ export function Blog() {
   if (recentPosts.length === 0) return null;
 
   return (
-    <section id="blog" className="scroll-section py-20 md:py-28 relative overflow-hidden">
-      <div className="container px-4 sm:px-6 mx-auto">
-        {/* Header */}
-        <motion.div
-          variants={SECTION_REVEAL.container}
-          initial="hidden"
-          whileInView={isRouteTransitioning ? undefined : "visible"}
-          viewport={{ once: true }}
-          className="mb-16 flex flex-col md:flex-row md:items-end md:justify-between gap-6"
-        >
-          <div>
-            <motion.div
-              variants={SECTION_REVEAL.heading}
-              className="mb-4"
-            >
-              <span className="text-sm text-neutral-500 dark:text-neutral-400 tracking-[0.16em] uppercase font-medium">
-                Blog & Notes
-              </span>
-            </motion.div>
-            <motion.h2
-              variants={SECTION_REVEAL.heading}
-              className="text-3xl sm:text-4xl md:text-5xl font-bold font-heading text-neutral-900 dark:text-white tracking-tight"
-            >
-              Latest Writings
-            </motion.h2>
-          </div>
-          
-          <motion.div
-            variants={SECTION_REVEAL.heading}
-          >
+    <section id="blog" className="scroll-section section-y relative">
+      <div className="shell">
+        <SectionHeading
+          index="08"
+          eyebrow="Blog & Notes"
+          title={
+            <>
+              Latest <em className="accent-serif">writing</em>
+            </>
+          }
+          action={
             <Link
               href="/blog"
-              className="group inline-flex min-h-11 items-center gap-2 text-accent font-medium transition-colors"
+              className="group inline-flex h-11 items-center gap-1.5 self-start rounded-full sm:h-10 border border-line-strong bg-surface/60 px-4 text-[13px] font-medium text-foreground transition-colors hover:bg-surface-2 md:self-auto"
             >
-              View All Posts
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              All posts
+              <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </Link>
-          </motion.div>
-        </motion.div>
+          }
+        />
 
-        {/* Blog grid.
-            Previously a `max-h-[80vh] overflow-y-auto` pane on mobile, which
-            trapped touch scrolling mid-page. Four cards flow fine in the page. */}
-        <div className="relative">
-          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
+        {/* An editorial index rather than a grid of tag-heavy cards: date,
+            title and one line of excerpt per row, so four posts fit in the
+            space two cards used to take. */}
+        <ul className="surface divide-y divide-line overflow-hidden">
           {recentPosts.map((post, index) => (
-            <motion.article
+            <motion.li
               key={post.slug}
               variants={SECTION_REVEAL.item}
               initial="hidden"
               whileInView={isRouteTransitioning ? undefined : "visible"}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.08 }}
+              transition={{ delay: index * 0.06 }}
             >
               <Link
                 href={`/blog/${post.slug}`}
-                className={`group block h-full p-4 sm:p-6 rounded-2xl border transition-all duration-300 ${
-                  post.featured
-                    ? "bg-neutral-50 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
-                    : "glass border-neutral-200/70 dark:border-neutral-800/70 hover:border-neutral-300 dark:hover:border-neutral-700"
-                }`}
+                className="group grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-1 p-5 transition-colors hover:bg-surface-2/50 focus-visible:bg-surface-2/50 sm:p-6 md:grid-cols-[9rem_minmax(0,1fr)_auto] md:gap-x-8"
               >
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {post.tags.slice(0, 3).map((tag) => (
-                    <Badge
-                      key={tag}
-                      variant="secondary"
-                      className={`text-xs ${
-                        post.featured
-                          ? "bg-amber-500/10 text-accent border-amber-500/20"
-                          : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400"
-                      }`}
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                  {post.featured && (
-                    <Badge className="bg-amber-500 text-black text-xs">
-                      Featured
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Title */}
-                <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3 group-hover:text-accent transition-colors">
-                  {post.title}
-                </h3>
-
-                {/* Excerpt */}
-                <p className="text-neutral-600 dark:text-neutral-400 text-sm leading-relaxed mb-4 line-clamp-2">
-                  {post.excerpt}
-                </p>
-
-                {/* Meta */}
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-neutral-500 dark:text-neutral-500">
-                  <span className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5" />
+                <div className="col-span-2 flex items-center gap-2 font-mono text-[11px] text-muted-foreground md:col-span-1 md:flex-col md:items-start md:gap-1 md:pt-1">
+                  <time dateTime={post.date}>
                     {new Date(post.date).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
                     })}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5" />
-                    {post.readTime}
-                  </span>
+                  </time>
+                  <span aria-hidden="true" className="md:hidden">·</span>
+                  <span>{post.readTime}</span>
                 </div>
 
-                {/* Read-more affordance. Kept visible on touch — a pointer-only
-                    reveal left an empty bordered strip on phones. */}
-                <div className="mt-4 pt-4 border-t border-neutral-200/50 dark:border-neutral-800/50 flex items-center gap-2 text-sm font-medium text-accent transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-visible:opacity-100">
-                  Read Article
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <div className="min-w-0">
+                  <h3 className="text-base font-semibold leading-snug tracking-[-0.015em] text-foreground transition-colors group-hover:text-accent sm:text-lg">
+                    {post.title}
+                  </h3>
+                  <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground md:line-clamp-1">
+                    {post.excerpt}
+                  </p>
+                  <div className="mt-3 hidden flex-wrap gap-1.5 sm:flex">
+                    {post.tags.slice(0, 3).map((tag) => (
+                      <span key={tag} className="chip">{tag}</span>
+                    ))}
+                  </div>
                 </div>
+
+                <span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full border border-line text-muted-foreground transition-all duration-300 group-hover:border-foreground group-hover:bg-foreground group-hover:text-background">
+                  <ArrowUpRight className="h-4 w-4" />
+                </span>
               </Link>
-            </motion.article>
+            </motion.li>
           ))}
-          </div>
-        </div>
+        </ul>
       </div>
     </section>
   );

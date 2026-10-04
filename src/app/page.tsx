@@ -9,6 +9,7 @@ import {
   About,
   TechStack,
   Projects,
+  Research,
   Experience,
   Achievements,
   Now,
@@ -27,10 +28,10 @@ const preloaderState = { shown: false };
 function SectionStage({ children }: { children: ReactNode }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 36, scale: 0.992 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, amount: 0.12 }}
-      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.08 }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className="relative"
     >
       {children}
@@ -105,6 +106,9 @@ export default function Home() {
         </SectionStage>
         <SectionStage>
           <Projects />
+        </SectionStage>
+        <SectionStage>
+          <Research />
         </SectionStage>
         <SectionStage>
           <Experience />

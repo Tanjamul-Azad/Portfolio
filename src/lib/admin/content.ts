@@ -14,6 +14,7 @@ export const CONTENT_TYPES = [
   "experiences",
   "achievements",
   "testimonials",
+  "research",
   "blog",
 ] as const;
 

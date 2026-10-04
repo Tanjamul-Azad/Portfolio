@@ -22,6 +22,7 @@ const NAV: { group: string; items: { href: string; label: string }[] }[] = [
     group: "Content",
     items: [
       { href: "/admin/projects", label: "Projects" },
+      { href: "/admin/research", label: "Research" },
       { href: "/admin/blog", label: "Blog" },
       { href: "/admin/achievements", label: "Certificates & Awards" },
       { href: "/admin/experiences", label: "Experience" },

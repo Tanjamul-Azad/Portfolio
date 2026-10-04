@@ -5,7 +5,7 @@ import {
   AnimatePresence,
   motion,
 } from "framer-motion";
-import { CodeFlowPattern } from "@/components/ui/code-flow-pattern";
+import { SectionHeading } from "@/components/common";
 import { cn } from "@/lib/utils";
 
 type Tech = {
@@ -145,51 +145,31 @@ function TechIcon({
   );
 }
 
-function TechCard({ tech, index }: { tech: Tech; index: number }) {
+function TechTile({ tech, index }: { tech: Tech; index: number }) {
   const isWhite = tech.color.toLowerCase() === "#ffffff";
-  const chipBorder = isWhite ? "rgba(148, 163, 184, 0.65)" : `${tech.color}55`;
-  const hoverBorder = isWhite ? "rgba(100, 116, 139, 0.8)" : `${tech.color}75`;
-  const baseShadow = "0 10px 20px rgba(15, 23, 42, 0.12)";
-  const hoverShadow = "0 16px 28px rgba(15, 23, 42, 0.24), inset 0 -8px 16px rgba(15, 23, 42, 0.12)";
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
+    <motion.li
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{
-        delay: index * 0.05,
-        duration: 0.4,
-        ease: [0.16, 1, 0.3, 1],
-      }}
-      className="group flex flex-col items-center justify-center gap-3 p-3"
+      transition={{ delay: index * 0.03, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      className="group flex h-13 items-center gap-3 rounded-xl border border-line bg-surface px-2.5 transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-line-strong"
     >
-      <motion.div
-        className={`relative flex h-14 w-14 items-center justify-center rounded-2xl border backdrop-blur-sm transition-all duration-300 sm:h-16 sm:w-16 ${
-          isWhite ? "bg-slate-900" : "bg-white/80 dark:bg-neutral-900/80"
-        }`}
-        style={{
-          borderColor: chipBorder,
-          boxShadow: baseShadow,
-        }}
-        whileHover={{
-          y: -3,
-          scale: 1.03,
-          borderColor: hoverBorder,
-          boxShadow: hoverShadow,
-        }}
-        transition={{ type: "spring", stiffness: 260, damping: 20 }}
+      {/* Brand colour shows as a faint ring on the icon well, so a grid of
+          thirty logos stays calm instead of turning into a colour chart. */}
+      <span
+        className={cn(
+          "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
+          isWhite ? "bg-neutral-900" : "bg-surface-2"
+        )}
+        style={{ boxShadow: `inset 0 0 0 1px ${isWhite ? "rgba(255,255,255,0.12)" : `${tech.color}40`}` }}
       >
-        <TechIcon
-          tech={tech}
-          size={48}
-          className="h-8 w-8 transition-transform duration-300 group-hover:scale-110 sm:h-10 sm:w-10"
-        />
-      </motion.div>
-
-      <span className="text-center text-xs font-medium tracking-wide text-neutral-500 transition-colors duration-300 group-hover:text-neutral-900 dark:group-hover:text-neutral-200">
+        <TechIcon tech={tech} size={20} className="h-4.5 w-4.5" />
+      </span>
+      <span className="truncate text-[13px] font-medium text-muted-foreground transition-colors duration-300 group-hover:text-foreground">
         {tech.name}
       </span>
-    </motion.div>
+    </motion.li>
   );
 }
 
@@ -197,57 +177,30 @@ export function TechStack() {
   const [activeCategory, setActiveCategory] = useState<Category>("Frontend");
 
   const activeTech = useMemo(() => categories[activeCategory], [activeCategory]);
-  const marqueeTech = useMemo(() => {
-    const all = categoryOrder.flatMap((category) => categories[category]);
-    return [...all, ...all];
-  }, []);
+  const totalTools = useMemo(
+    () => categoryOrder.reduce((sum, category) => sum + categories[category].length, 0),
+    []
+  );
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 48 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.18 }}
-      transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-      className="py-20 md:py-24 relative border-y border-neutral-200 dark:border-neutral-800/50 bg-neutral-100/50 dark:bg-neutral-950/50 overflow-hidden"
-    >
-      <CodeFlowPattern
-        className="opacity-25 dark:opacity-20 text-accent"
-        numElements={35}
-        flowSpeed={12}
-        maxOpacity={0.2}
-      />
+    <section id="stack" className="scroll-section section-y relative">
+      <div className="shell">
+        <SectionHeading
+          index="03"
+          eyebrow="Tech Stack"
+          title={
+            <>
+              Tools I <em className="accent-serif">work with</em>
+            </>
+          }
+          description="The languages, frameworks, and tools I reach for across frontend, backend, AI, and hardware work."
+        />
 
-      <div className="container relative z-10 mx-auto px-4 sm:px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 22 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-          className="mx-auto mb-10 max-w-2xl text-center"
-        >
-          <span className="mb-3 block text-xs uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
-            Tech Stack
-          </span>
-
-          <h2 className="font-heading text-2xl sm:text-3xl font-semibold text-neutral-900 dark:text-white md:text-4xl">
-            Tools I Work With
-          </h2>
-
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-            The languages, frameworks, and tools I reach for across frontend, backend, AI, and hardware work.
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-          className="relative mt-8"
-        >
-
-          <div className="relative z-10 mb-7 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <div className="mx-auto flex min-w-max items-center gap-2 rounded-2xl border border-neutral-200 dark:border-neutral-800/80 bg-white/50 dark:bg-neutral-950/60 p-1.5 backdrop-blur-md md:min-w-0 md:w-fit">
+        <div className="surface p-2 sm:p-3">
+          {/* Category switcher. Scrolls sideways on a phone, with the edges
+              faded so it is obvious there is more to the right. */}
+          <div className="-mx-2 overflow-x-auto px-2 [mask-image:linear-gradient(to_right,transparent,black_12px,black_calc(100%-24px),transparent)] [scrollbar-width:none] sm:mx-0 sm:px-0 sm:[mask-image:none] [&::-webkit-scrollbar]:hidden">
+            <div role="group" aria-label="Tech categories" className="flex w-max gap-1 rounded-xl bg-surface-2/70 p-1">
               {categoryOrder.map((category) => {
                 const isActive = activeCategory === category;
 
@@ -255,23 +208,22 @@ export function TechStack() {
                   <button
                     key={category}
                     type="button"
+                    aria-pressed={isActive}
                     onClick={() => setActiveCategory(category)}
-                    className="relative min-h-11 rounded-xl px-3 sm:px-4 md:px-5 py-2.5 text-xs sm:text-sm font-medium outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-amber-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-neutral-900"
+                    className="relative flex h-11 items-center gap-2 rounded-lg px-3.5 sm:h-9 text-[13px] font-medium outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-amber-500/70"
                   >
                     {isActive && (
                       <motion.span
                         layoutId="active-tech-tab"
-                        transition={{ type: "spring", stiffness: 360, damping: 28 }}
-                        className="absolute inset-0 rounded-xl border border-amber-500/20 dark:border-amber-400/55 bg-amber-50 dark:bg-amber-500/12 shadow-[0_0_24px_rgba(245,158,11,0.15)] dark:shadow-[0_0_24px_rgba(245,158,11,0.32)]"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                        className="absolute inset-0 rounded-lg bg-surface shadow-sm ring-1 ring-line"
                       />
                     )}
-
-                    <span
-                      className={`relative z-10 whitespace-nowrap ${
-                        isActive ? "text-amber-600 dark:text-amber-300" : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200"
-                      }`}
-                    >
+                    <span className={cn("relative z-10 whitespace-nowrap", isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground")}>
                       {category}
+                    </span>
+                    <span className={cn("relative z-10 font-mono text-[10px]", isActive ? "text-accent" : "text-muted-foreground")}>
+                      {categories[category].length}
                     </span>
                   </button>
                 );
@@ -279,63 +231,31 @@ export function TechStack() {
             </div>
           </div>
 
-          <div className="relative z-10 min-h-70 sm:min-h-85 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {/* Reserves the tallest category's height so switching tabs never
+              shoves the rest of the page up and down. */}
+          <div className="mt-2 min-h-[22rem] sm:mt-3 sm:min-h-[14.5rem] lg:min-h-[10.75rem]">
             <AnimatePresence mode="wait">
-              <motion.div
+              <motion.ul
                 key={activeCategory}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -16 }}
-                transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-                className="flex min-w-max items-start gap-4 px-1 md:mx-auto md:grid md:w-fit md:min-w-fit md:grid-cols-3 md:gap-4 lg:grid-cols-4 lg:gap-5"
+                aria-label={`${activeCategory} tools`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4"
               >
                 {activeTech.map((tech, index) => (
-                  <TechCard key={`${activeCategory}-${tech.slug}`} tech={tech} index={index} />
+                  <TechTile key={`${activeCategory}-${tech.slug}`} tech={tech} index={index} />
                 ))}
-              </motion.div>
+              </motion.ul>
             </AnimatePresence>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.65, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-          className="group relative mt-10 overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800/80 bg-white/50 dark:bg-neutral-950/70 py-4 shadow-sm"
-        >
-          <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-24 bg-linear-to-r from-neutral-100 dark:from-black via-neutral-100/90 dark:via-black/90 to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-24 bg-linear-to-l from-neutral-100 dark:from-black via-neutral-100/90 dark:via-black/90 to-transparent" />
-
-          <div className="animate-marquee flex w-max min-w-full items-center gap-4">
-            {marqueeTech.map((tech, index) => {
-              const isWhite = tech.color.toLowerCase() === "#ffffff";
-              
-              return (
-                <div
-                  key={`${tech.slug}-${index}`}
-                  className="group/item flex items-center gap-2 rounded-full border border-neutral-200 dark:border-neutral-800/80 bg-neutral-50 dark:bg-neutral-900/70 px-3 py-1.5 transition-all duration-300 hover:-translate-y-0.5 hover:border-neutral-300 dark:hover:border-neutral-700"
-                >
-                  <span
-                    className={`flex h-6 w-6 items-center justify-center rounded-md border ${
-                      isWhite
-                        ? "border-slate-300/80 bg-slate-900"
-                        : "border-transparent bg-white/60 dark:bg-neutral-900/60"
-                    }`}
-                    style={isWhite ? undefined : { boxShadow: `0 0 0 1px ${tech.color}45 inset` }}
-                  >
-                    <TechIcon tech={tech} size={20} className="h-4 w-4" />
-                  </span>
-                  <span className="text-xs font-medium tracking-wide text-neutral-600 dark:text-neutral-400">
-                    {tech.name}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </motion.div>
+        <p className="mt-4 font-mono text-[11px] text-muted-foreground">
+          {totalTools} tools across {categoryOrder.length} categories
+        </p>
       </div>
-    </motion.section>
+    </section>
   );
 }
-

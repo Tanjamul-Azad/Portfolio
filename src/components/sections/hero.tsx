@@ -8,8 +8,7 @@ import {
   useTransform,
 } from "framer-motion";
 import Image from "next/image";
-import { Pause, Play } from "lucide-react";
-import InteractiveHoverButton from "@/components/ui/interactive-hover-button";
+import { ArrowRight, ArrowUpRight, MapPin, Pause, Play } from "lucide-react";
 import { siteConfig } from "@/config";
 import { heroContent } from "@/data/site-content";
 import { HERO_SEQUENCE, MOTION_TOKENS } from "@/lib";
@@ -127,18 +126,16 @@ function TypewriterText({
     <span className="relative block" role="text" aria-label={text}>
       {/* Reserve final multiline height so surrounding layout never shifts. */}
       <span className="invisible" aria-hidden="true">
-        {text}...
+        {text}_
       </span>
       <span className="absolute inset-0" aria-hidden="true">
         {visibleText}
         <motion.span
-          className="inline-block"
-          initial={{ opacity: 0 }}
-          animate={isComplete ? { opacity: [1, 0.25, 1] } : { opacity: 0 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        >
-          ...
-        </motion.span>
+          className="ml-px inline-block h-[1.05em] w-[0.5ch] translate-y-[0.18em] bg-current align-baseline"
+          initial={{ opacity: 1 }}
+          animate={isComplete ? { opacity: [1, 0, 1] } : { opacity: 1 }}
+          transition={isComplete ? { duration: 1.05, repeat: Infinity, ease: "linear" } : { duration: 0 }}
+        />
       </span>
     </span>
   );
@@ -191,7 +188,7 @@ function HeroMedia({ reducedMotion }: { reducedMotion: boolean }) {
         alt={siteConfig.author.name}
         fill
         priority
-        sizes="(max-width: 640px) 224px, (max-width: 1024px) 384px, 608px"
+        sizes="(max-width: 1024px) 100vw, 520px"
         className="object-cover"
       />
     );
@@ -232,6 +229,35 @@ function HeroMedia({ reducedMotion }: { reducedMotion: boolean }) {
   );
 }
 
+/**
+ * Local time in Dhaka, ticking once a minute. Rendered only after mount —
+ * the server's clock and the visitor's would otherwise disagree and trip a
+ * hydration warning.
+ */
+function LocalTime() {
+  const [time, setTime] = useState<string | null>(null);
+
+  useEffect(() => {
+    const format = new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone: "Asia/Dhaka",
+    });
+    const tick = () => setTime(format.format(new Date()));
+    tick();
+    const id = window.setInterval(tick, 30_000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return <span className="tabular-nums">{time ?? "\u00A0"}</span>;
+}
+
+const heroSocials = [
+  { label: "GitHub", href: siteConfig.links.github },
+  { label: "LinkedIn", href: siteConfig.links.linkedin },
+  { label: "Facebook", href: siteConfig.links.facebook },
+];
+
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion() ?? false;
@@ -241,90 +267,117 @@ export function Hero() {
     offset: ["start start", "end start"],
   });
 
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.55], [1, 0]);
-  const heroY = useTransform(scrollYProgress, [0, 0.55], [0, 80]);
-  const imageScale = useTransform(scrollYProgress, [0, 0.55], [1, 0.88]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const heroY = useTransform(scrollYProgress, [0, 0.6], [0, 60]);
+
+  const [primaryAction, ...secondaryActions] = heroContent.actions;
 
   return (
     <section
       ref={sectionRef}
       id="hero"
-      className="scroll-section relative z-10 min-h-svh flex items-center justify-center overflow-hidden bg-white dark:bg-black transition-colors duration-500"
+      className="scroll-section relative z-10 flex min-h-svh items-center overflow-hidden bg-background"
     >
-      <div className="absolute inset-0 z-0 bg-white dark:bg-black transition-colors duration-500" />
+      {/* Backdrop: a faint grid fading out from the top, and a warm glow
+          behind the headline. Both static — painted once, never animated. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(to_right,var(--line)_1px,transparent_1px),linear-gradient(to_bottom,var(--line)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_75%_55%_at_50%_0%,black,transparent)]" />
+        <div className="absolute left-1/2 top-[-18%] h-[55svh] w-[min(80rem,120vw)] -translate-x-1/2 rounded-full bg-amber-500/[0.08] blur-[120px] dark:bg-amber-400/[0.07]" />
+      </div>
 
-      <div className="container max-w-7xl px-4 sm:px-6 relative z-10 pt-20 pb-12 sm:pt-24">
-        {/* On a portrait phone the name and portrait share a 50/50 row, so both
-            are in the first screen. Once there is room across — desktop, or a
-            phone turned landscape — the portrait becomes the right column. */}
+      <div className="shell relative z-10 pb-10 pt-20 sm:pt-24 hero-wide:pb-16 hero-wide:pt-28">
+        {/* One grid, two arrangements. On a phone the badge and the name sit
+            in the same cell as the portrait, overlaid on it, so name and face
+            read as a single composed card instead of separate floating
+            blocks. Once there is room across — desktop, or a phone turned
+            landscape — the portrait moves out to its own right-hand column. */}
         <motion.div
           style={{ opacity: heroOpacity, y: heroY }}
           variants={HERO_SEQUENCE.container}
           initial="hidden"
           animate="visible"
-          className="relative grid grid-cols-2 items-center gap-x-4 gap-y-6 sm:gap-x-6 hero-wide:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] hero-wide:gap-x-12 hero-wide:gap-y-0"
+          className="grid grid-cols-1 hero-wide:grid-cols-[minmax(0,1fr)_auto] hero-wide:gap-x-14 xl:gap-x-20"
         >
-            <motion.div
-              variants={HERO_SEQUENCE.item}
-              className="col-span-2 flex items-center gap-3 hero-wide:col-span-1 hero-wide:col-start-1 hero-wide:mb-10"
-            >
-              <div className="flex items-center gap-2.5 px-4 py-2 rounded-full border border-neutral-300/70 dark:border-white/15 bg-white/70 dark:bg-black/55 backdrop-blur-md w-fit transition-colors duration-300">
-                <span className="text-[10px] font-semibold tracking-[0.16em] text-green-600 dark:text-green-400 uppercase">
-                  {heroContent.badge.status}
-                </span>
-                <span className="text-xs font-medium text-neutral-600 dark:text-neutral-300">
-                  {heroContent.badge.text}
-                </span>
-              </div>
-            </motion.div>
-
-            {/* The 14svh term keeps the name from eating a short landscape
-                screen, where 9vw alone would render it ~67px tall. */}
-            <h1 className="col-start-1 col-span-1 display-heading text-[clamp(1.9rem,min(9vw,14svh),6.5rem)] leading-[0.92] text-neutral-900 dark:text-white transition-colors duration-300 hero-wide:col-start-1 hero-wide:mb-6">
-              {heroContent.headlineLines.map((line, i) => (
-                <div key={`${line.text}-${i}`}>
-                  <SplitText
-                    text={line.text}
-                    delay={0.16 + i * 0.08}
-                    className={line.muted ? "text-neutral-500 dark:text-neutral-500" : ""}
-                    reducedMotion={prefersReducedMotion}
-                  />
-                </div>
-              ))}
-            </h1>
-
+          {/* Portrait */}
           <motion.div
-            style={{ scale: imageScale }}
             variants={HERO_SEQUENCE.media}
-            className="col-start-2 row-start-2 hero-wide:col-start-2 hero-wide:row-start-1 hero-wide:row-span-3 hero-wide:justify-self-end"
+            className="relative col-start-1 row-start-1 hero-wide:col-start-2 hero-wide:row-span-4 hero-wide:self-center"
           >
-            {/* Height-driven rather than fixed once it is the side column, so the
-                portrait scales to the viewport instead of overflowing short
-                windows (the old 800px card did not fit a 900px-tall screen). */}
-            <motion.div
-              className="relative mx-auto aspect-[3/4] w-full max-w-[15rem] hero-wide:mx-0 hero-wide:ml-auto hero-wide:w-auto hero-wide:max-w-none hero-wide:h-[min(44rem,78svh)] hero-wide:-mr-12 xl:-mr-24"
-            >
-              <div className="relative h-full w-full overflow-hidden rounded-2xl bg-neutral-200 dark:bg-neutral-900 shadow-xl dark:shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transition-colors duration-300">
-                <HeroMedia reducedMotion={prefersReducedMotion} />
-                <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_0_80px_rgba(0,0,0,0.6)]" />
-              </div>
-            </motion.div>
+            <div className="relative aspect-[5/6] max-h-[50svh] w-full overflow-hidden rounded-[1.75rem] bg-surface-2 ring-1 ring-line hero-wide:aspect-[3/4] hero-wide:h-[min(40rem,74svh)] hero-wide:max-h-none hero-wide:w-auto">
+              <HeroMedia reducedMotion={prefersReducedMotion} />
+              {/* Phone only: darkens the lower half so the overlaid name stays legible. */}
+              <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/85 via-black/25 to-black/10 hero-wide:hidden" />
+              <div className="pointer-events-none absolute inset-0 rounded-[1.75rem] ring-1 ring-inset ring-white/10" />
+            </div>
+
+            {/* Desktop: location + local time, docked on the portrait's edge. */}
+            <div className="absolute -left-6 bottom-8 hidden items-center gap-3 rounded-2xl border border-line bg-background/80 px-4 py-3 shadow-xl backdrop-blur-xl hero-wide:flex">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2">
+                <MapPin className="h-4 w-4 text-accent" />
+              </span>
+              <span className="flex flex-col">
+                <span className="text-[13px] font-medium text-foreground">{siteConfig.author.location}</span>
+                <span className="font-mono text-[11px] text-muted-foreground">
+                  <LocalTime /> · GMT+6
+                </span>
+              </span>
+            </div>
           </motion.div>
 
+          {/* Availability badge — glass over the photo on phones. */}
+          <motion.div
+            variants={HERO_SEQUENCE.item}
+            className="relative z-10 col-start-1 row-start-1 self-start p-3.5 hero-wide:mb-8 hero-wide:p-0"
+          >
+            <span className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-black/35 py-1.5 pl-2.5 pr-3.5 text-white backdrop-blur-md hero-wide:border-line hero-wide:bg-surface/70 hero-wide:text-foreground">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:hidden" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+              </span>
+              <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-300 hero-wide:text-emerald-700 dark:hero-wide:text-emerald-400">
+                {heroContent.badge.status}
+              </span>
+              <span className="text-xs font-medium">{heroContent.badge.text}</span>
+            </span>
+          </motion.div>
+
+          {/* Name. Overlaid on the portrait's lower edge on phones; the
+              second line is set in the serif italic for an editorial pairing.
+              The svh term keeps it from eating a short landscape screen. */}
+          <h1 className="display relative z-10 col-start-1 row-start-1 self-end p-5 pb-6 text-[clamp(3rem,15vw,4.5rem)] text-white hero-wide:row-start-2 hero-wide:mb-6 hero-wide:self-auto hero-wide:p-0 hero-wide:text-[clamp(3.5rem,min(8vw,15svh),7.5rem)] hero-wide:text-foreground">
+            {heroContent.headlineLines.map((line, i) => (
+              <div key={`${line.text}-${i}`}>
+                <SplitText
+                  text={line.text}
+                  delay={0.16 + i * 0.08}
+                  className={
+                    i > 0
+                      ? "accent-serif -mt-[0.06em] pr-[0.12em] text-[1.08em]"
+                      : line.muted
+                        ? "text-muted-foreground"
+                        : ""
+                  }
+                  reducedMotion={prefersReducedMotion}
+                />
+              </div>
+            ))}
+          </h1>
+
+          {/* Copy, actions, proof */}
           <motion.div
             variants={HERO_SEQUENCE.container}
-            className="col-span-2 max-w-150 hero-wide:col-span-1 hero-wide:col-start-1"
+            className="col-start-1 mt-5 max-w-xl hero-wide:row-start-3 hero-wide:mt-0"
           >
             <motion.p
               variants={HERO_SEQUENCE.item}
-              className="mb-3 text-sm md:text-base font-medium tracking-[0.08em] uppercase text-neutral-500 dark:text-neutral-400 transition-colors duration-300"
+              className="text-balance text-xl font-medium leading-snug tracking-[-0.02em] text-foreground sm:text-2xl"
             >
               {heroContent.tagline}
             </motion.p>
 
             <motion.div
               variants={HERO_SEQUENCE.item}
-              className="mb-7 lg:mb-10 text-sm md:text-base italic tracking-[0.04em] leading-relaxed text-neutral-700 dark:text-neutral-200 max-w-136 min-h-[3.2rem] md:min-h-12 transition-colors duration-300"
+              className="mt-3 font-mono text-[12px] leading-relaxed text-muted-foreground sm:text-[13px]"
             >
               <TypewriterText
                 text={heroContent.typewriter}
@@ -335,63 +388,77 @@ export function Hero() {
               />
             </motion.div>
 
-            <motion.div
-              variants={HERO_SEQUENCE.item}
-              className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-4"
-            >
-              {heroContent.actions.map((action, i) => (
-                <InteractiveHoverButton
+            <motion.div variants={HERO_SEQUENCE.item} className="mt-6 flex gap-2.5 sm:mt-7 sm:gap-3">
+              {primaryAction && (
+                <a
+                  href={primaryAction.href}
+                  className="group inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-5 text-[13px] font-semibold text-background shadow-[0_10px_30px_-10px_rgb(0_0_0/0.45)] transition-transform duration-300 hover:-translate-y-0.5 sm:flex-none sm:px-7 sm:text-sm"
+                >
+                  {primaryAction.label}
+                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 max-[400px]:hidden" />
+                </a>
+              )}
+              {secondaryActions.map((action, i) => (
+                <a
                   key={`${action.label}-${i}`}
-                  text={action.label}
                   href={action.href}
-                  aria-label={action.label}
-                  classes={
-                    // One action leads. The second is a quieter, borderless
-                    // partner rather than a second filled pill of equal weight,
-                    // so the eye is not asked to choose between two equals.
-                    i === 0
-                      ? "h-12 sm:h-14 w-full min-w-0 sm:w-auto sm:min-w-40 px-3 sm:px-8 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black text-[11px] sm:text-sm font-semibold whitespace-nowrap hover-lift"
-                      : "h-12 sm:h-14 w-full min-w-0 sm:w-auto sm:min-w-40 px-3 sm:px-8 rounded-full border-transparent bg-transparent text-[11px] sm:text-sm font-medium whitespace-nowrap text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
-                  }
-                />
+                  className="inline-flex h-12 flex-1 items-center justify-center rounded-full border border-line-strong bg-surface/60 px-5 text-[13px] font-medium text-foreground backdrop-blur transition-colors duration-300 hover:bg-surface-2 sm:flex-none sm:px-7 sm:text-sm"
+                >
+                  {action.label}
+                </a>
               ))}
             </motion.div>
 
             {heroContent.stats.length > 0 && (
-              <motion.div
+              <motion.dl
                 variants={HERO_SEQUENCE.item}
                 // Dropped on a landscape phone, where it is the difference
                 // between the buttons being on screen and below the fold.
-                className="mt-8 lg:mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-neutral-200 dark:border-white/10 pt-6 transition-colors duration-300 [@media(max-height:560px)]:hidden"
+                className="mt-6 grid grid-cols-3 divide-x divide-line border-y border-line py-3.5 sm:mt-8 sm:py-4 [@media(max-height:560px)]:hidden"
+                style={{ gridTemplateColumns: `repeat(${Math.min(heroContent.stats.length, 3)}, minmax(0, 1fr))` }}
               >
-                {heroContent.stats.map((stat, i) => (
-                  <div key={`${stat.label}-${i}`} className="flex flex-col">
-                    <span className="font-heading text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white transition-colors duration-300">
-                      {stat.value}
-                    </span>
-                    <span className="text-[11px] sm:text-xs font-medium uppercase tracking-[0.1em] text-neutral-500 dark:text-neutral-400">
+                {heroContent.stats.slice(0, 3).map((stat, i) => (
+                  <div key={`${stat.label}-${i}`} className="flex flex-col gap-1 px-3 first:pl-0 sm:px-5">
+                    <dt className="order-2 text-[10px] font-medium uppercase leading-snug tracking-[0.06em] text-muted-foreground sm:text-[11px] sm:tracking-[0.12em]">
                       {stat.label}
-                    </span>
+                    </dt>
+                    <dd className="display order-1 text-[1.75rem] text-foreground sm:text-4xl">{stat.value}</dd>
                   </div>
                 ))}
-              </motion.div>
+              </motion.dl>
             )}
 
-            <div className="mt-4 lg:mt-8" />
+            <motion.ul variants={HERO_SEQUENCE.item} className="mt-6 hidden items-center gap-5 hero-wide:flex">
+              {heroSocials.map((social) => (
+                <li key={social.label}>
+                  <a
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-1 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {social.label}
+                    <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </a>
+                </li>
+              ))}
+            </motion.ul>
           </motion.div>
         </motion.div>
       </div>
 
       <motion.div
+        aria-hidden="true"
         initial={{ opacity: 0 }}
         animate={{ opacity: prefersReducedMotion ? 0 : 1 }}
         transition={{ delay: MOTION_TOKENS.duration.slow }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-2 pointer-events-none"
+        className="pointer-events-none absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 hero-wide:flex [@media(max-height:560px)]:hidden"
       >
-        <motion.div
-          className="w-px h-10 bg-neutral-500/70 dark:bg-neutral-400/70"
-          animate={{ opacity: [1, 0.2, 1], scaleY: [1, 0.6, 1] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+        <span className="eyebrow text-[10px]">Scroll</span>
+        <motion.span
+          className="h-8 w-px origin-top bg-line-strong"
+          animate={{ scaleY: [0.3, 1, 0.3], opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
         />
       </motion.div>
     </section>
