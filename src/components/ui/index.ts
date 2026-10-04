@@ -42,4 +42,3 @@ export {
   TooltipTrigger,
 } from "./tooltip";
 export { TestimonialsColumn } from "./testimonials-columns-1";
-export { default as InteractiveHoverButton } from "./interactive-hover-button";

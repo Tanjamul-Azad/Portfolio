@@ -4,7 +4,14 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Check, ChevronDown, Clock, Copy, MessageCircle, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { ContactForm } from "./contact-form";
+import dynamic from "next/dynamic";
+
+// react-hook-form + zod only matter once someone starts typing; split them out
+// of the first load. The placeholder holds the form's height so nothing jumps.
+const ContactForm = dynamic(() => import("./contact-form").then((m) => m.ContactForm), {
+  ssr: false,
+  loading: () => <div aria-hidden="true" className="h-[22rem] animate-pulse rounded-xl bg-surface-2/40" />,
+});
 import { siteConfig } from "@/config";
 import { sectionsContent } from "@/data/site-content";
 import { cn } from "@/lib/utils";

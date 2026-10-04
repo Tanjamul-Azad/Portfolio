@@ -133,7 +133,8 @@ function TechIcon({
   return (
     <img
       src={getIconUrl(tech.slug, tech.color)}
-      alt={tech.name}
+      // Decorative: the tech's name is always printed right beside its logo.
+      alt=""
       width={size}
       height={size}
       loading="lazy"

@@ -84,15 +84,9 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          duration: MOTION_TOKENS.duration.slow,
-          ease: MOTION_TOKENS.easing.premium,
-        }}
-        className="relative z-10"
-      >
+      {/* Plain wrapper: it used to fade the whole page in from opacity 0, which
+          kept everything — the hero included — unpainted until hydration. */}
+      <div className="relative z-10">
         <Navbar />
         <Hero />
         <SectionStage>
@@ -126,7 +120,7 @@ export default function Home() {
           <Contact />
         </SectionStage>
         <Footer />
-      </motion.div>
+      </div>
     </main>
   );
 }

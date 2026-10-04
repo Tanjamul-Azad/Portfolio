@@ -142,32 +142,54 @@ function TypewriterText({
 }
 
 /**
- * Hero portrait. The source may be a video or a still, and either can fail, so
- * this handles all three states.
+ * Hero portrait.
  *
- * The video is decorative, muted, and looping, so it is hidden from assistive
- * tech and the still carries the alt text. It preloads metadata only — the old
- * `preload="auto"` pulled the full multi-megabyte file on every page load — and
- * it does not autoplay under prefers-reduced-motion. A pause control is offered
- * either way, since auto-playing motion needs a way to stop it (WCAG 2.2.2).
+ * The still is always rendered first, through next/image with priority, so it
+ * is what the browser paints as the largest element: an optimised AVIF/WebP of
+ * a few dozen KB rather than a 3 MB video. The looping video is an
+ * enhancement layered on top, and only where it is cheap: a wide screen, no
+ * reduced-motion or data-saver preference, and only once the page has loaded
+ * and gone idle. Phones keep the still, which was most of the mobile LCP.
+ *
+ * The video is decorative, so it is hidden from assistive tech and the still
+ * carries the alt text. A pause control is offered while it plays, since
+ * auto-playing motion needs a way to stop it (WCAG 2.2.2).
  */
 function HeroMedia({ reducedMotion }: { reducedMotion: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoFailed, setVideoFailed] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(!reducedMotion);
+  const [showVideo, setShowVideo] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const src = heroContent.profileVideo;
-  const poster = heroContent.profilePoster;
   const isVideo = /\.(mp4|webm|mov)$/i.test(src);
+  const still = isVideo ? heroContent.profilePoster : src;
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (reducedMotion) {
-      video.pause();
-      setIsPlaying(false);
-    }
-  }, [reducedMotion]);
+    if (!isVideo || reducedMotion) return;
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    if (connection?.saveData) return;
+    if (!window.matchMedia("(min-width: 1024px)").matches) return;
+
+    let idleId = 0;
+    let timeoutId = 0;
+    const start = () => {
+      const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+      if (w.requestIdleCallback) idleId = w.requestIdleCallback(() => setShowVideo(true), { timeout: 2500 });
+      else timeoutId = window.setTimeout(() => setShowVideo(true), 1200);
+    };
+
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+
+    return () => {
+      window.removeEventListener("load", start);
+      const w = window as Window & { cancelIdleCallback?: (id: number) => void };
+      if (idleId && w.cancelIdleCallback) w.cancelIdleCallback(idleId);
+      if (timeoutId) window.clearTimeout(timeoutId);
+    };
+  }, [isVideo, reducedMotion]);
 
   const toggle = () => {
     const video = videoRef.current;
@@ -180,51 +202,55 @@ function HeroMedia({ reducedMotion }: { reducedMotion: boolean }) {
     }
   };
 
-  if (!isVideo || videoFailed) {
-    const fallback = videoFailed ? poster ?? src : src;
-    return (
-      <Image
-        src={fallback}
-        alt={siteConfig.author.name}
-        fill
-        priority
-        sizes="(max-width: 1024px) 100vw, 520px"
-        className="object-cover"
-      />
-    );
-  }
-
   return (
     <>
-      <video
-        ref={videoRef}
-        src={encodeURI(src)}
-        poster={poster ? encodeURI(poster) : undefined}
-        autoPlay={!reducedMotion}
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        aria-hidden="true"
-        tabIndex={-1}
-        disablePictureInPicture
-        onError={() => setVideoFailed(true)}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-        className="h-full w-full object-cover"
-      />
-      {/* Kept out of sight so nothing sits on the portrait, but still reachable
-          by keyboard — auto-playing motion needs a way to stop it (WCAG 2.2.2). */}
-      <button
-        type="button"
-        onClick={toggle}
-        aria-label={isPlaying ? "Pause background video" : "Play background video"}
-        className="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:bottom-3 focus-visible:right-3 focus-visible:z-10 focus-visible:flex focus-visible:h-11 focus-visible:w-11 focus-visible:items-center focus-visible:justify-center focus-visible:rounded-full focus-visible:border focus-visible:border-white/25 focus-visible:bg-black/75 focus-visible:text-white focus-visible:backdrop-blur-md"
-      >
-        {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-      </button>
-      {/* The portrait still carries the accessible name for the whole media slot. */}
-      <span className="sr-only">{siteConfig.author.name}</span>
+      {still ? (
+        <Image
+          src={still}
+          alt={siteConfig.author.name}
+          fill
+          priority
+          fetchPriority="high"
+          sizes="(max-width: 1024px) 100vw, 520px"
+          className="object-cover"
+        />
+      ) : (
+        <span className="sr-only">{siteConfig.author.name}</span>
+      )}
+
+      {showVideo && !videoFailed && (
+        <>
+          <video
+            ref={videoRef}
+            src={encodeURI(src)}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            aria-hidden="true"
+            tabIndex={-1}
+            disablePictureInPicture
+            onError={() => setVideoFailed(true)}
+            onPlaying={() => {
+              setVideoReady(true);
+              setIsPlaying(true);
+            }}
+            onPause={() => setIsPlaying(false)}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${videoReady ? "opacity-100" : "opacity-0"}`}
+          />
+          {/* Kept out of sight so nothing sits on the portrait, but still reachable
+              by keyboard — auto-playing motion needs a way to stop it (WCAG 2.2.2). */}
+          <button
+            type="button"
+            onClick={toggle}
+            aria-label={isPlaying ? "Pause background video" : "Play background video"}
+            className="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:bottom-3 focus-visible:right-3 focus-visible:z-10 focus-visible:flex focus-visible:h-11 focus-visible:w-11 focus-visible:items-center focus-visible:justify-center focus-visible:rounded-full focus-visible:border focus-visible:border-white/25 focus-visible:bg-black/75 focus-visible:text-white focus-visible:backdrop-blur-md"
+          >
+            {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+          </button>
+        </>
+      )}
     </>
   );
 }

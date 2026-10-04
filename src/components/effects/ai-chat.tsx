@@ -258,7 +258,7 @@ export function AiChat() {
           className="flex h-14 items-center gap-2.5 rounded-full border border-neutral-200/80 bg-white/90 pr-1.5 pl-1.5 text-accent shadow-lg shadow-neutral-900/10 backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl sm:pr-4 dark:border-neutral-800/80 dark:bg-neutral-900/90 dark:shadow-black/30"
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
-          aria-label={isOpen ? "Close AI assistant" : "Open AI assistant — ask about the portfolio"}
+          aria-label={isOpen ? "Close AI assistant" : "AI Portfolio — ask the assistant about my work"}
         >
           <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full ring-1 ring-black/5 dark:ring-white/10">
             <Image
