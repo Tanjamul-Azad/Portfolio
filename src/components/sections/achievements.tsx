@@ -434,7 +434,7 @@ export function Achievements() {
     <section id="achievements" className="scroll-section section-y relative">
       <div className="shell">
         <SectionHeading
-          index="06"
+          index="07"
           eyebrow="Recognition"
           title={
             <>

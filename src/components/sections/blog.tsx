@@ -20,7 +20,7 @@ export function Blog() {
     <section id="blog" className="scroll-section section-y relative">
       <div className="shell">
         <SectionHeading
-          index="07"
+          index="08"
           eyebrow="Blog & Notes"
           title={
             <>

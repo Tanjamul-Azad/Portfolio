@@ -90,6 +90,27 @@ export interface Testimonial {
   rating?: number;
 }
 
+/** Where a research piece stands. Drives the status pill and the venue label. */
+export type ResearchStatus = "idea" | "in-progress" | "under-review" | "accepted" | "published";
+
+export interface ResearchWork {
+  id: string;
+  title: string;
+  /** One or two sentences: the question and the approach. */
+  summary: string;
+  status: ResearchStatus;
+  /** Field, e.g. "NLP" or "Federated Learning". */
+  area?: string;
+  /** Target venue while in progress, the actual venue once accepted/published. */
+  venue?: string;
+  year?: string;
+  /** e.g. "Md. Tanzamul Azad, A. Rahman" — leave empty for solo or undecided. */
+  authors?: string;
+  tags: string[];
+  paperUrl?: string;
+  codeUrl?: string;
+}
+
 export interface NowItem {
   category: "building" | "learning" | "looking";
   items: string[];

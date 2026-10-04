@@ -1,0 +1,36 @@
+[
+  {
+    "id": "hallucination-mds",
+    "title": "Conflict-Aware Hallucination Detection in Multi-Document Summarization",
+    "summary": "Detecting hallucinated claims in summaries built from several sources, where the sources themselves disagree — separating genuine source conflict from fabrication.",
+    "status": "in-progress",
+    "area": "NLP · LLM Reliability",
+    "venue": "",
+    "year": "2026",
+    "authors": "",
+    "tags": [
+      "LLMs",
+      "Summarization",
+      "Hallucination"
+    ],
+    "paperUrl": "",
+    "codeUrl": ""
+  },
+  {
+    "id": "fl-ids-iot",
+    "title": "Green Federated Learning for Intrusion Detection in IoT",
+    "summary": "An energy-aware federated learning setup for intrusion detection on IoT devices, trading off detection accuracy against communication and compute cost on constrained hardware.",
+    "status": "in-progress",
+    "area": "Federated Learning · Security",
+    "venue": "",
+    "year": "2026",
+    "authors": "",
+    "tags": [
+      "Federated Learning",
+      "IoT",
+      "Green Computing"
+    ],
+    "paperUrl": "",
+    "codeUrl": ""
+  }
+]

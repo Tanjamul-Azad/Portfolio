@@ -118,6 +118,20 @@ const techItem = z.object({
   description: str,
 });
 
+const researchWork = z.object({
+  id: str,
+  title: str,
+  summary: str,
+  status: z.enum(["idea", "in-progress", "under-review", "accepted", "published"]),
+  area: str.optional(),
+  venue: str.optional(),
+  year: str.optional(),
+  authors: str.optional(),
+  tags: strArr,
+  paperUrl: str.optional(),
+  codeUrl: str.optional(),
+});
+
 const nowItem = z.object({
   category: z.enum(["building", "learning", "looking"]),
   items: strArr,
@@ -191,5 +205,6 @@ export const schemas: Record<ContentType, z.ZodTypeAny> = {
   experiences: z.array(experience),
   achievements: z.array(achievement),
   testimonials: z.array(testimonial),
+  research: z.array(researchWork),
   blog: z.array(blog),
 };

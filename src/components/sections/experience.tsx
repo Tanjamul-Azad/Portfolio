@@ -129,7 +129,7 @@ export function Experience() {
     <section id="experience" className="scroll-section section-y relative">
       <div className="shell">
         <SectionHeading
-          index="05"
+          index="06"
           eyebrow="Experience"
           title={
             <>

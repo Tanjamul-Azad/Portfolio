@@ -47,7 +47,7 @@ export function Contact() {
           <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14">
             <div className="flex flex-col">
               <div className="mb-5 flex items-center gap-3">
-                <span className="eyebrow text-accent">08</span>
+                <span className="eyebrow text-accent">09</span>
                 <span aria-hidden="true" className="h-px w-8 bg-line-strong" />
                 <span className="eyebrow">{sectionsContent.contact.eyebrow}</span>
               </div>

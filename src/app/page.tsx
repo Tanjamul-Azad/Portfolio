@@ -9,6 +9,7 @@ import {
   About,
   TechStack,
   Projects,
+  Research,
   Experience,
   Achievements,
   Now,
@@ -105,6 +106,9 @@ export default function Home() {
         </SectionStage>
         <SectionStage>
           <Projects />
+        </SectionStage>
+        <SectionStage>
+          <Research />
         </SectionStage>
         <SectionStage>
           <Experience />
