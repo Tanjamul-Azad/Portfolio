@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, ExternalLink, Award, Medal, Trophy, Star, ChevronDown, RotateCw, X as XIcon } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Award, Trophy, Star, ChevronDown, RotateCw, X as XIcon } from "lucide-react";
 import Image from "next/image";
 import { achievements } from "@/data";
+import { SectionHeading } from "@/components/common";
+import { cn } from "@/lib/utils";
 import type { Achievement } from "@/types";
 import {
   Dialog,
@@ -66,7 +68,7 @@ function AchievementThumb({ achievement }: { achievement: Achievement }) {
         {/* Hints that there's a second side, for anyone who hasn't hovered yet. */}
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute bottom-3 right-3 flex items-center gap-1 rounded-full bg-black/55 px-2 py-1 text-[9px] font-medium text-white opacity-80 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-0"
+          className="pointer-events-none absolute bottom-3 right-3 hidden items-center gap-1 rounded-full bg-black/55 px-2 py-1 text-[9px] font-medium text-white opacity-80 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-0 sm:flex"
         >
           <RotateCw className="h-3 w-3" />
           Hover to flip
@@ -95,8 +97,8 @@ function AchievementThumb({ achievement }: { achievement: Achievement }) {
           "radial-gradient(120% 120% at 30% 20%, rgba(245,158,11,0.20), transparent), #0a0a0a",
       }}
     >
-      <TypeIcon className="h-9 w-9 text-amber-400/80" />
-      <span className="select-none text-3xl font-bold text-white/85">
+      <TypeIcon className="h-6 w-6 text-amber-400/80 sm:h-8 sm:w-8" />
+      <span className="select-none font-heading text-xl font-semibold text-white/85 sm:text-3xl">
         {achievement.title.charAt(0)}
       </span>
     </div>
@@ -115,76 +117,65 @@ function AchievementCard({
   const TypeIcon = TYPE_ICON[achievement.type];
 
   return (
-    <motion.div
+    <motion.li
       layout
-      initial={{ opacity: 0, y: 26 }}
+      initial={{ opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.55, delay: Math.min(index, 6) * 0.08, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -6 }}
+      transition={{ duration: 0.5, delay: Math.min(index, 6) * 0.06, ease: [0.22, 1, 0.36, 1] }}
       className="group h-full"
     >
+      {/* A compact row on phones (thumbnail beside the text), a card with the
+          thumbnail on top from sm up. */}
       <button
         type="button"
         onClick={onOpen}
-        className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white text-left transition-all duration-300 group-hover:border-amber-500/40 group-hover:shadow-xl group-hover:shadow-amber-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 dark:border-neutral-800 dark:bg-neutral-900"
+        className="surface flex h-full w-full items-stretch gap-0 overflow-hidden text-left transition-[border-color,transform] duration-300 hover:-translate-y-1 hover:border-line-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 sm:flex-col"
       >
-        {/* Thumbnail — the dominant visual */}
-        <div className="relative aspect-16/10 w-full overflow-hidden bg-neutral-100 dark:bg-neutral-950">
+        <div className="relative w-28 shrink-0 overflow-hidden bg-surface-2 sm:aspect-16/10 sm:w-full">
           <AchievementThumb achievement={achievement} />
           <div className="absolute inset-0 ring-1 ring-inset ring-black/5 dark:ring-white/10" />
-          <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur-sm">
-            <TypeIcon className="h-3 w-3" />
-            {TYPE_LABEL[achievement.type]}
-          </span>
           {achievement.credentialUrl && (
-            <span className="absolute right-3 top-3 rounded-full bg-amber-500 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-black">
+            <span className="absolute right-2 top-2 rounded-full bg-amber-400 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-black sm:right-3 sm:top-3 sm:px-2">
               Verified
             </span>
           )}
         </div>
 
-        {/* Details */}
-        <div className="flex flex-1 flex-col p-5">
-          <h3 className="line-clamp-2 text-base font-semibold leading-tight text-neutral-900 transition-colors duration-300 group-hover:text-accent md:text-lg dark:text-white dark:group-hover:text-amber-300">
+        <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-5">
+          <span className="eyebrow mb-1.5 inline-flex items-center gap-1.5 text-[10px]">
+            <TypeIcon className="h-3 w-3 text-accent" />
+            {TYPE_LABEL[achievement.type]}
+          </span>
+
+          <h3 className="line-clamp-2 text-[15px] font-semibold leading-snug tracking-[-0.01em] text-foreground sm:text-base">
             {achievement.title}
           </h3>
 
-          <div className="mt-2 flex items-center gap-2 text-xs">
-            <span className="truncate font-medium text-neutral-600 dark:text-neutral-300">
-              {achievement.issuer}
-            </span>
-            <span className="h-1 w-1 shrink-0 rounded-full bg-amber-500" />
-            <span className="shrink-0 text-neutral-500 dark:text-neutral-400">{achievement.date}</span>
-          </div>
+          <p className="mt-1.5 truncate text-xs text-muted-foreground">
+            {achievement.issuer} · {achievement.date}
+          </p>
 
-          <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+          <p className="mt-3 hidden line-clamp-2 text-sm leading-relaxed text-muted-foreground sm:block">
             {achievement.description}
           </p>
 
-          <div className="mt-3 flex flex-wrap gap-1.5">
+          <div className="mt-auto hidden flex-wrap gap-1.5 pt-4 sm:flex">
             {achievement.skills.slice(0, 3).map((skill) => (
-              <span
-                key={skill}
-                className="rounded-full border border-neutral-200 bg-neutral-100 px-2 py-0.5 text-[10px] text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
-              >
-                {skill}
-              </span>
+              <span key={skill} className="chip">{skill}</span>
             ))}
             {achievement.skills.length > 3 && (
-              <span className="rounded-full border border-amber-500/25 bg-amber-500/10 px-2 py-0.5 text-[10px] text-accent">
-                +{achievement.skills.length - 3}
-              </span>
+              <span className="chip text-accent">+{achievement.skills.length - 3}</span>
             )}
           </div>
 
-          <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-amber-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:text-amber-400">
-            View details
+          <span className="mt-auto inline-flex items-center gap-1 pt-2 text-xs font-medium text-foreground sm:hidden">
+            Details
             <ArrowUpRight className="h-3.5 w-3.5" />
           </span>
         </div>
       </button>
-    </motion.div>
+    </motion.li>
   );
 }
 
@@ -423,77 +414,73 @@ export function Achievements() {
     : filteredAchievements.slice(0, VISIBLE_LIMIT);
   const hiddenCount = filteredAchievements.length - visibleAchievements.length;
 
-  const filters: { label: string; value: "all" | Achievement["type"]; icon: typeof Award }[] = [
-    { label: "All", value: "all", icon: Medal },
-    { label: "Certifications", value: "certification", icon: Award },
-    { label: "Awards", value: "award", icon: Trophy },
-    { label: "Achievements", value: "achievement", icon: Star },
-  ];
+  // Counts live on the filter chips themselves — that replaces the separate
+  // stats block, and an empty category simply has no chip.
+  const filters = (
+    [
+      { label: "All", value: "all" },
+      { label: "Awards", value: "award" },
+      { label: "Achievements", value: "achievement" },
+      { label: "Certifications", value: "certification" },
+    ] as { label: string; value: "all" | Achievement["type"] }[]
+  )
+    .map((f) => ({
+      ...f,
+      count: f.value === "all" ? achievements.length : achievements.filter((a) => a.type === f.value).length,
+    }))
+    .filter((f) => f.value === "all" || f.count > 0);
 
   return (
-    <section id="achievements" className="scroll-section py-20 md:py-28 relative overflow-hidden">
-      <div className="container px-4 sm:px-6 mx-auto relative">
-        {/* Header */}
-        <div className="mb-12 md:mb-16 text-center">
-          <motion.span
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-xs text-neutral-500 dark:text-neutral-400 tracking-[0.3em] uppercase mb-4 block"
-          >
-            Recognition
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl sm:text-4xl md:text-6xl font-bold font-heading mb-6 text-neutral-900 dark:text-white tracking-tight"
-          >
-            Achievements & Awards
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-neutral-500 dark:text-neutral-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed"
-          >
-            Milestones from competitions, academics, and the projects I&apos;ve shipped.
-            Tap any card to view the certificate and full details.
-          </motion.p>
-        </div>
+    <section id="achievements" className="scroll-section section-y relative">
+      <div className="shell">
+        <SectionHeading
+          index="06"
+          eyebrow="Recognition"
+          title={
+            <>
+              Achievements &amp; <em className="accent-serif">awards</em>
+            </>
+          }
+          description="Milestones from competitions, academics, and the projects I've shipped. Open any card for the certificate and full details."
+        />
 
-        {/* Filter Tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="flex flex-wrap justify-center gap-2 mb-12"
-        >
-          {filters.map((f) => {
-            const Icon = f.icon;
-            return (
-              <button
-                key={f.value}
-                onClick={() => {
-                  setFilter(f.value);
-                  setShowAll(false);
-                }}
-                className={`flex min-h-11 items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${
-                  filter === f.value
-                    ? "bg-amber-500 text-black"
-                    : "bg-white/50 dark:bg-neutral-900/50 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white border border-neutral-200 dark:border-neutral-800"
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                {f.label}
-              </button>
-            );
-          })}
-        </motion.div>
+        {filters.length > 2 && (
+          <div className="-mx-5 mb-5 overflow-x-auto px-5 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
+            <div role="group" aria-label="Filter achievements" className="flex w-max gap-1 rounded-xl border border-line bg-surface/60 p-1">
+              {filters.map((f) => {
+                const isActive = filter === f.value;
+                return (
+                  <button
+                    key={f.value}
+                    type="button"
+                    aria-pressed={isActive}
+                    onClick={() => {
+                      setFilter(f.value);
+                      setShowAll(false);
+                    }}
+                    className="relative flex h-11 items-center gap-2 rounded-lg px-3.5 sm:h-9 text-[13px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-amber-500/70"
+                  >
+                    {isActive && (
+                      <motion.span
+                        layoutId="achievement-filter"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                        className="absolute inset-0 rounded-lg bg-foreground"
+                      />
+                    )}
+                    <span className={cn("relative z-10", isActive ? "text-background" : "text-muted-foreground hover:text-foreground")}>
+                      {f.label}
+                    </span>
+                    <span className={cn("relative z-10 font-mono text-[10px]", isActive ? "text-background/70" : "text-muted-foreground")}>
+                      {f.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
-        {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">
             {visibleAchievements.map((achievement, index) => (
               <AchievementCard
@@ -504,74 +491,21 @@ export function Achievements() {
               />
             ))}
           </AnimatePresence>
-        </div>
+        </ul>
 
         {/* Show more / less — keeps the section compact as the list grows */}
         {(hiddenCount > 0 || showAll) && filteredAchievements.length > VISIBLE_LIMIT && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="mt-10 flex justify-center"
-          >
+          <div className="mt-8 flex justify-center">
             <button
               type="button"
               onClick={() => setShowAll((prev) => !prev)}
-              className="group inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white/70 px-6 py-2.5 text-sm font-medium text-neutral-700 backdrop-blur-sm transition-all duration-300 hover:border-amber-500/40 hover:text-accent dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-neutral-300 dark:hover:text-amber-300"
+              className="inline-flex h-11 items-center gap-2 rounded-full border border-line-strong bg-surface/60 px-5 text-[13px] font-medium text-foreground transition-colors hover:bg-surface-2"
             >
               {showAll ? "Show less" : `Show ${hiddenCount} more`}
-              <ChevronDown
-                className={`h-4 w-4 transition-transform duration-300 ${showAll ? "rotate-180" : ""}`}
-              />
+              <ChevronDown className={cn("h-4 w-4 transition-transform duration-300", showAll && "rotate-180")} />
             </button>
-          </motion.div>
+          </div>
         )}
-
-        {/* Stats Summary */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-16 md:mt-20 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-2xl mx-auto"
-        >
-          {[
-            {
-              count: achievements.filter((a) => a.type === "certification").length,
-              label: "Certifications",
-              icon: Award,
-              accentLine: "via-amber-500/70",
-              accentIcon: "text-amber-500/70",
-            },
-            {
-              count: achievements.filter((a) => a.type === "award").length,
-              label: "Awards",
-              icon: Trophy,
-              accentLine: "via-sky-500/65",
-              accentIcon: "text-sky-500/70",
-            },
-            {
-              count: achievements.filter((a) => a.type === "achievement").length,
-              label: "Achievements",
-              icon: Star,
-              accentLine: "via-emerald-500/65",
-              accentIcon: "text-emerald-500/70",
-            },
-          ].map((stat, i) => {
-            const Icon = stat.icon;
-            return (
-              <motion.div
-                key={i}
-                whileHover={{ scale: 1.03, y: -2 }}
-                className="relative text-center p-5 rounded-2xl bg-white/80 dark:bg-neutral-900/80 border border-neutral-200 dark:border-neutral-800 hover:border-amber-500/30 transition-colors duration-300 overflow-hidden group"
-              >
-                <div className={`absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent ${stat.accentLine} to-transparent`} />
-                <Icon className={`w-5 h-5 mx-auto mb-2 ${stat.accentIcon}`} />
-                <div className="text-3xl font-bold text-neutral-900 dark:text-white">{stat.count}</div>
-                <div className="text-xs text-neutral-500 mt-1">{stat.label}</div>
-              </motion.div>
-            );
-          })}
-        </motion.div>
       </div>
 
       <AchievementDialog achievement={selected} onClose={() => setSelected(null)} />

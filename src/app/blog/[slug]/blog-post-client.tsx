@@ -21,7 +21,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
 
   if (!post) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-black">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">Post not found</h1>
           <Button asChild variant="outline">
@@ -47,7 +47,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
   };
 
   return (
-    <main className="bg-neutral-50 dark:bg-black min-h-screen">
+    <main className="bg-background min-h-screen">
       <Navbar />
 
       {/* Hero */}

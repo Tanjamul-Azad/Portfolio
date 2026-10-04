@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence, useMotionValue, useReducedMotion, useSpring, useTransform, useMotionTemplate, useScroll } from "framer-motion";
-import { ArrowUpRight, ExternalLink, Github, FileText, Lock, Play } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, ArrowUpRight, ExternalLink, Github, Lock, Play } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { getPinnedProjects, projects as allProjects } from "@/data/projects";
 import type { Project } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { SectionHeading } from "@/components/common";
 import { trackEvent } from "@/lib/telemetry";
 import { MOTION_TOKENS } from "@/lib";
 import { cn } from "@/lib/utils";
@@ -19,24 +19,46 @@ function isVideoFile(url?: string) {
   return !!url && /\.(mp4|webm|mov|ogg)$/i.test(url);
 }
 
-/** Image thumbnail that degrades to a branded letter placeholder. */
-function ProjectThumb({
+const hasLink = (url?: string) => !!url && url !== "#";
+
+/**
+ * Project visual: an inline looping video when the project has a direct
+ * video file, otherwise the thumbnail, degrading to a branded letter tile when
+ * there is no image or it fails to load.
+ */
+function ProjectMedia({
   project,
-  loaded,
-  failed,
-  onLoad,
-  onError,
   sizes,
   priority,
+  allowVideo = false,
+  className,
 }: {
   project: Project;
-  loaded: boolean;
-  failed: boolean;
-  onLoad: () => void;
-  onError: () => void;
   sizes: string;
   priority?: boolean;
+  allowVideo?: boolean;
+  className?: string;
 }) {
+  const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  if (allowVideo && isVideoFile(project.videoUrl)) {
+    return (
+      <video
+        src={encodeURI(project.videoUrl!)}
+        poster={project.image ? encodeURI(project.image) : undefined}
+        aria-hidden="true"
+        tabIndex={-1}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        className={cn("absolute inset-0 h-full w-full object-cover", className)}
+      />
+    );
+  }
+
   if (!project.image || failed) {
     return (
       <div
@@ -45,7 +67,7 @@ function ProjectThumb({
           background: `radial-gradient(120% 120% at 30% 20%, ${project.color ?? "#525252"}40, transparent), #0a0a0a`,
         }}
       >
-        <span className="text-3xl font-bold text-white/90 select-none">
+        <span className="select-none font-heading text-3xl font-semibold text-white/90">
           {project.title.charAt(0)}
         </span>
       </div>
@@ -54,255 +76,163 @@ function ProjectThumb({
 
   return (
     <>
-      {!loaded && (
-        <div className="absolute inset-0 z-0 animate-pulse bg-neutral-200/70 dark:bg-neutral-800/70" />
-      )}
+      {!loaded && <div className="absolute inset-0 animate-pulse bg-surface-2" />}
       <Image
         src={project.image}
         alt={project.title}
         fill
         sizes={sizes}
         priority={priority}
-        onLoad={onLoad}
-        onError={onError}
-        className={`object-cover transition-all duration-500 ease-out group-hover:scale-105 ${loaded ? "opacity-100" : "opacity-0"}`}
+        onLoad={() => setLoaded(true)}
+        onError={() => setFailed(true)}
+        className={cn(
+          "object-cover transition-[opacity,transform] duration-700 ease-out",
+          loaded ? "opacity-100" : "opacity-0",
+          className
+        )}
       />
     </>
   );
 }
-  
-/**
- * Nudges its child toward the pointer.
- *
- * The offset rides on motion values rather than React state: storing it in
- * state re-rendered this subtree on every mousemove, which is a lot of React
- * work to move a button a few pixels and is what made the pull feel notchy.
- * Springs read the motion values directly, so a pointer move costs no render.
- *
- * Under prefers-reduced-motion the element simply does not move.
- */
-function MagneticWrapper({ children, className }: { children: React.ReactNode, className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const prefersReducedMotion = useReducedMotion() ?? false;
 
-  const offsetX = useMotionValue(0);
-  const offsetY = useMotionValue(0);
-  const springConfig = { stiffness: 150, damping: 15, mass: 0.2 };
-  const x = useSpring(offsetX, springConfig);
-  const y = useSpring(offsetY, springConfig);
+/** The source-code action: a GitHub link, or a mailto request for a private repo. */
+function sourceAction(project: Project) {
+  if (project.sourcePrivate) {
+    return {
+      href: `mailto:${siteConfig.contact.email}?subject=${encodeURIComponent(`Source code request — ${project.title}`)}`,
+      label: `Request source code for ${project.title}`,
+      Icon: Lock,
+      event: "projects_request_source",
+      external: false,
+    };
+  }
+  if (hasLink(project.sourceUrl)) {
+    return {
+      href: project.sourceUrl!,
+      label: `View source for ${project.title} on GitHub`,
+      Icon: Github,
+      event: "projects_open_source",
+      external: true,
+    };
+  }
+  return null;
+}
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current || prefersReducedMotion) return;
-    const { left, top, width, height } = ref.current.getBoundingClientRect();
-    offsetX.set((e.clientX - (left + width / 2)) * 0.2);
-    offsetY.set((e.clientY - (top + height / 2)) * 0.2);
-  };
+const iconButton =
+  "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-foreground transition-colors duration-200 hover:bg-surface-2 sm:h-10 sm:w-10";
 
-  const handleMouseLeave = () => {
-    offsetX.set(0);
-    offsetY.set(0);
-  };
-
+/** Live-demo + source icon buttons, shared by the phone card and desktop preview. */
+function SecondaryActions({ project, source }: { project: Project; source: string }) {
+  const src = sourceAction(project);
   return (
-    <motion.div
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={prefersReducedMotion ? undefined : { x, y }}
-      className={className}
-    >
-      {children}
-    </motion.div>
+    <>
+      {hasLink(project.liveUrl) && (
+        <a
+          href={project.liveUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Open the live demo of ${project.title}`}
+          title="Live demo"
+          onClick={() => trackEvent("projects_open_live_demo", { project_slug: project.slug, source })}
+          className={iconButton}
+        >
+          <ExternalLink className="h-4 w-4" />
+        </a>
+      )}
+      {hasLink(project.videoUrl) && !isVideoFile(project.videoUrl) && (
+        <a
+          href={project.videoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Watch the demo video of ${project.title}`}
+          title="Watch demo"
+          onClick={() => trackEvent("projects_open_video", { project_slug: project.slug, source })}
+          className={iconButton}
+        >
+          <Play className="h-4 w-4" />
+        </a>
+      )}
+      {src && (
+        <a
+          href={src.href}
+          {...(src.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          aria-label={src.label}
+          title={project.sourcePrivate ? "Request source" : "Source code"}
+          onClick={() => trackEvent(src.event, { project_slug: project.slug, source })}
+          className={iconButton}
+        >
+          <src.Icon className="h-4 w-4" />
+        </a>
+      )}
+    </>
   );
 }
 
-interface MobileProjectCardProps {
-  project: Project;
-  index: number;
-  isRouteTransitioning: boolean;
-  failedImages: Record<string, boolean>;
-  loadedImages: Record<string, boolean>;
-  markImageLoaded: (id: string) => void;
-  markImageFailed: (id: string) => void;
-}
+/* ── Phone: swipeable card ──────────────────────────────────────────────── */
 
-function MobileProjectCard({ project, index, isRouteTransitioning, failedImages, loadedImages, markImageLoaded, markImageFailed }: MobileProjectCardProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-  
-  // Parallax effect: image moves contrary to scroll direction slightly
-  const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
-
+function MobileProjectCard({ project, index, isPinned }: { project: Project; index: number; isPinned: boolean }) {
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 50, rotateX: 10 }}
-      whileInView={isRouteTransitioning ? undefined : { opacity: 1, y: 0, rotateX: 0 }}
-      transition={{ duration: 0.8, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-      viewport={{ once: true, margin: "-50px" }}
-      style={{ perspective: "1000px" }}
-    >
-      <div className="group rounded-2xl max-[360px]:rounded-xl sm:rounded-3xl overflow-hidden border border-neutral-200/50 dark:border-neutral-800/50 bg-white dark:bg-neutral-900 shadow-lg sm:shadow-xl">
-        {/* Image area */}
-        <Link
-          href={`/projects/${project.slug}`}
-          aria-label={`${project.title} case study`}
-          className="block relative rounded-t-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/70"
-        >
-          <div className="aspect-video max-[360px]:aspect-2/1 sm:aspect-4/3 relative bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
-            {isVideoFile(project.videoUrl) ? (
-              <video
-                src={encodeURI(project.videoUrl!)}
-                poster={project.image ? encodeURI(project.image) : undefined}
-                aria-hidden="true"
-                tabIndex={-1}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                className="absolute inset-0 z-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-              />
-            ) : project.image && !failedImages[project.id] ? (
-              <>
-                <AnimatePresence>
-                  {!loadedImages[project.id] && (
-                    <motion.div
-                      initial={{ opacity: 1 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
-                      className="absolute inset-0 z-0 animate-pulse bg-neutral-200/70 dark:bg-neutral-800/70"
-                    />
-                  )}
-                </AnimatePresence>
-                <motion.div style={{ y }} className="absolute inset-0 w-full h-[130%] -top-[15%]">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className={`object-cover h-full w-full z-0 transition-transform duration-700 ease-out group-hover:scale-105 ${loadedImages[project.id] ? "opacity-100" : "opacity-0"}`}
-                    onLoad={() => markImageLoaded(project.id)}
-                    onError={() => markImageFailed(project.id)}
-                  />
-                </motion.div>
-              </>
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-neutral-900 dark:bg-neutral-100 z-0">
-                <span className="text-5xl sm:text-6xl font-bold text-neutral-300 dark:text-neutral-700">
-                  {project.title.substring(0, 1)}
-                </span>
-              </div>
-            )}
-            
-            {/* Inner Shadow Gradient */}
-            <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/5 dark:ring-white/10" />
-          </div>
-        </Link>
+    <article className="surface flex h-full flex-col overflow-hidden">
+      <Link
+        href={`/projects/${project.slug}`}
+        aria-label={`${project.title} case study`}
+        className="relative block aspect-[16/10] overflow-hidden bg-surface-2 focus-visible:ring-inset"
+      >
+        <ProjectMedia project={project} sizes="(max-width: 640px) 85vw, 50vw" allowVideo priority={index === 0} />
+        <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-black/5 dark:ring-white/10" />
+        <span className="absolute left-3 top-3 rounded-full bg-black/55 px-2 py-1 font-mono text-[10px] font-medium text-white backdrop-blur-sm">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+        {isPinned && (
+          <span className="absolute right-3 top-3 rounded-full bg-amber-400 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-black">
+            Pinned
+          </span>
+        )}
+      </Link>
 
-        {/* Content Area */}
-        <div className="p-4 max-[360px]:p-3 sm:p-5">
+      <div className="flex flex-1 flex-col p-4">
+        <p className="eyebrow mb-1.5 truncate text-[10px]">{project.role}</p>
+        <h3 className="text-lg font-semibold leading-tight tracking-[-0.02em] text-foreground">
+          {project.title}
+        </h3>
+        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+          {project.description}
+        </p>
+
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {project.tags.slice(0, 3).map((tag) => (
+            <span key={tag} className="chip">{tag}</span>
+          ))}
+        </div>
+
+        <div className="mt-auto flex items-center gap-2 pt-4">
           <Link
             href={`/projects/${project.slug}`}
-            className="flex min-h-11 w-fit items-center rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/70"
+            onClick={() => trackEvent("projects_open_case_study", { project_slug: project.slug, source: "mobile_card" })}
+            className="inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-full bg-foreground text-[13px] font-semibold text-background"
           >
-            <h3 className="text-lg max-[360px]:text-base sm:text-xl font-bold text-neutral-900 dark:text-white mb-2 flex items-center gap-2 group-hover:text-accent transition-colors">
-              {project.title}
-              <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 text-neutral-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
-            </h3>
+            Case study
+            <ArrowRight className="h-3.5 w-3.5" />
           </Link>
-
-          <p className="text-sm max-[360px]:text-xs text-neutral-600 dark:text-neutral-400 mb-4 max-[360px]:mb-3 line-clamp-2 sm:line-clamp-3">
-            {project.description}
-          </p>
-
-          <div className="flex flex-wrap gap-2 max-[360px]:gap-1.5 mb-4 max-[360px]:mb-3">
-            {project.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
-              <span
-                key={tag}
-                className={`text-[10px] max-[360px]:text-[9px] font-medium tracking-wide uppercase px-2.5 max-[360px]:px-2 py-1 max-[360px]:py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 rounded-full border border-neutral-200 dark:border-neutral-700 ${tagIndex === 2 ? "max-[360px]:hidden" : ""}`}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 pt-3 max-[360px]:pt-2.5 sm:pt-4 border-t border-neutral-100 dark:border-neutral-800">
-            {project.liveUrl && project.liveUrl !== '#' && (
-              <Button asChild size="xs" className="w-full sm:flex-1 rounded-full max-[360px]:h-8 max-[360px]:px-3 max-[360px]:text-[11px] bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 font-medium hover:bg-neutral-800 dark:hover:bg-neutral-200 active:scale-[0.98] transition-all duration-200">
-                <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("projects_open_live_demo", { project_slug: project.slug, source: "mobile_card" })}>
-                  <ExternalLink className="w-3.5 h-3.5 mr-1.5" /> Live Demo
-                </a>
-              </Button>
-            )}
-            <Button asChild size="xs" variant="outline" className="w-full sm:flex-1 rounded-full max-[360px]:h-8 max-[360px]:px-3 max-[360px]:text-[11px] border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 font-medium active:scale-[0.98] transition-all duration-200">
-              <Link href={`/projects/${project.slug}`} onClick={() => trackEvent("projects_open_case_study", { project_slug: project.slug, source: "mobile_card" })}>
-                <FileText className="w-3.5 h-3.5 mr-1.5" /> Case Study
-              </Link>
-            </Button>
-            {project.sourcePrivate ? (
-              <Button asChild size="icon" variant="ghost" className="self-end sm:self-auto rounded-full size-11 sm:size-9 shrink-0 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-95 transition-all duration-200">
-                <a
-                  href={`mailto:${siteConfig.contact.email}?subject=${encodeURIComponent(`Source code request — ${project.title}`)}`}
-                  onClick={() => trackEvent("projects_request_source", { project_slug: project.slug, source: "mobile_card" })}
-                >
-                  <Lock className="w-4 h-4" />
-                  <span className="sr-only">Request source code for {project.title}</span>
-                </a>
-              </Button>
-            ) : (
-              project.sourceUrl && project.sourceUrl !== '#' && (
-                <Button asChild size="icon" variant="ghost" className="self-end sm:self-auto rounded-full size-11 sm:size-9 shrink-0 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-95 transition-all duration-200">
-                  <a
-                    href={project.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => trackEvent("projects_open_source", { project_slug: project.slug, source: "mobile_card" })}
-                  >
-                    <Github className="w-4 h-4" />
-                    <span className="sr-only">View source for {project.title} on GitHub</span>
-                  </a>
-                </Button>
-              )
-            )}
-          </div>
+          <SecondaryActions project={project} source="mobile_card" />
         </div>
       </div>
-    </motion.div>
+    </article>
   );
 }
+
+/* ── Desktop: rail row + preview ────────────────────────────────────────── */
 
 interface RailRowProps {
   project: Project;
   index: number;
   isActive: boolean;
   isPinned: boolean;
-  loaded: boolean;
-  failed: boolean;
   onActivate: () => void;
-  onLoad: () => void;
-  onError: () => void;
   rowRef: (el: HTMLAnchorElement | null) => void;
 }
 
-/** A single compact, thumbnail-led row in the scrollable desktop project rail. */
-function RailRow({
-  project,
-  index,
-  isActive,
-  isPinned,
-  loaded,
-  failed,
-  onActivate,
-  onLoad,
-  onError,
-  rowRef,
-}: RailRowProps) {
+function RailRow({ project, index, isActive, isPinned, onActivate, rowRef }: RailRowProps) {
   return (
     <Link
       ref={rowRef}
@@ -310,41 +240,29 @@ function RailRow({
       onMouseEnter={onActivate}
       onFocus={onActivate}
       onClick={() =>
-        trackEvent("projects_open_case_study", {
-          project_slug: project.slug,
-          source: "desktop_rail",
-        })
+        trackEvent("projects_open_case_study", { project_slug: project.slug, source: "desktop_rail" })
       }
       aria-current={isActive ? "true" : undefined}
       className={cn(
-        "group flex items-center gap-4 rounded-2xl border p-2.5 pr-3 transition-all duration-300 ease-out outline-none scroll-mt-4",
+        "group relative flex items-center gap-4 rounded-2xl border p-2 pr-4 outline-none transition-all duration-300 ease-out scroll-mt-4",
         isActive
-          ? "border-amber-500/40 bg-neutral-100/90 dark:bg-neutral-900/80 shadow-sm translate-x-1"
-          : "border-transparent opacity-55 hover:opacity-100 focus-visible:opacity-100"
+          ? "border-line bg-surface shadow-[var(--surface-shadow)]"
+          : "border-transparent hover:bg-surface/50 focus-visible:bg-surface/50"
       )}
     >
-      {/* Thumbnail — top visual priority */}
-      <div className="relative aspect-video w-28 xl:w-36 shrink-0 overflow-hidden rounded-xl bg-neutral-200 dark:bg-neutral-800 ring-1 ring-inset ring-black/5 dark:ring-white/10">
-        <ProjectThumb
-          project={project}
-          loaded={loaded}
-          failed={failed}
-          onLoad={onLoad}
-          onError={onError}
-          sizes="160px"
-        />
-        <span className="font-mono absolute left-1.5 top-1.5 z-10 rounded-md bg-black/55 px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
-          {(index + 1).toString().padStart(2, "0")}
-        </span>
+      <div className="relative aspect-[16/10] w-24 shrink-0 overflow-hidden rounded-xl bg-surface-2 ring-1 ring-inset ring-line xl:w-28">
+        <ProjectMedia project={project} sizes="128px" />
       </div>
 
-      {/* Info */}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
+          <span className={cn("font-mono text-[11px] transition-colors", isActive ? "text-accent" : "text-muted-foreground")}>
+            {String(index + 1).padStart(2, "0")}
+          </span>
           <h3
             className={cn(
-              "truncate text-base xl:text-lg font-bold tracking-tight transition-colors",
-              isActive ? "text-neutral-900 dark:text-white" : "text-neutral-700 dark:text-neutral-300"
+              "truncate text-[15px] font-semibold tracking-[-0.01em] transition-colors xl:text-base",
+              isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
             )}
           >
             {project.title}
@@ -355,28 +273,95 @@ function RailRow({
             </span>
           )}
         </div>
-        <p className="mt-0.5 truncate text-xs text-neutral-500 dark:text-neutral-400">{project.role}</p>
-        <div className="mt-1.5 flex flex-wrap gap-1.5">
-          {project.tags.slice(0, 3).map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full bg-neutral-200/70 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:bg-neutral-800/70 dark:text-neutral-400"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+        <p className="mt-1 truncate text-xs text-muted-foreground">{project.role}</p>
       </div>
 
       <ArrowUpRight
         className={cn(
-          "h-5 w-5 shrink-0 transition-all duration-300",
+          "h-4 w-4 shrink-0 transition-all duration-300",
           isActive
-            ? "text-amber-500 translate-x-0 opacity-100"
-            : "text-neutral-400 -translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+            ? "translate-x-0 text-foreground opacity-100"
+            : "-translate-x-1 text-muted-foreground opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
         )}
       />
     </Link>
+  );
+}
+
+function ProjectPreview({ project, isPinned }: { project: Project; isPinned: boolean }) {
+  return (
+    <AnimatePresence mode="wait">
+      <motion.article
+        key={project.id}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -8 }}
+        transition={{ duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
+        className="surface group relative overflow-hidden"
+      >
+        {/* Ambient wash in the project's own colour, behind the card. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -inset-x-10 -top-24 h-64 opacity-25 blur-[90px] dark:opacity-30"
+          style={{ backgroundColor: project.color || "#f59e0b" }}
+        />
+
+        <Link
+          href={`/projects/${project.slug}`}
+          aria-label={`${project.title} case study`}
+          tabIndex={-1}
+          className="relative m-2 block aspect-[16/9] overflow-hidden rounded-xl bg-surface-2"
+        >
+          <ProjectMedia
+            project={project}
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            allowVideo
+            priority={project.featured}
+            className="group-hover:scale-[1.03]"
+          />
+          <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-black/5 dark:ring-white/10" />
+        </Link>
+
+        <div className="relative px-6 pb-6 pt-4">
+          <div className="flex items-start justify-between gap-6">
+            <div className="min-w-0">
+              <p className="eyebrow mb-2 truncate text-[10px]">{project.role}</p>
+              <h3 className="flex items-center gap-2.5 text-2xl font-semibold tracking-[-0.025em] text-foreground">
+                {project.title}
+                {isPinned && (
+                  <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
+                    Pinned
+                  </span>
+                )}
+              </h3>
+            </div>
+          </div>
+
+          <p className="mt-3 line-clamp-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            {project.description}
+          </p>
+
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-5">
+            <div className="flex flex-wrap gap-1.5">
+              {project.tags.slice(0, 4).map((tag) => (
+                <span key={tag} className="chip">{tag}</span>
+              ))}
+            </div>
+            <div className="flex items-center gap-2">
+              <SecondaryActions project={project} source="desktop_preview" />
+              <Link
+                href={`/projects/${project.slug}`}
+                onClick={() => trackEvent("projects_open_case_study", { project_slug: project.slug, source: "desktop_preview" })}
+                className="group/cta inline-flex h-10 items-center gap-1.5 rounded-full bg-foreground pl-5 pr-4 text-[13px] font-semibold text-background transition-transform duration-300 hover:-translate-y-px"
+              >
+                Case study
+                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover/cta:translate-x-0.5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </motion.article>
+    </AnimatePresence>
   );
 }
 
@@ -384,7 +369,7 @@ export function Projects() {
   const { isRouteTransitioning } = useRouteTransitioning();
   const totalProjects = allProjects.length;
 
-  // Show every project (pinned first), so the rail can hold many without growing the page.
+  // Every project, pinned first.
   const displayProjects = useMemo(() => {
     const pinned = getPinnedProjects();
     const pinnedIds = new Set(pinned.map((p) => p.id));
@@ -394,469 +379,175 @@ export function Projects() {
   const pinnedIdSet = useMemo(() => new Set(getPinnedProjects().map((p) => p.id)), []);
 
   const [hoveredProject, setHoveredProject] = useState<string | null>(displayProjects[0]?.id || null);
-  const [showAllMobile, setShowAllMobile] = useState(false);
-  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
-  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
   const projectLinkRefs = useRef<Array<HTMLAnchorElement | null>>([]);
-  const previewRef = useRef<HTMLDivElement>(null);
 
-  // 3D Tilt Effect State
-  const mouseX = useMotionValue(0.5);
-  const mouseY = useMotionValue(0.5);
-
-  const springConfig = { damping: 20, stiffness: 200, mass: 0.5 };
-  const springX = useSpring(mouseX, springConfig);
-  const springY = useSpring(mouseY, springConfig);
-
-  const rotateX = useTransform(springY, [0, 1], [6, -6]); // more pronounced tilt
-  const rotateY = useTransform(springX, [0, 1], [-6, 6]);
-
-  const glareX = useTransform(springX, [0, 1], [0, 100]);
-  const glareY = useTransform(springY, [0, 1], [0, 100]);
-  const glareBackground = useMotionTemplate`radial-gradient(circle 400px at ${glareX}% ${glareY}%, rgba(255,255,255,0.15), transparent)`;
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!previewRef.current) return;
-    const rect = previewRef.current.getBoundingClientRect();
-    
-    // Calculate 0 to 1 mapping based on mouse position within the element
-    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
-    
-    mouseX.set(x);
-    mouseY.set(y);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(0.5);
-    mouseY.set(0.5);
-  };
-
-  const filteredProjects = displayProjects;
-
-  // Mobile shows a short, complete list first rather than a scroll-inside-scroll pane.
-  const MOBILE_INITIAL_COUNT = 3;
-  const visibleMobileProjects = showAllMobile
-    ? filteredProjects
-    : filteredProjects.slice(0, MOBILE_INITIAL_COUNT);
-  const hiddenMobileCount = filteredProjects.length - visibleMobileProjects.length;
-
-  const activeProject =
-    filteredProjects.length === 0
-      ? null
-      : filteredProjects.find((p) => p.id === hoveredProject) || filteredProjects[0];
-
-  // A direct video file plays inline as an animated preview; anything else
-  // (YouTube, etc.) stays a "Watch Demo" link in the hover overlay.
-  const previewVideo = isVideoFile(activeProject?.videoUrl) ? activeProject!.videoUrl : null;
+  // Phone carousel position, for the counter and progress bar under it.
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [slide, setSlide] = useState(0);
 
   useEffect(() => {
-    if (filteredProjects.length === 0) {
-      setHoveredProject(null);
-      return;
-    }
+    const el = carouselRef.current;
+    if (!el) return;
+    let frame = 0;
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const first = el.firstElementChild as HTMLElement | null;
+        if (!first) return;
+        const step = first.offsetWidth + 12;
+        setSlide(Math.min(displayProjects.length - 1, Math.max(0, Math.round(el.scrollLeft / step))));
+      });
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      el.removeEventListener("scroll", onScroll);
+    };
+  }, [displayProjects.length]);
 
-    const isHoveredVisible = filteredProjects.some((project) => project.id === hoveredProject);
-    if (!isHoveredVisible) {
-      setHoveredProject(filteredProjects[0].id);
-    }
-  }, [filteredProjects, hoveredProject]);
-
-  const markImageFailed = (projectId: string) => {
-    setFailedImages((prev) => ({ ...prev, [projectId]: true }));
-  };
-
-  const markImageLoaded = (projectId: string) => {
-    setLoadedImages((prev) => ({ ...prev, [projectId]: true }));
-  };
+  const activeProject =
+    displayProjects.length === 0
+      ? null
+      : displayProjects.find((p) => p.id === hoveredProject) || displayProjects[0];
 
   const focusProjectByOffset = (offset: 1 | -1) => {
-    if (filteredProjects.length === 0) return;
-
-    const currentIndex = Math.max(
-      0,
-      filteredProjects.findIndex((project) => project.id === hoveredProject)
-    );
-    const nextIndex = (currentIndex + offset + filteredProjects.length) % filteredProjects.length;
-    const nextProject = filteredProjects[nextIndex];
-
-    setHoveredProject(nextProject.id);
+    if (displayProjects.length === 0) return;
+    const currentIndex = Math.max(0, displayProjects.findIndex((p) => p.id === hoveredProject));
+    const nextIndex = (currentIndex + offset + displayProjects.length) % displayProjects.length;
+    setHoveredProject(displayProjects[nextIndex].id);
     const nextRow = projectLinkRefs.current[nextIndex];
     nextRow?.focus();
     nextRow?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   };
 
+  const browseAll = (
+    <Link
+      href="/projects"
+      onClick={() => trackEvent("projects_open_all_projects", { source: "homepage_section" })}
+      className="group inline-flex h-11 items-center gap-1.5 self-start rounded-full sm:h-10 border border-line-strong bg-surface/60 px-4 text-[13px] font-medium text-foreground transition-colors hover:bg-surface-2 md:self-auto"
+    >
+      All {totalProjects} projects
+      <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+    </Link>
+  );
+
   return (
-    <section id="projects" className="scroll-section py-20 md:py-28 relative overflow-hidden md:min-h-screen flex items-center">
+    <section id="projects" className="scroll-section section-y relative">
+      <div className="shell">
+        <SectionHeading
+          index="04"
+          eyebrow="Selected Work"
+          title={
+            <>
+              Things I&apos;ve <em className="accent-serif">built</em>
+            </>
+          }
+          description="Production platforms, AI tooling and research prototypes — each with a written case study."
+          action={browseAll}
+        />
 
-      <div className="container px-4 sm:px-6 mx-auto relative">
-        {/* Header */}
-        <div className="mb-10 md:mb-14 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <motion.span
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="text-sm text-neutral-500 dark:text-neutral-400 tracking-[0.16em] uppercase font-medium"
-            >
-              Selected Work
-            </motion.span>
-            <motion.h2
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: MOTION_TOKENS.duration.slow, ease: MOTION_TOKENS.easing.premium }}
-              className="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold font-heading tracking-tight text-neutral-900 dark:text-white"
-            >
-              Projects
-            </motion.h2>
+        {displayProjects.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-line-strong p-8 text-center text-sm text-muted-foreground">
+            No projects to show yet — check back soon.
           </div>
+        ) : (
+          <>
+            {/* Desktop: scrollable rail on the left, live preview on the right. */}
+            <div className="hidden items-start gap-8 lg:grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] xl:gap-10">
+              <div className="relative">
+                <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-6 bg-linear-to-b from-background to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-10 bg-linear-to-t from-background to-transparent" />
 
-          <Button
-            asChild
-            size="default"
-            className="self-start sm:self-auto rounded-full h-11 px-6 text-sm font-semibold bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 shadow-sm"
-          >
-            <Link
-              href="/projects"
-              onClick={() => trackEvent("projects_open_all_projects", { source: "homepage_section" })}
-            >
-              Browse all {totalProjects} projects
-              <ArrowUpRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
+                <div
+                  role="list"
+                  aria-label="Project list — use arrow keys to navigate"
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    if (event.key === "ArrowDown") {
+                      event.preventDefault();
+                      focusProjectByOffset(1);
+                    }
+                    if (event.key === "ArrowUp") {
+                      event.preventDefault();
+                      focusProjectByOffset(-1);
+                    }
+                  }}
+                  className="custom-scrollbar max-h-[33rem] space-y-1 overflow-y-auto py-2 pr-2 outline-none"
+                >
+                  {displayProjects.map((project, index) => (
+                    <motion.div
+                      key={project.id}
+                      role="listitem"
+                      initial={{ opacity: 0, y: 12 }}
+                      whileInView={isRouteTransitioning ? undefined : { opacity: 1, y: 0 }}
+                      transition={{ duration: MOTION_TOKENS.duration.medium, delay: Math.min(index, 6) * 0.04, ease: MOTION_TOKENS.easing.premium }}
+                      viewport={{ once: true }}
+                    >
+                      <RailRow
+                        project={project}
+                        index={index}
+                        isActive={activeProject?.id === project.id}
+                        isPinned={pinnedIdSet.has(project.id)}
+                        onActivate={() => setHoveredProject(project.id)}
+                        rowRef={(el) => {
+                          projectLinkRefs.current[index] = el;
+                        }}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
 
-        {/* Main Content - Split Layout */}
-        <div className="grid lg:grid-cols-[0.78fr_1.22fr] gap-8 lg:gap-10 items-start">
-          {/* Left Side - Scrollable thumbnail rail (fixed height → page never grows) */}
-          <div className="hidden lg:block">
-            <div className="relative">
-              {/* Fade masks */}
-              <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-10 bg-linear-to-b from-white to-transparent dark:from-black" />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-10 bg-linear-to-t from-white to-transparent dark:from-black" />
+              <div className="sticky top-28">
+                {activeProject && (
+                  <ProjectPreview project={activeProject} isPinned={pinnedIdSet.has(activeProject.id)} />
+                )}
+              </div>
+            </div>
 
+            {/* Phones and tablets: a sideways snap carousel. Every project is
+                one swipe away and the section stays one card tall, instead of
+                a stack of full-width cards several screens long. It scrolls on
+                the horizontal axis only, so it never traps vertical scrolling. */}
+            <div className="lg:hidden">
               <div
+                ref={carouselRef}
                 role="list"
-                aria-label="Project list — use arrow keys to navigate"
-                tabIndex={0}
-                onKeyDown={(event) => {
-                  if (event.key === "ArrowDown") {
-                    event.preventDefault();
-                    focusProjectByOffset(1);
-                  }
-                  if (event.key === "ArrowUp") {
-                    event.preventDefault();
-                    focusProjectByOffset(-1);
-                  }
-                }}
-                className="custom-scrollbar max-h-128 xl:max-h-144 space-y-2 overflow-y-auto py-4 pr-2 outline-none"
+                aria-label="Projects"
+                className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-5 px-5 pb-1 [scrollbar-width:none] sm:-mx-6 sm:scroll-px-6 sm:px-6 [&::-webkit-scrollbar]:hidden"
               >
-                {filteredProjects.map((project, index) => (
+                {displayProjects.map((project, index) => (
                   <motion.div
                     key={project.id}
                     role="listitem"
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={isRouteTransitioning ? undefined : { opacity: 1, y: 0 }}
-                    transition={{ duration: MOTION_TOKENS.duration.medium, delay: Math.min(index, 6) * 0.05, ease: MOTION_TOKENS.easing.premium }}
+                    initial={{ opacity: 0, x: 24 }}
+                    whileInView={isRouteTransitioning ? undefined : { opacity: 1, x: 0 }}
                     viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: Math.min(index, 3) * 0.06, ease: MOTION_TOKENS.easing.premium }}
+                    className="w-[84%] max-w-[22rem] shrink-0 snap-start sm:w-[46%]"
                   >
-                    <RailRow
-                      project={project}
-                      index={index}
-                      isActive={hoveredProject === project.id}
-                      isPinned={pinnedIdSet.has(project.id)}
-                      loaded={!!loadedImages[project.id]}
-                      failed={!!failedImages[project.id]}
-                      onActivate={() => setHoveredProject(project.id)}
-                      onLoad={() => markImageLoaded(project.id)}
-                      onError={() => markImageFailed(project.id)}
-                      rowRef={(el) => {
-                        projectLinkRefs.current[index] = el;
-                      }}
-                    />
+                    <MobileProjectCard project={project} index={index} isPinned={pinnedIdSet.has(project.id)} />
                   </motion.div>
                 ))}
               </div>
-            </div>
-          </div>
 
-          {/* Right Side - Project Preview Image */}
-          <div className="hidden lg:block sticky top-32" style={{ perspective: "1500px" }}>
-            {activeProject ? (
-              <AnimatePresence mode="wait">
-              <motion.div
-                key={activeProject?.id}
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: -20 }}
-                transition={{ duration: MOTION_TOKENS.duration.slow, ease: MOTION_TOKENS.easing.premium }}
-                className="relative"
-              >
-                {/* Ambient Backlight */}
-                <div 
-                  className="absolute inset-0 blur-[80px] opacity-20 dark:opacity-30 transition-colors duration-1000 -z-10 rounded-full scale-105"
-                  style={{ backgroundColor: activeProject?.color || "var(--theme-primary, #6366f1)" }}
-                />
-
-                {/* Image container */}
-                <motion.div 
-                  ref={previewRef}
-                  onMouseMove={handleMouseMove}
-                  onMouseLeave={handleMouseLeave}
-                  style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-                  className="relative rounded-2xl overflow-hidden shadow-2xl group border border-neutral-200 dark:border-neutral-800"
-                >
-                  {/* Dynamic Glare */}
-                  <motion.div
-                    className="absolute inset-0 z-30 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 mix-blend-overlay"
-                    style={{ background: glareBackground }}
+              <div className="mt-4 flex items-center gap-4" aria-hidden="true">
+                <span className="font-mono text-[11px] tabular-nums text-foreground">
+                  {String(slide + 1).padStart(2, "0")}
+                  <span className="text-muted-foreground"> / {String(displayProjects.length).padStart(2, "0")}</span>
+                </span>
+                <span className="relative h-px flex-1 overflow-hidden bg-line">
+                  <span
+                    className="absolute inset-y-0 left-0 bg-foreground transition-[width] duration-300 ease-out"
+                    style={{ width: `${((slide + 1) / displayProjects.length) * 100}%` }}
                   />
-
-                  {/* Project image/preview container */}
-                  <div className="aspect-16/10 relative bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
-                    {/* Inline animated video preview takes priority when present */}
-                    {previewVideo ? (
-                      <video
-                        key={previewVideo}
-                        src={encodeURI(previewVideo)}
-                        poster={activeProject?.image ? encodeURI(activeProject.image) : undefined}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="metadata"
-                        className="absolute inset-0 z-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      />
-                    ) : activeProject?.image && !failedImages[activeProject.id] ? (
-                      <>
-                        <AnimatePresence>
-                          {!loadedImages[activeProject.id] && (
-                            <motion.div
-                              initial={{ opacity: 1 }}
-                              animate={{ opacity: 1 }}
-                              exit={{ opacity: 0 }}
-                              transition={{ duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
-                              className="absolute inset-0 z-0 animate-pulse bg-neutral-300/50 dark:bg-neutral-700/50"
-                            />
-                          )}
-                        </AnimatePresence>
-                        <Image
-                          src={activeProject.image}
-                          alt={activeProject.title}
-                          fill
-                          sizes="(min-width: 1024px) 50vw, 100vw"
-                          className={`object-cover z-0 transition-transform duration-700 ease-out group-hover:scale-105 ${loadedImages[activeProject.id] ? "opacity-100" : "opacity-0"}`}
-                          onLoad={() => markImageLoaded(activeProject.id)}
-                          onError={() => markImageFailed(activeProject.id)}
-                          priority={activeProject.featured}
-                        />
-                      </>
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-neutral-900 dark:bg-neutral-100 z-0">
-                        <span className="text-6xl font-bold text-white dark:text-neutral-900">
-                          {activeProject?.title.substring(0, 1)}
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Faded shades at borders */}
-                    <div className="absolute inset-0 z-10 bg-linear-to-t from-black/80 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out" />
-                    <div className="absolute inset-0 z-10 ring-1 ring-inset ring-black/10 dark:ring-white/10 pointer-events-none" />
-
-                    {/* Content overlaid at the bottom */}
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={activeProject?.id + '-actions'}
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: MOTION_TOKENS.duration.medium, ease: MOTION_TOKENS.easing.premium }}
-                        className="absolute inset-0 z-20 flex flex-col items-center justify-center p-8 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                      >
-                        {/* Action buttons */}
-                        <div className="flex flex-wrap items-center justify-center gap-4 translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out" style={{ transform: "translateZ(30px)" }}>
-                          {activeProject?.liveUrl && activeProject.liveUrl !== '#' && (
-                            <MagneticWrapper>
-                              <Button
-                                asChild
-                                size="default"
-                                className="rounded-full bg-white text-black font-semibold hover:bg-neutral-200 active:scale-[0.98] transition-all duration-200 shadow-[0_0_30px_rgba(255,255,255,0.3)] px-6 h-12"
-                              >
-                                <a
-                                  href={activeProject.liveUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  onClick={() =>
-                                    trackEvent("projects_open_live_demo", {
-                                      project_slug: activeProject.slug,
-                                      source: "desktop_preview",
-                                    })
-                                  }
-                                >
-                                  <ExternalLink className="w-4 h-4 mr-2" />
-                                  Live Demo
-                                </a>
-                              </Button>
-                            </MagneticWrapper>
-                          )}
-                          {activeProject?.videoUrl && activeProject.videoUrl !== '#' && !isVideoFile(activeProject.videoUrl) && (
-                            <MagneticWrapper>
-                              <Button
-                                asChild
-                                size="default"
-                                variant="outline"
-                                className="rounded-full bg-black/60 hover:text-white border-white/20 text-white hover:bg-black/90 font-semibold active:scale-[0.98] transition-all duration-200 shadow-2xl backdrop-blur-xl px-6 h-12"
-                              >
-                                <a
-                                  href={activeProject.videoUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  onClick={() =>
-                                    trackEvent("projects_open_video", {
-                                      project_slug: activeProject.slug,
-                                      source: "desktop_preview",
-                                    })
-                                  }
-                                >
-                                  <Play className="w-4 h-4 mr-2" />
-                                  Watch Demo
-                                </a>
-                              </Button>
-                            </MagneticWrapper>
-                          )}
-                          <MagneticWrapper>
-                            <Button
-                              asChild
-                              size="default"
-                              variant="outline"
-                              className="rounded-full bg-black/60 hover:text-white border-white/20 text-white hover:bg-black/90 font-semibold active:scale-[0.98] transition-all duration-200 shadow-2xl backdrop-blur-xl px-6 h-12"
-                            >
-                              <Link
-                                href={`/projects/${activeProject?.slug}`}
-                                onClick={() =>
-                                  trackEvent("projects_open_case_study", {
-                                    project_slug: activeProject.slug,
-                                    source: "desktop_preview",
-                                  })
-                                }
-                              >
-                                <FileText className="w-4 h-4 mr-2" />
-                                Case Study
-                              </Link>
-                            </Button>
-                          </MagneticWrapper>
-                          {activeProject?.sourcePrivate ? (
-                            <MagneticWrapper>
-                              <Button
-                                asChild
-                                size="icon"
-                                variant="ghost"
-                                className="rounded-full w-12 h-12 bg-black/60 text-white hover:text-white hover:bg-black/90 active:scale-95 transition-all duration-200 shadow-2xl backdrop-blur-xl"
-                              >
-                                <a
-                                  href={`mailto:${siteConfig.contact.email}?subject=${encodeURIComponent(`Source code request — ${activeProject.title}`)}`}
-                                  onClick={() =>
-                                    trackEvent("projects_request_source", {
-                                      project_slug: activeProject.slug,
-                                      source: "desktop_preview",
-                                    })
-                                  }
-                                >
-                                  <Lock className="w-5 h-5" />
-                                  <span className="sr-only">
-                                    Request source code for {activeProject.title}
-                                  </span>
-                                </a>
-                              </Button>
-                            </MagneticWrapper>
-                          ) : (
-                            activeProject?.sourceUrl && activeProject.sourceUrl !== '#' && (
-                              <MagneticWrapper>
-                                <Button
-                                  asChild
-                                  size="icon"
-                                  variant="ghost"
-                                  className="rounded-full w-12 h-12 bg-black/60 text-white hover:text-white hover:bg-black/90 active:scale-95 transition-all duration-200 shadow-2xl backdrop-blur-xl"
-                                >
-                                  <a
-                                    href={activeProject.sourceUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={() =>
-                                      trackEvent("projects_open_source", {
-                                        project_slug: activeProject.slug,
-                                        source: "desktop_preview",
-                                      })
-                                    }
-                                  >
-                                    <Github className="w-5 h-5" />
-                                    <span className="sr-only">
-                                      View source for {activeProject.title} on GitHub
-                                    </span>
-                                  </a>
-                                </Button>
-                              </MagneticWrapper>
-                            )
-                          )}
-                        </div>
-                      </motion.div>
-                    </AnimatePresence>
-                  </div>
-                </motion.div>
-              </motion.div>
-              </AnimatePresence>
-            ) : (
-              <div className="rounded-2xl border border-dashed border-neutral-300 p-8 text-center text-sm text-neutral-500 dark:border-neutral-700 dark:text-neutral-400">
-                No projects to show yet — check back soon.
+                </span>
+                <span className="eyebrow text-[10px]">Swipe</span>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Mobile project cards.
-            These used to live in a `max-h-[82vh] overflow-y-auto` pane. Nesting a
-            scroll container inside the page scroll traps the finger on touch and
-            hides the rest of the list behind an edge with no affordance, so the
-            cards now flow in the page and a "show more" control keeps the section
-            short instead. */}
-        <div className="lg:hidden mt-8 sm:mt-12">
-          {filteredProjects.length > 0 ? (
-            <>
-              <div className="space-y-4 sm:space-y-6">
-                {visibleMobileProjects.map((project, index) => (
-                  <MobileProjectCard
-                    key={project.id + "-mobile"}
-                    project={project}
-                    index={index}
-                    isRouteTransitioning={isRouteTransitioning}
-                    failedImages={failedImages}
-                    loadedImages={loadedImages}
-                    markImageLoaded={markImageLoaded}
-                    markImageFailed={markImageFailed}
-                  />
-                ))}
-              </div>
-
-              {hiddenMobileCount > 0 && (
-                <div className="mt-6 flex justify-center">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowAllMobile(true)}
-                    className="rounded-full h-11 px-6 text-sm font-semibold border-neutral-300 dark:border-neutral-700"
-                  >
-                    Show {hiddenMobileCount} more{" "}
-                    {hiddenMobileCount === 1 ? "project" : "projects"}
-                  </Button>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="rounded-2xl border border-dashed border-neutral-300 p-8 text-center text-sm text-neutral-500 dark:border-neutral-700 dark:text-neutral-400">
-              No projects to show yet — check back soon.
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </section>
   );

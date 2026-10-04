@@ -1,213 +1,149 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { Mail, MessageCircle, Clock, Sparkles, ChevronDown } from "lucide-react";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { ArrowUpRight, Check, ChevronDown, Clock, Copy, MessageCircle, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 import { ContactForm } from "./contact-form";
 import { siteConfig } from "@/config";
 import { sectionsContent } from "@/data/site-content";
-import { NetworkPattern } from "@/components/ui/network-pattern";
+import { cn } from "@/lib/utils";
 
 export function Contact() {
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const prefersReducedMotion = useReducedMotion() ?? false;
+  const [copied, setCopied] = useState(false);
+  const email = siteConfig.contact.email;
 
-  // Cursor-tracked glow layers use CSS vars written directly to the DOM
-  // (not React state) so the 60fps mousemove never triggers a re-render.
-  function trackSection(e: React.MouseEvent<HTMLElement>) {
-    const rect = sectionRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    sectionRef.current!.style.setProperty("--spot-x", `${e.clientX - rect.left}px`);
-    sectionRef.current!.style.setProperty("--spot-y", `${e.clientY - rect.top}px`);
-  }
-
-  function trackCard(e: React.MouseEvent<HTMLDivElement>) {
-    const rect = cardRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    cardRef.current!.style.setProperty("--card-x", `${e.clientX - rect.left}px`);
-    cardRef.current!.style.setProperty("--card-y", `${e.clientY - rect.top}px`);
+  async function copyEmail() {
+    try {
+      await navigator.clipboard.writeText(email);
+      setCopied(true);
+      toast.success("Email copied to clipboard");
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard can be blocked (insecure context, permissions) — fall back to mailto.
+      window.location.href = `mailto:${email}`;
+    }
   }
 
   return (
-    <section
-      id="contact"
-      ref={sectionRef}
-      onMouseMove={trackSection}
-      className="group scroll-section py-16 md:py-24 relative overflow-hidden md:min-h-screen flex items-center"
-    >
-      {/* Network connection pattern */}
-      <NetworkPattern
-        className="opacity-50 dark:opacity-30"
-        numNodes={20}
-        connectionDistance={180}
-        animationSpeed={0.4}
-        lineOpacity={0.25}
-        nodeOpacity={0.7}
-      />
-
-      {/* Soft breathing aura behind the heading.
-          Only opacity animates: scaling a 110px blur forces the browser to
-          re-rasterise the whole blurred layer every frame, forever, while
-          opacity stays on the compositor. */}
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 w-[28rem] h-[28rem] rounded-full bg-neutral-400/10 dark:bg-neutral-200/[0.06] blur-[110px]"
-        animate={prefersReducedMotion ? { opacity: 0.8 } : { opacity: [0.6, 1, 0.6] }}
-        transition={
-          prefersReducedMotion
-            ? { duration: 0 }
-            : { duration: 8, repeat: Infinity, ease: "easeInOut" }
-        }
-      />
-
-      {/* Ambient spotlight that follows the cursor across the section */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 dark:hidden"
-        style={{
-          background:
-            "radial-gradient(600px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(0,0,0,0.035), transparent 70%)",
-        }}
-      />
-      <div
-        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 hidden dark:block"
-        style={{
-          background:
-            "radial-gradient(600px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(255,255,255,0.06), transparent 70%)",
-        }}
-      />
-
-      <div className="container px-4 sm:px-6 mx-auto relative">
-        {/* Top: heading + email/WhatsApp */}
-        <div className="max-w-2xl mx-auto text-center">
-          <motion.span
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-xs text-neutral-400 dark:text-neutral-500 tracking-[0.3em] uppercase mb-3 block"
-          >
-            {sectionsContent.contact.eyebrow}
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl sm:text-4xl md:text-6xl font-bold font-heading mb-4 tracking-tight text-neutral-900 dark:text-white leading-[1.1]"
-          >
-            {sectionsContent.contact.headingLine1}<br />
-            <span className="inline-block border-b-4 border-neutral-900 dark:border-white pb-1">
-              {sectionsContent.contact.headingLine2}
-            </span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-base sm:text-lg text-neutral-500 dark:text-neutral-400 mb-6 sm:mb-8 max-w-md mx-auto leading-relaxed"
-          >
-            {sectionsContent.contact.subtext}
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-          >
-            <div className="flex items-center justify-center gap-3">
-              <a
-                href={`mailto:${siteConfig.contact.email}`}
-                className="group/btn flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-neutral-900 hover:border-neutral-900 hover:text-white dark:hover:bg-white dark:hover:border-white dark:hover:text-neutral-900 hover:-translate-y-0.5 transition-all duration-200"
-              >
-                <Mail className="w-4 h-4 shrink-0" />
-                <span className="text-sm font-medium">Email</span>
-              </a>
-
-              <a
-                href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group/btn flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-neutral-900 hover:border-neutral-900 hover:text-white dark:hover:bg-white dark:hover:border-white dark:hover:text-neutral-900 hover:-translate-y-0.5 transition-all duration-200"
-              >
-                <MessageCircle className="w-4 h-4 shrink-0" />
-                <span className="text-sm font-medium">WhatsApp</span>
-              </a>
-            </div>
-
-            {/* Meta notes */}
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 mt-5 text-xs text-neutral-400 dark:text-neutral-500">
-              <span className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 shrink-0" />
-                {sectionsContent.contact.responseTime}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                Or ask the AI assistant, bottom right
-              </span>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Bottom: contact form, in a spotlight-glow card */}
+    <section id="contact" className="scroll-section section-y relative">
+      <div className="shell">
+        {/* The finale is one panel rather than a heading floating over a
+            background animation: everything needed to get in touch sits on a
+            single surface. */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.25 }}
-          className="max-w-2xl mx-auto mt-10 md:mt-14"
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="relative overflow-hidden rounded-[1.75rem] border border-line bg-surface p-5 shadow-[var(--surface-shadow)] sm:rounded-[2rem] sm:p-10 lg:p-14"
         >
-          <div
-            ref={cardRef}
-            onMouseMove={trackCard}
-            className="group/card relative rounded-2xl p-[1.5px] overflow-hidden bg-neutral-200 dark:bg-neutral-800 shadow-xl shadow-neutral-900/5 dark:shadow-black/40"
-          >
-            {/* Glow ring that lights up near the cursor */}
-            <div
-              className="pointer-events-none absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 dark:hidden"
-              style={{
-                background:
-                  "radial-gradient(220px circle at var(--card-x, 50%) var(--card-y, 50%), rgba(0,0,0,0.35), transparent 70%)",
-              }}
-            />
-            <div
-              className="pointer-events-none absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 hidden dark:block"
-              style={{
-                background:
-                  "radial-gradient(220px circle at var(--card-x, 50%) var(--card-y, 50%), rgba(255,255,255,0.5), transparent 70%)",
-              }}
-            />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+            <div className="absolute -right-24 -top-32 h-96 w-96 rounded-full bg-amber-500/15 blur-[110px] dark:bg-amber-400/10" />
+            <div className="absolute inset-0 opacity-60 [background-image:linear-gradient(to_right,var(--line)_1px,transparent_1px),linear-gradient(to_bottom,var(--line)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:radial-gradient(ellipse_60%_70%_at_100%_0%,black,transparent)]" />
+          </div>
 
-            <div className="relative rounded-[14px] bg-white/90 dark:bg-neutral-900/80 backdrop-blur-sm overflow-hidden">
+          <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14">
+            <div className="flex flex-col">
+              <div className="mb-5 flex items-center gap-3">
+                <span className="eyebrow text-accent">08</span>
+                <span aria-hidden="true" className="h-px w-8 bg-line-strong" />
+                <span className="eyebrow">{sectionsContent.contact.eyebrow}</span>
+              </div>
+
+              <h2 className="display text-[clamp(2.5rem,8vw,4.75rem)] text-foreground">
+                {sectionsContent.contact.headingLine1}
+                <br />
+                <em className="accent-serif text-[1.06em]">{sectionsContent.contact.headingLine2}</em>
+              </h2>
+
+              <p className="mt-5 max-w-md text-[15px] leading-relaxed text-muted-foreground sm:text-base">
+                {sectionsContent.contact.subtext}
+              </p>
+
+              {/* The address itself is the call to action. */}
+              <div className="mt-8 flex items-center gap-2 rounded-2xl border border-line bg-background/60 p-1.5 pl-4 backdrop-blur sm:max-w-md">
+                <a
+                  href={`mailto:${email}`}
+                  className="min-w-0 flex-1 truncate py-2.5 text-[15px] font-medium text-foreground hover:text-accent sm:text-base"
+                >
+                  {email}
+                </a>
+                <button
+                  type="button"
+                  onClick={copyEmail}
+                  aria-label={copied ? "Email copied" : "Copy email address"}
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-foreground transition-colors hover:bg-line"
+                >
+                  {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                </button>
+              </div>
+
+              <div className="mt-3 grid grid-cols-2 gap-2 sm:flex sm:max-w-md">
+                <a
+                  href={`mailto:${email}`}
+                  className="inline-flex h-12 flex-1 items-center justify-center gap-1.5 rounded-full bg-foreground text-[13px] font-semibold text-background transition-transform duration-300 hover:-translate-y-0.5 sm:text-sm"
+                >
+                  Send an email
+                  <ArrowUpRight className="h-4 w-4" />
+                </a>
+                <a
+                  href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-12 flex-1 items-center justify-center gap-1.5 rounded-full border border-line-strong bg-surface/60 text-[13px] font-medium text-foreground transition-colors hover:bg-surface-2 sm:text-sm"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  WhatsApp
+                </a>
+              </div>
+
+              <div className="mt-5 flex flex-col gap-1.5 text-xs text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-x-5">
+                <span className="flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5 shrink-0" />
+                  {sectionsContent.contact.responseTime}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5 shrink-0" />
+                  Or ask the AI assistant, bottom right
+                </span>
+              </div>
+            </div>
+
+            {/* Form. Always open beside the copy on desktop; folded behind a
+                single row on phones so the panel stays short until wanted. */}
+            <div className="rounded-2xl border border-line bg-background/70 backdrop-blur-sm lg:self-start">
               <button
                 type="button"
                 onClick={() => setIsFormOpen((open) => !open)}
                 aria-expanded={isFormOpen}
-                className="w-full flex items-center justify-between gap-4 p-5 sm:p-6 text-left group cursor-pointer"
+                className="flex w-full items-center justify-between gap-4 p-4 text-left sm:p-5 lg:hidden"
               >
-                <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-white">
-                    Send a message
-                  </h3>
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">
+                <span>
+                  <span className="block text-[15px] font-semibold text-foreground">Send a message</span>
+                  <span className="mt-0.5 block text-xs text-muted-foreground">
                     {isFormOpen ? "Fill in the fields below" : "Tap to open the form"}
-                  </p>
-                </div>
-                <span className="w-9 h-9 rounded-full border border-neutral-200 dark:border-neutral-700 flex items-center justify-center shrink-0 group-hover:bg-neutral-900 group-hover:border-neutral-900 group-hover:text-white dark:group-hover:bg-white dark:group-hover:border-white dark:group-hover:text-neutral-900 transition-colors duration-200">
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-300 ${isFormOpen ? "rotate-180" : ""}`}
-                  />
+                  </span>
+                </span>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line">
+                  <ChevronDown className={cn("h-4 w-4 transition-transform duration-300", isFormOpen && "rotate-180")} />
                 </span>
               </button>
 
+              <div className="hidden px-6 pt-6 lg:block">
+                <h3 className="text-[15px] font-semibold text-foreground">Send a message</h3>
+                <p className="mt-0.5 text-xs text-muted-foreground">Lands straight in my inbox.</p>
+              </div>
+
               <div
-                className={`grid transition-[grid-template-rows] duration-400 ease-in-out ${
+                className={cn(
+                  "grid transition-[grid-template-rows] duration-400 ease-in-out lg:grid-rows-[1fr]",
                   isFormOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                }`}
+                )}
               >
                 <div className="overflow-hidden">
-                  <div className="px-5 sm:px-6 pb-6">
+                  <div className="px-4 pb-5 sm:px-5 lg:p-6">
                     <ContactForm />
                   </div>
                 </div>

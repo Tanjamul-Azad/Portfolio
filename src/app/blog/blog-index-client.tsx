@@ -12,7 +12,7 @@ export default function BlogPageClient() {
   const featuredPosts = blogPosts.filter(p => p.featured);
 
   return (
-    <main className="bg-neutral-50 dark:bg-black min-h-svh">
+    <main className="bg-background min-h-svh">
       <Navbar />
       
       {/* Hero */}
@@ -108,7 +108,7 @@ export default function BlogPageClient() {
       )}
 
       {/* All Posts */}
-      <section className="py-16 bg-neutral-50 dark:bg-black">
+      <section className="py-16 bg-background">
         <div className="container px-4 sm:px-6 mx-auto">
           <h2 className="text-sm text-neutral-500 uppercase tracking-widest mb-8">All Posts</h2>
           <div className="space-y-4 max-w-3xl">

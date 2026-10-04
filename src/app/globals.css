@@ -22,9 +22,16 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --font-sans: var(--font-inter);
-  --font-heading: var(--font-outfit);
+  --font-sans: var(--font-geist);
+  --font-heading: var(--font-geist);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-instrument);
+
+  /* Layered surfaces: page → surface (cards) → surface-2 (wells, chips). */
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
@@ -122,30 +129,39 @@
   }
 }
 
-/* Premium Design System Token - OKLCH */
+/* Design tokens.
+   One neutral ramp per theme, layered page → surface → surface-2, with
+   hairline borders drawn from the foreground at low alpha so they read the
+   same on every layer. Components reach for these rather than literal
+   neutral-* shades, so light and dark stay in step. */
 :root {
-  --radius: 0.5rem;
+  --radius: 0.75rem;
 
-  /* Light Mode - Crisp, slightly warm */
-  --background: #FFFFFF;
-  --foreground: oklch(0.15 0.01 20);
-  /* Soft black */
+  /* Light: warm paper page, pure-white cards lifted off it. */
+  --background: #f6f6f4;
+  --foreground: #111113;
+  --surface: #ffffff;
+  --surface-2: #efefec;
+  --line: rgb(17 17 19 / 0.09);
+  --line-strong: rgb(17 17 19 / 0.16);
+  --surface-shadow: 0 1px 2px rgb(17 17 19 / 0.04), 0 12px 32px -16px rgb(17 17 19 / 0.12);
 
-  --primary: oklch(0.15 0.01 20);
-  --primary-foreground: oklch(0.99 0 0);
+  --primary: #111113;
+  --primary-foreground: #fafafa;
 
-  --secondary: oklch(0.96 0 0);
-  --secondary-foreground: oklch(0.15 0.01 20);
+  --secondary: #efefec;
+  --secondary-foreground: #111113;
 
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.55 0 0);
+  --muted: #efefec;
+  /* 6.2:1 on the page colour — safe for small meta text. */
+  --muted-foreground: #5c5c63;
 
-  --accent: oklch(0.96 0 0);
-  --accent-foreground: oklch(0.15 0.01 20);
+  --accent: #efefec;
+  --accent-foreground: #111113;
 
-  --border: oklch(0.92 0 0);
-  --input: oklch(0.92 0 0);
-  --ring: oklch(0.15 0 0);
+  --border: rgb(17 17 19 / 0.09);
+  --input: rgb(17 17 19 / 0.12);
+  --ring: #111113;
 
   /* Accent text.
      Tailwind's amber-500 (#f59e0b) is ~2.2:1 on white and amber-600 (#d97706)
@@ -154,32 +170,41 @@
      colour, so the accent is themed rather than hard-coded per component. */
   --accent-fg: #b45309;
   --accent-fg-strong: #92400e;
+
+  --grain-opacity: 0.035;
 }
 
 .dark {
-  /* Dark Mode - Deep, rich charcoal, not pure black */
-  --background: #000000;
-  --foreground: oklch(0.98 0 0);
+  /* Dark: near-black rather than #000, so cards and shadows have room. */
+  --background: #09090b;
+  --foreground: #f4f4f5;
+  --surface: #111114;
+  --surface-2: #1a1a1e;
+  --line: rgb(255 255 255 / 0.08);
+  --line-strong: rgb(255 255 255 / 0.15);
+  --surface-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 16px 40px -20px rgb(0 0 0 / 0.8);
 
-  --primary: oklch(0.98 0 0);
-  --primary-foreground: oklch(0.12 0.01 260);
+  --primary: #f4f4f5;
+  --primary-foreground: #0b0b0d;
 
-  --secondary: oklch(0.18 0.01 260);
-  --secondary-foreground: oklch(0.98 0 0);
+  --secondary: #1a1a1e;
+  --secondary-foreground: #f4f4f5;
 
-  --muted: oklch(0.18 0.01 260);
-  --muted-foreground: oklch(0.65 0 0);
+  --muted: #1a1a1e;
+  --muted-foreground: #a1a1aa;
 
-  --accent: oklch(0.18 0.01 260);
-  --accent-foreground: oklch(0.98 0 0);
+  --accent: #1a1a1e;
+  --accent-foreground: #f4f4f5;
 
-  --border: oklch(0.22 0.01 260);
-  --input: oklch(0.22 0.01 260);
-  --ring: oklch(0.85 0 0);
+  --border: rgb(255 255 255 / 0.08);
+  --input: rgb(255 255 255 / 0.12);
+  --ring: #e4e4e7;
 
   /* On near-black, the bright end of the ramp is the readable one (~11:1). */
   --accent-fg: #fbbf24;
   --accent-fg-strong: #fcd34d;
+
+  --grain-opacity: 0.05;
 }
 
 @layer base {
@@ -189,13 +214,60 @@
 
   body {
     @apply bg-background text-foreground antialiased selection:bg-neutral-900 selection:text-white dark:selection:bg-white dark:selection:text-neutral-900;
-    font-feature-settings: "ss01", "ss02", "cv01", "cv02";
-    background-image: none;
+    font-feature-settings: "ss01", "cv11";
+    text-rendering: optimizeLegibility;
   }
 
-  .dark body {
-    background-image: none;
+  /* Film grain over the whole page. A static SVG noise tile on one fixed,
+     non-interactive layer: rasterised once, composited for free, and it gives
+     flat dark surfaces the slight texture that keeps them from looking cheap. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
+}
+
+/* ── Layout primitives ─────────────────────────────────────────────────────
+   Every home section shares one container and one vertical rhythm, so the
+   page reads as a single composition instead of ten differently-padded
+   blocks. */
+@utility shell {
+  @apply mx-auto w-full max-w-6xl px-5 sm:px-6 lg:px-8;
+}
+
+@utility section-y {
+  @apply py-14 sm:py-20 lg:py-24;
+}
+
+/* Small uppercase label used for eyebrows, meta and indices. */
+@utility eyebrow {
+  @apply font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground;
+}
+
+/* The one card. Hairline border, layered background, theme-aware lift. */
+@utility surface {
+  @apply rounded-2xl border border-line bg-surface;
+  box-shadow: var(--surface-shadow);
+}
+
+/* Compact tag/pill. */
+@utility chip {
+  @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-2/70 px-2.5 py-1 text-[11px] font-medium leading-none text-muted-foreground;
+}
+
+/* Display type: tight, heavy, slightly negative tracking. */
+@utility display {
+  @apply font-heading font-semibold tracking-[-0.035em] leading-[0.95];
+}
+
+/* Serif italic accent word inside a sans heading. */
+@utility accent-serif {
+  @apply font-serif font-normal italic tracking-[-0.01em];
 }
 
 @layer utilities {
@@ -217,19 +289,19 @@
 
   /* Typography Utilities */
   .display-heading {
-    @apply font-heading font-bold tracking-tight leading-[1.1];
+    @apply font-heading font-semibold tracking-[-0.035em] leading-[1.05];
   }
 
   /* Glass effects - more subtle */
   .glass-panel {
-    @apply bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-neutral-200/50 dark:border-neutral-800/50;
+    @apply bg-surface/80 backdrop-blur-xl border border-line;
   }
 
   /* Lighter glass used for inline surfaces (filter chips, floating rails, cards).
      Kept separate from .glass-panel so it can sit on top of section backgrounds
      without the heavier opacity reading as a solid block. */
   .glass {
-    @apply bg-white/70 dark:bg-neutral-900/60 backdrop-blur-xl border-neutral-200/70 dark:border-neutral-800/70;
+    @apply bg-surface/70 backdrop-blur-xl border-line;
   }
 
   /* Cursor-tracked spotlight for cards. The parent sets --spot-x/--spot-y on
