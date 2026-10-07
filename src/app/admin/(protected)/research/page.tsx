@@ -9,7 +9,8 @@ import { generateId } from "@/lib/admin/slugify";
 
 const STATUS_OPTIONS: readonly { value: ResearchStatus; label: string }[] = [
   { value: "idea", label: "Idea" },
-  { value: "in-progress", label: "In progress" },
+  { value: "in-progress", label: "Research in progress" },
+  { value: "in-preparation", label: "Paper in preparation" },
   { value: "under-review", label: "Under review" },
   { value: "accepted", label: "Accepted" },
   { value: "published", label: "Published" },
@@ -32,10 +33,11 @@ export default function ResearchEditor() {
           items={data}
           onChange={setData}
           addLabel="Add research work"
-          itemTitle={(r) => r.title || "New research work"}
+          itemTitle={(r) => [r.acronym, r.title].filter(Boolean).join(": ") || "New research work"}
           itemSubtitle={(r) => [STATUS_OPTIONS.find((o) => o.value === r.status)?.label, r.venue].filter(Boolean).join(" · ") || undefined}
           newItem={() => ({
             id: generateId(data.map((r) => r.id)),
+            acronym: "",
             title: "",
             summary: "",
             status: "idea",
@@ -49,7 +51,10 @@ export default function ResearchEditor() {
           })}
           renderItem={(r, update) => (
             <>
-              <TextField label="Title" value={r.title} onChange={(v) => update({ title: v })} />
+              <div className="grid gap-3 sm:grid-cols-[10rem_1fr]">
+                <TextField label="Acronym" placeholder="Optional" value={r.acronym ?? ""} onChange={(v) => update({ acronym: v })} />
+                <TextField label="Title" value={r.title} onChange={(v) => update({ title: v })} />
+              </div>
               <TextAreaField label="Summary" value={r.summary} onChange={(v) => update({ summary: v })} rows={3} />
               <div className="grid gap-3 sm:grid-cols-2">
                 <SelectField label="Status" value={r.status} options={STATUS_OPTIONS} onChange={(v) => update({ status: v })} />

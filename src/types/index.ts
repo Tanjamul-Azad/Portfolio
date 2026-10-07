@@ -91,10 +91,18 @@ export interface Testimonial {
 }
 
 /** Where a research piece stands. Drives the status pill and the venue label. */
-export type ResearchStatus = "idea" | "in-progress" | "under-review" | "accepted" | "published";
+export type ResearchStatus =
+  | "idea"
+  | "in-progress"
+  | "in-preparation"
+  | "under-review"
+  | "accepted"
+  | "published";
 
 export interface ResearchWork {
   id: string;
+  /** Optional short project name shown as the badge; the row number is shown when empty. */
+  acronym?: string;
   title: string;
   /** One or two sentences: the question and the approach. */
   summary: string;

@@ -1,34 +1,68 @@
 [
   {
-    "id": "hallucination-mds",
-    "title": "Conflict-Aware Hallucination Detection in Multi-Document Summarization",
-    "summary": "Detecting hallucinated claims in summaries built from several sources, where the sources themselves disagree — separating genuine source conflict from fabrication.",
+    "id": "research-1",
+    "title": "Faithfulness-Checked Neuro-Symbolic Reasoning with LLMs",
+    "summary": "A neuro-symbolic framework that checks whether an LLM's translation of natural-language rules into first-order logic is faithful.",
     "status": "in-progress",
-    "area": "NLP · LLM Reliability",
-    "venue": "",
-    "year": "2026",
+    "area": "NLP · Neuro-Symbolic AI",
+    "venue": "ACL (Main Track)",
+    "year": "",
     "authors": "",
     "tags": [
       "LLMs",
-      "Summarization",
-      "Hallucination"
+      "First-Order Logic",
+      "Faithfulness"
     ],
     "paperUrl": "",
     "codeUrl": ""
   },
   {
-    "id": "fl-ids-iot",
-    "title": "Green Federated Learning for Intrusion Detection in IoT",
-    "summary": "An energy-aware federated learning setup for intrusion detection on IoT devices, trading off detection accuracy against communication and compute cost on constrained hardware.",
-    "status": "in-progress",
-    "area": "Federated Learning · Security",
-    "venue": "",
-    "year": "2026",
+    "id": "research-2",
+    "title": "Camera-Free Indoor Scene Reconstruction",
+    "summary": "A study of how much of a room's structure and appearance can be recovered from low-cost non-optical sensors on a battery-powered embedded node.",
+    "status": "in-preparation",
+    "area": "Computer Vision · Embedded Sensing",
+    "venue": "ICCV 2027",
+    "year": "2027",
+    "authors": "",
+    "tags": [
+      "Scene Reconstruction",
+      "Non-Optical Sensing",
+      "Embedded AI"
+    ],
+    "paperUrl": "",
+    "codeUrl": ""
+  },
+  {
+    "id": "research-3",
+    "title": "Energy-Efficient Federated Intrusion Detection for IoT",
+    "summary": "A lightweight federated intrusion detection framework for resource-constrained IoT networks.",
+    "status": "in-preparation",
+    "area": "Federated Learning · IoT Security",
+    "venue": "IEEE Internet of Things Journal (IoT-J)",
+    "year": "",
     "authors": "",
     "tags": [
       "Federated Learning",
-      "IoT",
+      "Intrusion Detection",
       "Green Computing"
+    ],
+    "paperUrl": "",
+    "codeUrl": ""
+  },
+  {
+    "id": "research-4",
+    "title": "Effect-Level Security for MCP Tool Servers",
+    "summary": "A runtime defense that checks what an untrusted MCP tool server actually changed.",
+    "status": "in-preparation",
+    "area": "Systems Security · LLM Agents",
+    "venue": "USENIX Security Symposium 2027 (Cycle 2)",
+    "year": "2027",
+    "authors": "",
+    "tags": [
+      "MCP",
+      "Agent Security",
+      "Runtime Defense"
     ],
     "paperUrl": "",
     "codeUrl": ""
