@@ -120,9 +120,10 @@ const techItem = z.object({
 
 const researchWork = z.object({
   id: str,
+  acronym: str.optional(),
   title: str,
   summary: str,
-  status: z.enum(["idea", "in-progress", "under-review", "accepted", "published"]),
+  status: z.enum(["idea", "in-progress", "in-preparation", "under-review", "accepted", "published"]),
   area: str.optional(),
   venue: str.optional(),
   year: str.optional(),
