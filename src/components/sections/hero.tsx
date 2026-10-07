@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   motion,
+  MotionConfig,
   useReducedMotion,
   useScroll,
   useTransform,
@@ -18,13 +19,11 @@ function SplitText({
   delay = 0,
   charStagger = 0.028,
   className = "",
-  reducedMotion = false,
 }: {
   text: string;
   delay?: number;
   charStagger?: number;
   className?: string;
-  reducedMotion?: boolean;
 }) {
   return (
     // The visible characters are individual spans for the stagger, which screen
@@ -35,10 +34,15 @@ function SplitText({
           key={`${char}-${i}`}
           aria-hidden="true"
           className="inline-block"
-          initial={reducedMotion ? { opacity: 0 } : { y: "115%", rotateZ: 3, opacity: 0 }}
-          animate={reducedMotion ? { opacity: 1 } : { y: 0, rotateZ: 0, opacity: 1 }}
+          // The same initial state on server and client, whatever the visitor's
+          // motion preference: branching on it here rendered different inline
+          // styles on each side and broke hydration. Reduced motion is handled
+          // by the MotionConfig around the hero, which drops the transform and
+          // keeps only the fade.
+          initial={{ y: "115%", rotateZ: 3, opacity: 0 }}
+          animate={{ y: 0, rotateZ: 0, opacity: 1 }}
           transition={{
-            duration: reducedMotion ? MOTION_TOKENS.duration.quick : 0.65,
+            duration: 0.65,
             delay: delay + i * charStagger,
             ease: MOTION_TOKENS.easing.premium,
           }}
@@ -63,7 +67,9 @@ function TypewriterText({
   loopDelay?: number;
   reducedMotion?: boolean;
 }) {
-  const [visibleCount, setVisibleCount] = useState(reducedMotion ? text.length : 0);
+  // Starts empty on both server and client; the effect fills it in at once
+  // under reduced motion. Seeding it from the preference broke hydration.
+  const [visibleCount, setVisibleCount] = useState(0);
 
   useEffect(() => {
     if (reducedMotion) {
@@ -299,6 +305,7 @@ export function Hero() {
   const [primaryAction, ...secondaryActions] = heroContent.actions;
 
   return (
+    <MotionConfig reducedMotion="user">
     <section
       ref={sectionRef}
       id="hero"
@@ -383,7 +390,6 @@ export function Hero() {
                         ? "text-muted-foreground"
                         : ""
                   }
-                  reducedMotion={prefersReducedMotion}
                 />
               </div>
             ))}
@@ -488,5 +494,6 @@ export function Hero() {
         />
       </motion.div>
     </section>
+    </MotionConfig>
   );
 }

@@ -84,7 +84,7 @@ Be warm, professional, and concise. Use real facts from the data below.
 IDENTITY:
 - Name: Md. Tanzamul Azad (Tonmoy)
 - Age: ${age} (DOB: 2002-12-20)
-- Background: Full-Stack Developer & ML Researcher at United International University (UIU), Dhaka.
+- Background: AI Engineer and NLP & Generative AI researcher; final-year CSE (Data Science) at United International University (UIU), Dhaka.
 - Key Stats: CGPA 3.78/4.0, 3x UIU Project Show winner.
 
 CONTACT: ${siteConfig.contact.email} | ${siteConfig.contact.whatsapp}

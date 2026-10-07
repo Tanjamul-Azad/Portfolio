@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { experiences } from "@/data";
@@ -23,20 +23,21 @@ function getPeriodRange(period: string): { start: number; end: number } | null {
   return { start, end };
 }
 
-/** Bullets shown on a phone before "show more"; desktop always shows all. */
-const MOBILE_BULLETS = 2;
-
 function ExperienceRow({
   exp,
   index,
+  open,
+  onToggle,
   isRouteTransitioning,
 }: {
   exp: Experience;
   index: number;
+  open: boolean;
+  onToggle: () => void;
   isRouteTransitioning: boolean;
 }) {
-  const [expanded, setExpanded] = useState(false);
-  const hiddenOnMobile = Math.max(0, exp.description.length - MOBILE_BULLETS);
+  const panelId = useId();
+  const tech = exp.technologies ?? [];
 
   return (
     <motion.li
@@ -48,54 +49,88 @@ function ExperienceRow({
         delay: Math.min(index, 3) * MOTION_TOKENS.stagger.tight,
         ease: MOTION_TOKENS.easing.premium,
       }}
-      className="group grid gap-3 border-t border-line py-6 first:border-t-0 first:pt-0 sm:py-8 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-10"
+      className={cn("group transition-colors", open && "bg-surface-2/40")}
     >
-      {/* When + where. One mono line on a phone, a left column on desktop. */}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 md:flex-col md:items-start md:gap-2">
-        <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-          {exp.period}
-        </span>
-        <span aria-hidden="true" className="h-1 w-1 rounded-full bg-line-strong md:hidden" />
-        <span className="text-[13px] font-medium text-accent">{exp.company}</span>
-      </div>
+      <h3>
+        {/* Collapsed, a role is one compact row: when and where, the title,
+            and its stack on a single line. On a phone those stack under a
+            top line that carries the toggle; from md up the dates sit in a
+            left column like a résumé. */}
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={open}
+          aria-controls={panelId}
+          className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1.5 px-4 py-4 text-left outline-none transition-colors hover:bg-surface-2/50 focus-visible:bg-surface-2/50 sm:px-6 sm:py-5 md:grid-cols-[11rem_minmax(0,1fr)_auto] md:gap-x-8"
+        >
+          <span className="col-start-1 row-start-1 flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1 md:flex-col md:items-start md:gap-1">
+            <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+              {exp.period}
+            </span>
+            <span aria-hidden="true" className="h-1 w-1 rounded-full bg-line-strong md:hidden" />
+            <span className="truncate text-[13px] font-medium text-accent md:max-w-full">{exp.company}</span>
+          </span>
 
-      <div className="min-w-0">
-        <h3 className="text-lg font-semibold leading-snug tracking-[-0.02em] text-foreground sm:text-xl">
-          {exp.role}
-        </h3>
+          <span className="col-span-2 row-start-2 min-w-0 md:col-span-1 md:col-start-2 md:row-start-1">
+            <span className="block text-base font-semibold leading-snug tracking-[-0.02em] text-foreground sm:text-lg">
+              {exp.role}
+            </span>
+            {tech.length > 0 && (
+              <span
+                // The full stack shows as chips once open, so the one-line
+                // preview steps out of the way rather than leaving a gap.
+                className={cn("mt-1 truncate font-mono text-[11px] text-muted-foreground", open ? "hidden" : "block")}
+              >
+                {tech.join(" / ")}
+              </span>
+            )}
+          </span>
 
-        <ul className="mt-3 space-y-2">
-          {exp.description.map((item, i) => (
-            <li
-              key={`${exp.id}-${i}`}
-              className={cn(
-                "flex items-start gap-3 text-sm leading-relaxed text-muted-foreground",
-                i >= MOBILE_BULLETS && !expanded && "max-sm:hidden"
-              )}
-            >
-              <span className="mt-[0.6em] h-1 w-1 shrink-0 rounded-full bg-line-strong transition-colors duration-300 group-hover:bg-amber-500" />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-
-        {hiddenOnMobile > 0 && (
-          <button
-            type="button"
-            onClick={() => setExpanded((v) => !v)}
-            aria-expanded={expanded}
-            className="mt-2 inline-flex min-h-11 items-center gap-1 text-[13px] font-medium text-foreground sm:hidden"
+          <span
+            aria-hidden="true"
+            className="col-start-2 row-start-1 flex h-9 w-9 items-center justify-center justify-self-end rounded-full border border-line text-muted-foreground transition-all duration-300 group-hover:border-line-strong group-hover:text-foreground md:col-start-3"
           >
-            {expanded ? "Show less" : `Show ${hiddenOnMobile} more`}
-            <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", expanded && "rotate-180")} />
-          </button>
-        )}
+            <ChevronDown className={cn("h-4 w-4 transition-transform duration-300", open && "rotate-180")} />
+          </span>
+        </button>
+      </h3>
 
-        {!!exp.technologies?.length && (
-          <p className="mt-4 font-mono text-[11px] leading-relaxed text-muted-foreground">
-            {exp.technologies.join("  /  ")}
-          </p>
+      {/* Height animates through grid rows, so nothing is measured in JS.
+          Collapsed content is inert, so it is skipped by keyboard and
+          screen readers. */}
+      <div
+        id={panelId}
+        role="region"
+        aria-label={`${exp.role}, ${exp.company}`}
+        inert={!open}
+        className={cn(
+          "grid transition-[grid-template-rows] duration-400 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
         )}
+      >
+        <div className="overflow-hidden">
+          <div className="px-4 pb-5 sm:px-6 sm:pb-6 md:pl-[calc(11rem+3.5rem)] md:pr-20">
+            <ul className="space-y-2.5">
+              {exp.description.map((item, i) => (
+                <li
+                  key={`${exp.id}-${i}`}
+                  className="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground sm:text-[15px]"
+                >
+                  <span className="mt-[0.6em] h-1 w-1 shrink-0 rounded-full bg-amber-500" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            {tech.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {tech.map((t) => (
+                  <span key={t} className="chip">{t}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </motion.li>
   );
@@ -103,6 +138,8 @@ function ExperienceRow({
 
 export function Experience() {
   const { isRouteTransitioning } = useRouteTransitioning();
+  // The most recent role starts open, so it is obvious the rows expand.
+  const [openId, setOpenId] = useState<string | null>(experiences[0]?.id ?? null);
 
   const snapshotStats = useMemo(() => {
     const roleCount = experiences.length;
@@ -150,12 +187,14 @@ export function Experience() {
           }
         />
 
-        <ol className="surface px-5 py-6 sm:px-8 sm:py-8">
+        <ol className="surface divide-y divide-line overflow-hidden">
           {experiences.map((exp, index) => (
             <ExperienceRow
               key={exp.id}
               exp={exp}
               index={index}
+              open={openId === exp.id}
+              onToggle={() => setOpenId((cur) => (cur === exp.id ? null : exp.id))}
               isRouteTransitioning={isRouteTransitioning}
             />
           ))}
