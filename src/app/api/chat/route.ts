@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { projects } from "@/data/projects";
-import { experiences } from "@/data/experiences";
-import { techStack } from "@/data/tech-stack";
-import { achievements } from "@/data/achievements";
-import { nowItems } from "@/data/now";
-import { siteConfig } from "@/config";
+import { buildSystemPrompt } from "@/lib/chat/knowledge";
+import { readAnswerStream, type ProviderFormat } from "@/lib/chat/stream";
 
 export const runtime = "nodejs";
+// Streaming answers stay open for a few seconds; give them room.
+export const maxDuration = 30;
 
 // ── Rate limiting ─────────────────────────────────────────────────────────
 // Protects the shared LLM API keys from being drained by abuse/spam.
@@ -14,9 +12,10 @@ const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const MAX_REQUESTS = 15; // 15 chat messages per minute per IP
 
-// Without a deadline a wedged provider holds the request open until the platform
-// kills it, and the remaining fallbacks never get a turn.
-const PROVIDER_TIMEOUT_MS = 12_000;
+// How long a provider gets to produce its first token before the next one is
+// tried, and the hard cap on a whole answer once it is streaming.
+const FIRST_TOKEN_TIMEOUT_MS = 15_000;
+const ANSWER_TIMEOUT_MS = 45_000;
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
@@ -35,82 +34,114 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
-/** Dynamically calculate age from DOB so it increments day by day */
-function calculateAge(dob: Date): number {
-  const today = new Date();
-  let age = today.getFullYear() - dob.getFullYear();
-  const m = today.getMonth() - dob.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
-  return age;
+interface Provider {
+  name: string;
+  url: string;
+  key: string | undefined;
+  model: string;
+  format: ProviderFormat;
 }
 
-function buildPortfolioContext(): string {
-  const DOB = new Date("2002-12-20");
-  const age = calculateAge(DOB);
+function getProviders(): Provider[] {
+  const providers: Provider[] = [
+    {
+      // llama-3.3-70b-versatile was retired from Groq and returned 404
+      // model_not_found, which silently took the whole assistant down.
+      name: "Groq",
+      url: "https://api.groq.com/openai/v1/chat/completions",
+      key: process.env.GROQ_API_KEY,
+      model: "openai/gpt-oss-120b",
+      format: "openai",
+    },
+    {
+      name: "Groq (small)",
+      url: "https://api.groq.com/openai/v1/chat/completions",
+      key: process.env.GROQ_API_KEY,
+      model: "openai/gpt-oss-20b",
+      format: "openai",
+    },
+    {
+      name: "GLM",
+      url: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+      key: process.env.GLM_API_KEY,
+      model: "glm-4",
+      format: "openai",
+    },
+    {
+      name: "Gemini",
+      // The key travels in a header so it cannot leak through logs or referrers.
+      url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse",
+      key: process.env.GEMINI_API_KEY,
+      model: "gemini-2.0-flash",
+      format: "google",
+    },
+    {
+      name: "Deepseek",
+      url: "https://api.deepseek.com/chat/completions",
+      key: process.env.DEEPSEEK_API_KEY,
+      model: "deepseek-chat",
+      format: "openai",
+    },
+  ];
 
-  // ── PROJECTS: Optimized for token limits ───────────────────────────────
-  const allProjects = projects
-    .map((p) => {
-      return [
-        `  PROJECT: ${p.title}${p.featured ? " [Featured]" : ""}`,
-        `    Role: ${p.role}`,
-        `    Tech: ${p.tags.join(", ")}`,
-        `    Impact: ${p.impact}`,
-      ].join("\n");
-    })
-    .join("\n\n");
+  // Local testing only: point the assistant at any OpenAI-compatible endpoint
+  // (a mock server, Ollama, LM Studio). Never consulted in production.
+  if (process.env.NODE_ENV !== "production" && process.env.CHAT_MOCK_URL) {
+    providers.unshift({
+      name: "Local",
+      url: process.env.CHAT_MOCK_URL,
+      key: process.env.CHAT_MOCK_KEY || "local",
+      model: process.env.CHAT_MOCK_MODEL || "local",
+      format: "openai",
+    });
+  }
 
-  // ── EXPERIENCES: Minimal ───────────────────────────────────────────────
-  const experienceList = experiences
-    .map((e) => `  - ${e.role} at ${e.company} (${e.period})`)
-    .join("\n");
-
-  // ── TECH STACK ───────────────────────────────────────────────────────────
-  const techSummary = techStack.map((t) => t.name).join(", ");
-
-  // ── ACHIEVEMENTS ────────────────────────────────────────────────────────
-  const allAchievements = achievements
-    .map((a) => `  - ${a.title} (${a.date})`)
-    .join("\n");
-
-  // ── NOW ──────────────────────────────────────────────────────────────────
-  const currentlyBuilding = nowItems.find((n) => n.category === "building")?.items.join("; ") || "";
-  const lookingFor = nowItems.find((n) => n.category === "looking")?.items.join("; ") || "";
-
-  return `You are the personal AI assistant for Md. Tanzamul Azad (Tonmoy).
-Your role is to speak ABOUT him in the third person (he, him, his).
-Be warm, professional, and concise. Use real facts from the data below.
-
-IDENTITY:
-- Name: Md. Tanzamul Azad (Tonmoy)
-- Age: ${age} (DOB: 2002-12-20)
-- Background: AI Engineer and NLP & Generative AI researcher; final-year CSE (Data Science) at United International University (UIU), Dhaka.
-- Key Stats: CGPA 3.78/4.0, 3x UIU Project Show winner.
-
-CONTACT: ${siteConfig.contact.email} | ${siteConfig.contact.whatsapp}
-LINKS: GitHub: ${siteConfig.links.github}, LinkedIn: ${siteConfig.links.linkedin}
-
-EXPERIENCE:
-${experienceList}
-
-FEATURED PROJECTS:
-${allProjects}
-
-TECH STACK: ${techSummary}
-
-ACHIEVEMENTS:
-${allAchievements}
-
-CURRENTLY:
-- Building: ${currentlyBuilding}
-- Open to: ${lookingFor}
-
-RESPONSE STYLE:
-- Always use third-person pronouns.
-- Keep responses short (under 80 words).
-- If you don't know something, point them to ${siteConfig.contact.email} or his resume.
-`;
+  return providers;
 }
+
+type Turn = { role: "user" | "assistant"; content: string };
+
+function providerRequest(provider: Provider, system: string, turns: Turn[], signal: AbortSignal) {
+  if (provider.format === "openai") {
+    return fetch(provider.url, {
+      method: "POST",
+      signal,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${provider.key}`,
+      },
+      body: JSON.stringify({
+        model: provider.model,
+        messages: [{ role: "system", content: system }, ...turns],
+        max_tokens: 900,
+        temperature: 0.4,
+        stream: true,
+      }),
+    });
+  }
+
+  // Gemini: the conversation is mapped turn by turn, with the system prompt
+  // as a proper system instruction.
+  return fetch(provider.url, {
+    method: "POST",
+    signal,
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": provider.key ?? "",
+    },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: system }] },
+      contents: turns.map((t) => ({
+        role: t.role === "user" ? "user" : "model",
+        parts: [{ text: t.content }],
+      })),
+      generationConfig: { maxOutputTokens: 700, temperature: 0.4 },
+    }),
+  });
+}
+
+/** Strips a role prefix some models add to the very start of an answer. */
+const stripLeadingRole = (s: string) => s.replace(/^\s*(Assistant:|AI:|Bot:)\s*/i, "");
 
 export async function POST(request: NextRequest) {
   try {
@@ -121,193 +152,133 @@ export async function POST(request: NextRequest) {
 
     if (isRateLimited(ip)) {
       return NextResponse.json(
-        { error: "Too many messages. Please slow down and try again shortly." },
+        { error: "Too many messages. Please slow down and try again shortly.", code: "rate_limited" },
         { status: 429 }
       );
     }
 
     const body = await request.json();
-    const { message, history } = body;
+    const { message, history } = body ?? {};
 
-    if (!message || typeof message !== "string") {
-      return NextResponse.json({ error: "Message is required" }, { status: 400 });
+    if (!message || typeof message !== "string" || !message.trim()) {
+      return NextResponse.json({ error: "Message is required", code: "bad_request" }, { status: 400 });
     }
 
     if (message.length > 2000) {
       return NextResponse.json(
-        { error: "Message is too long. Please keep it under 2000 characters." },
+        { error: "Message is too long. Please keep it under 2000 characters.", code: "too_long" },
         { status: 400 }
       );
     }
 
-    const historyMessages =
-      Array.isArray(history) && history.length > 0
-        ? history
-            .filter(
-              (m: unknown): m is { role?: string; content: string } =>
-                typeof m === "object" &&
-                m !== null &&
-                typeof (m as { content?: unknown }).content === "string" &&
-                (m as { content: string }).content.trim().length > 0
-            )
-            .slice(-8)
-            .map((m) => ({
-              role: m.role === "user" ? ("user" as const) : ("assistant" as const),
-              // History is client-supplied: cap each turn before it reaches a paid provider.
-              content: m.content.slice(0, 2000),
-            }))
-        : [];
+    const historyTurns: Turn[] = Array.isArray(history)
+      ? history
+          .filter(
+            (m: unknown): m is { role?: string; content: string } =>
+              typeof m === "object" &&
+              m !== null &&
+              typeof (m as { content?: unknown }).content === "string" &&
+              (m as { content: string }).content.trim().length > 0
+          )
+          .slice(-8)
+          .map((m) => ({
+            role: m.role === "user" ? ("user" as const) : ("assistant" as const),
+            // History is client-supplied: cap each turn before it reaches a paid provider.
+            content: m.content.slice(0, 2000),
+          }))
+      : [];
 
-    const context = buildPortfolioContext();
-
-    // ── PROVIDER SEQUENCING ────────────────────────────────────────────────
-    const providers = [
-      {
-        // llama-3.3-70b-versatile was retired from Groq and returned 404
-        // model_not_found, which silently took the whole assistant down.
-        // Verified against the live model list on this account.
-        name: "Groq",
-        url: "https://api.groq.com/openai/v1/chat/completions",
-        key: process.env.GROQ_API_KEY,
-        model: "openai/gpt-oss-120b",
-        type: "openai",
-      },
-      {
-        name: "Groq (small)",
-        url: "https://api.groq.com/openai/v1/chat/completions",
-        key: process.env.GROQ_API_KEY,
-        model: "openai/gpt-oss-20b",
-        type: "openai",
-      },
-      {
-        name: "GLM",
-        url: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
-        key: process.env.GLM_API_KEY,
-        model: "glm-4",
-        type: "openai",
-      },
-      {
-        name: "Gemini",
-        // gemini-1.5-flash on the v1 endpoint has been retired; 2.0-flash on
-        // v1beta is the current equivalent. The key moves to a header so it
-        // cannot leak through logs or referrers.
-        url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
-        key: process.env.GEMINI_API_KEY,
-        model: "gemini-2.0-flash",
-        type: "google",
-      },
-      {
-        name: "Deepseek",
-        url: "https://api.deepseek.com/chat/completions",
-        key: process.env.DEEPSEEK_API_KEY,
-        model: "deepseek-chat",
-        type: "openai",
-      },
-    ];
-
+    const turns: Turn[] = [...historyTurns, { role: "user", content: message }];
+    const system = buildSystemPrompt();
+    const providers = getProviders().filter((p) => Boolean(p.key));
     let lastError = "";
-    const providersConfigured = providers.some((p) => Boolean(p.key));
 
     for (const provider of providers) {
-      if (!provider.key) continue;
+      const controller = new AbortController();
+      let timer = setTimeout(() => controller.abort(), FIRST_TOKEN_TIMEOUT_MS);
 
       try {
-        const signal = AbortSignal.timeout(PROVIDER_TIMEOUT_MS);
-
-        let res;
-        if (provider.type === "openai") {
-          res = await fetch(provider.url, {
-            method: "POST",
-            signal,
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${provider.key}`,
-            },
-            body: JSON.stringify({
-              model: provider.model,
-              messages: [{ role: "system", content: context }, ...historyMessages, { role: "user", content: message }],
-              max_tokens: 800,
-              temperature: 0.5,
-            }),
-          });
-        } else {
-          // Google Gemini format. The conversation is mapped turn by turn — the
-          // previous version folded the system prompt into the user message and
-          // dropped history entirely, so the Gemini fallback answered every
-          // message with no memory of the one before it.
-          res = await fetch(provider.url, {
-            method: "POST",
-            signal,
-            headers: {
-              "Content-Type": "application/json",
-              "x-goog-api-key": provider.key,
-            },
-            body: JSON.stringify({
-              systemInstruction: { parts: [{ text: context }] },
-              contents: [
-                ...historyMessages.map((m) => ({
-                  role: m.role === "user" ? "user" : "model",
-                  parts: [{ text: m.content }],
-                })),
-                { role: "user", parts: [{ text: message }] },
-              ],
-              generationConfig: { maxOutputTokens: 400, temperature: 0.5 },
-            }),
-          });
-        }
-
-        if (!res.ok) {
-          const errText = await res.text();
-          console.warn(`[Chat API] ${provider.name} failed (${res.status}):`, errText);
+        const res = await providerRequest(provider, system, turns, controller.signal);
+        if (!res.ok || !res.body) {
+          const errText = await res.text().catch(() => "");
+          console.warn(`[Chat API] ${provider.name} failed (${res.status}):`, errText.slice(0, 300));
           lastError = `${provider.name}: ${res.status}`;
-          continue; // Try next provider
+          clearTimeout(timer);
+          continue;
         }
 
-        const data = await res.json();
-        let rawResponse = "";
-
-        if (provider.type === "openai") {
-          rawResponse = data.choices?.[0]?.message?.content ?? "";
-        } else {
-          rawResponse = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+        // Wait for the first real token before committing to this provider, so
+        // one that connects and then says nothing still falls through to the next.
+        const fragments = readAnswerStream(res.body, provider.format);
+        let first = "";
+        while (!first) {
+          const next = await fragments.next();
+          if (next.done) break;
+          first = stripLeadingRole(next.value);
+        }
+        if (!first) {
+          lastError = `${provider.name}: empty`;
+          clearTimeout(timer);
+          continue;
         }
 
-        if (!rawResponse) continue;
+        clearTimeout(timer);
+        timer = setTimeout(() => controller.abort(), ANSWER_TIMEOUT_MS);
+        const encoder = new TextEncoder();
 
-        // SANITIZATION
-        const response = rawResponse
-          // Reasoning models sometimes emit their scratchpad inline.
-          .replace(/<think>[\s\S]*?<\/think>/gi, "")
-          .replace(/<think>[\s\S]*$/i, "")
-          .replace(/^(Assistant:|AI:|Bot:)\s*/i, "")
-          .replace(/\*\*(.*?)\*\*/g, "$1")
-          .replace(/\*(.*?)\*/g, "$1")
-          .replace(/`([^`]+)`/g, "$1")
-          .replace(/^#{1,6}\s+/gm, "")
-          .replace(/^[-*+]\s+/gm, "• ")
-          .trim();
+        const stream = new ReadableStream<Uint8Array>({
+          start(c) {
+            c.enqueue(encoder.encode(first));
+          },
+          async pull(c) {
+            try {
+              const next = await fragments.next();
+              if (next.done) {
+                clearTimeout(timer);
+                c.close();
+              } else {
+                c.enqueue(encoder.encode(next.value));
+              }
+            } catch (err) {
+              clearTimeout(timer);
+              console.error(`[Chat API] ${provider.name} stream error:`, err instanceof Error ? err.message : err);
+              c.close();
+            }
+          },
+          cancel() {
+            // The visitor pressed stop or closed the panel: stop paying for tokens.
+            clearTimeout(timer);
+            controller.abort();
+          },
+        });
 
-        return NextResponse.json({ response });
+        return new Response(stream, {
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8",
+            "Cache-Control": "no-store",
+            "X-Accel-Buffering": "no",
+          },
+        });
       } catch (err) {
+        clearTimeout(timer);
         const errMessage = err instanceof Error ? err.message : String(err);
-        console.error(`[Chat API] ${provider.name} critical error:`, errMessage);
+        console.error(`[Chat API] ${provider.name} error:`, errMessage);
         lastError = errMessage;
-        continue;
       }
     }
 
-    // The browser gets a generic message. Provider names and status codes stay in
-    // the server log, where they belong — they were previously echoed to the client.
+    // The browser gets a stable code. Provider names and status codes stay in
+    // the server log.
     console.error("[Chat API] All providers failed. Last error:", lastError || "none configured");
     return NextResponse.json(
       {
         error: "The assistant is unavailable right now. Please try again shortly.",
-        code: providersConfigured ? "upstream_unavailable" : "not_configured",
+        code: providers.length > 0 ? "upstream_unavailable" : "not_configured",
       },
       { status: 503 }
     );
   } catch (error) {
     console.error("Chat API Critical Error:", error);
-    return NextResponse.json({ error: "Failed to process request" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to process request", code: "unknown" }, { status: 500 });
   }
 }

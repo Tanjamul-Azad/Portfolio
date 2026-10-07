@@ -10,12 +10,13 @@ import {
 import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config";
 import {
-  LazyAiChat,
+  AiChatLauncher,
   CursorDot,
   ScrollProgress,
   StickyEmail,
 } from "@/components/effects";
 import { Analytics } from "@vercel/analytics/next";
+import { themeScript } from "@/lib/theme-script";
 
 // Geist carries both display and body; Instrument Serif supplies the italic
 // accent words in headings; Geist Mono sets the small labels and indices.
@@ -138,6 +139,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Sets the stored theme on <html> before first paint. Static,
+            developer-authored string — no user input. */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body
         className={`${geist.variable} ${geistMono.variable} ${instrumentSerif.variable} font-sans antialiased`}
       >
@@ -186,19 +192,14 @@ export default function RootLayout({
           }}
         />
         <a href="#main-content" className="skip-link">Skip to main content</a>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider>
 
           <CursorDot />
           <RouteTransitionProvider>
             <HashScrollManager />
             <ScrollProgress />
             <StickyEmail />
-            <LazyAiChat />
+            <AiChatLauncher />
             <div id="main-content" className="relative min-h-svh flex flex-col">
               <PageTransition>{children}</PageTransition>
             </div>
