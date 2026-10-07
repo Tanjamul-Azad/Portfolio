@@ -44,7 +44,7 @@ export function About() {
     {
       icon: Compass,
       label: "Focus",
-      value: siteConfig.author.role.split("|").slice(0, 2).map((s) => s.trim()).join(" · "),
+      value: siteConfig.author.role,
     },
     {
       icon: Mail,

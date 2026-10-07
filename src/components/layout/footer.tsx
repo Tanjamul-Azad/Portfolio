@@ -17,7 +17,7 @@ export function Footer() {
             <span className="text-accent">.</span>
           </Link>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            {siteConfig.author.role.split("|").slice(0, 2).map((s) => s.trim()).join(" & ")}, based in{" "}
+            {siteConfig.author.role}, based in{" "}
             {siteConfig.author.location}.
           </p>
           <a
