@@ -5,8 +5,6 @@ import {
   motion,
   MotionConfig,
   useReducedMotion,
-  useScroll,
-  useTransform,
 } from "framer-motion";
 import Image from "next/image";
 import { ArrowRight, ArrowUpRight, MapPin, Pause, Play } from "lucide-react";
@@ -58,69 +56,35 @@ function TypewriterText({
   text,
   startDelay = 1800,
   charInterval = 38,
-  loopDelay = 2200,
   reducedMotion = false,
 }: {
   text: string;
   startDelay?: number;
   charInterval?: number;
-  loopDelay?: number;
   reducedMotion?: boolean;
 }) {
   // Starts empty on both server and client; the effect fills it in at once
   // under reduced motion. Seeding it from the preference broke hydration.
   const [visibleCount, setVisibleCount] = useState(0);
 
+  // Types the line once, then rests on a blinking caret. It used to erase and
+  // retype forever, re-rendering every ~40ms for as long as the page was open
+  // — steady main-thread work competing with scrolling on phones.
   useEffect(() => {
     if (reducedMotion) {
       setVisibleCount(text.length);
       return;
     }
 
-    let timeoutId: number | undefined;
-    let isDisposed = false;
+    let index = 0;
+    let timeoutId = window.setTimeout(function step() {
+      index += 1;
+      setVisibleCount(Math.min(index, text.length));
+      if (index < text.length) timeoutId = window.setTimeout(step, charInterval);
+    }, startDelay);
 
-    // The loop is infinite, so it would otherwise keep scheduling timers for a
-    // tab nobody is looking at.
-    const onVisibility = () => {
-      if (document.hidden && timeoutId) window.clearTimeout(timeoutId);
-      else if (!document.hidden && !isDisposed) startTypingCycle(0);
-    };
-
-    const startTypingCycle = (delay: number) => {
-      timeoutId = window.setTimeout(() => {
-        if (isDisposed) return;
-
-        setVisibleCount(0);
-        let index = 0;
-
-        const step = () => {
-          if (isDisposed) return;
-
-          index += 1;
-          setVisibleCount(Math.min(index, text.length));
-
-          if (index < text.length) {
-            timeoutId = window.setTimeout(step, charInterval);
-            return;
-          }
-
-          timeoutId = window.setTimeout(() => startTypingCycle(0), loopDelay);
-        };
-
-        timeoutId = window.setTimeout(step, charInterval);
-      }, delay);
-    };
-
-    startTypingCycle(startDelay);
-    document.addEventListener("visibilitychange", onVisibility);
-
-    return () => {
-      isDisposed = true;
-      document.removeEventListener("visibilitychange", onVisibility);
-      if (timeoutId) window.clearTimeout(timeoutId);
-    };
-  }, [charInterval, loopDelay, reducedMotion, startDelay, text]);
+    return () => window.clearTimeout(timeoutId);
+  }, [charInterval, reducedMotion, startDelay, text]);
 
   const visibleText = text.slice(0, visibleCount);
   const isComplete = visibleCount >= text.length;
@@ -291,23 +255,13 @@ const heroSocials = [
 ];
 
 export function Hero() {
-  const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion() ?? false;
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
-
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const heroY = useTransform(scrollYProgress, [0, 0.6], [0, 60]);
 
   const [primaryAction, ...secondaryActions] = heroContent.actions;
 
   return (
     <MotionConfig reducedMotion="user">
     <section
-      ref={sectionRef}
       id="hero"
       className="scroll-section relative z-10 flex min-h-svh items-center overflow-hidden bg-background"
     >
@@ -325,7 +279,6 @@ export function Hero() {
             blocks. Once there is room across — desktop, or a phone turned
             landscape — the portrait moves out to its own right-hand column. */}
         <motion.div
-          style={{ opacity: heroOpacity, y: heroY }}
           variants={HERO_SEQUENCE.container}
           initial="hidden"
           animate="visible"
@@ -415,7 +368,6 @@ export function Hero() {
                 text={heroContent.typewriter}
                 startDelay={2200}
                 charInterval={44}
-                loopDelay={2800}
                 reducedMotion={prefersReducedMotion}
               />
             </motion.div>

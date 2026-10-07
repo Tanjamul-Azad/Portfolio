@@ -1,80 +1,83 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 /**
  * Where you are in the page, as a hairline across the top edge.
  *
- * Measured from a scroll listener rather than framer-motion's `useScroll`,
- * which reported a progress of 0 for the whole page here.
+ * Written straight to the DOM on each animation frame — a `scaleX` transform
+ * and the progressbar's aria value — with no React state. The previous version
+ * re-rendered on every frame and animated `width`, a layout property, which
+ * added main-thread work to every scroll frame on phones.
  */
 export function ScrollProgress() {
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const barRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const onAdmin = pathname?.startsWith("/admin") ?? false;
 
   useEffect(() => {
     if (onAdmin) return;
+    const bar = barRef.current;
+    const track = trackRef.current;
+    if (!bar || !track) return;
 
     let frame = 0;
+    let scrollable = 1;
 
+    // Page height only changes on resize or as content loads, so it is read
+    // then rather than on every scroll frame.
     const measure = () => {
-      const { scrollHeight, clientHeight } = document.documentElement;
-      const scrollableHeight = scrollHeight - clientHeight;
-
-      // A page shorter than the viewport has nothing to scroll: guard the divide
-      // so it reports 0 instead of NaN (which rendered as "NaN%" and height:NaN%).
-      if (scrollableHeight <= 0) {
-        setScrollProgress(0);
-        return;
-      }
-
-      // Clamp so rubber-band overscroll can't report <0% or >100%.
-      const progress = (window.scrollY / scrollableHeight) * 100;
-      setScrollProgress(Math.min(100, Math.max(0, progress)));
+      scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
     };
 
-    // Coalesce scroll events to one measurement per frame.
-    const handleScroll = () => {
-      if (frame) return;
-      frame = requestAnimationFrame(() => {
-        frame = 0;
-        measure();
-      });
+    const paint = () => {
+      frame = 0;
+      // Clamp so rubber-band overscroll can't report <0% or >100%.
+      const progress = Math.min(1, Math.max(0, window.scrollY / scrollable));
+      bar.style.transform = `scaleX(${progress})`;
+      track.setAttribute("aria-valuenow", String(Math.round(progress * 100)));
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(paint);
+    };
+    const onResize = () => {
+      measure();
+      onScroll();
     };
 
     measure();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll, { passive: true });
+    paint();
+    const resizeObserver = new ResizeObserver(onResize);
+    resizeObserver.observe(document.body);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       if (frame) cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
+      resizeObserver.disconnect();
+      window.removeEventListener("scroll", onScroll);
     };
   }, [onAdmin]);
 
   if (onAdmin) return null;
 
-  const rounded = Math.round(scrollProgress);
-
   return (
-    // One hairline along the very top edge, at every size. It sits above the
-    // navbar rather than under it, because the navbar changes shape as it
-    // scrolls and anything anchored to its underside would drift. The old
-    // desktop rail with a percentage readout was one more floating object
-    // competing for the margins.
+    // It sits above the navbar rather than under it, so nothing anchored to
+    // the bar's changing shape can make it drift.
     <div
-      className="fixed inset-x-0 top-0 z-60 h-0.5"
+      ref={trackRef}
+      className="pointer-events-none fixed inset-x-0 top-0 z-60 h-0.5"
       role="progressbar"
       aria-label="Page scroll progress"
       aria-valuemin={0}
       aria-valuemax={100}
-      aria-valuenow={rounded}
+      aria-valuenow={0}
     >
       <div
-        className="h-full origin-left bg-linear-to-r from-amber-500/60 via-amber-400 to-amber-300 transition-[width] duration-100 ease-out"
-        style={{ width: `${scrollProgress}%` }}
+        ref={barRef}
+        className="h-full w-full origin-left bg-linear-to-r from-amber-500/60 via-amber-400 to-amber-300 will-change-transform"
+        style={{ transform: "scaleX(0)" }}
       />
     </div>
   );

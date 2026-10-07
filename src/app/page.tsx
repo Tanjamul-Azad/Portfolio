@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, type ReactNode } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Preloader } from "@/components/common";
 import { Navbar, Footer } from "@/components/layout";
@@ -24,20 +24,6 @@ import { MOTION_TOKENS } from "@/lib";
 // the homepage from /blog or /projects. Kept at module scope and read lazily
 // so server and first client render agree (no hydration mismatch).
 const preloaderState = { shown: false };
-
-function SectionStage({ children }: { children: ReactNode }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.08 }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className="relative"
-    >
-      {children}
-    </motion.div>
-  );
-}
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(() => !preloaderState.shown);
@@ -88,37 +74,41 @@ export default function Home() {
           kept everything — the hero included — unpainted until hydration. */}
       <div className="relative z-10">
         <Navbar />
+        {/* One Suspense boundary per section, so React hydrates the page as
+            separate small units and yields between them, rather than in a
+            few long blocks. Those blocks were landing exactly as a visitor
+            started to scroll and froze the first swipe on phones. */}
         <Hero />
-        <SectionStage>
+        <Suspense>
           <About />
-        </SectionStage>
-        <SectionStage>
+        </Suspense>
+        <Suspense>
           <Now />
-        </SectionStage>
-        <SectionStage>
+        </Suspense>
+        <Suspense>
           <TechStack />
-        </SectionStage>
-        <SectionStage>
+        </Suspense>
+        <Suspense>
           <Projects />
-        </SectionStage>
-        <SectionStage>
+        </Suspense>
+        <Suspense>
           <Research />
-        </SectionStage>
-        <SectionStage>
+        </Suspense>
+        <Suspense>
           <Experience />
-        </SectionStage>
-        <SectionStage>
+        </Suspense>
+        <Suspense>
           <Achievements />
-        </SectionStage>
-        <SectionStage>
+        </Suspense>
+        <Suspense>
           <Testimonials />
-        </SectionStage>
-        <SectionStage>
+        </Suspense>
+        <Suspense>
           <Blog />
-        </SectionStage>
-        <SectionStage>
+        </Suspense>
+        <Suspense>
           <Contact />
-        </SectionStage>
+        </Suspense>
         <Footer />
       </div>
     </main>

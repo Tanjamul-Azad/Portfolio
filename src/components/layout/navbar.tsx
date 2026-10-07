@@ -82,34 +82,31 @@ export function Navbar() {
     href.startsWith("#") ? (isHome ? href : `/${href}`) : href;
 
   return (
-    <nav
-      aria-label="Main"
-      className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-[padding] duration-500 ease-out",
-        scrolled ? "px-3 pt-3 sm:px-4" : "px-0 pt-0"
-      )}
-    >
-      {/* Full-width and transparent over the hero; once the page moves it
-          tucks into a floating, blurred island so it stops competing with the
-          content scrolling under it. */}
-      <div
-        className={cn(
-          "mx-auto flex items-center justify-between rounded-full border transition-all duration-500 ease-out",
-          scrolled
-            ? "max-w-5xl border-line bg-background/75 py-1.5 pl-5 pr-1.5 shadow-[0_8px_30px_-12px_rgb(0_0_0/0.25)] backdrop-blur-xl"
-            : "max-w-6xl border-transparent bg-transparent px-5 py-4 sm:px-6 lg:px-8"
-        )}
-      >
+    <nav aria-label="Main" className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4">
+      {/* The bar keeps one fixed geometry; only its background fades in once
+          the page moves. It used to morph from full-width to an island by
+          transitioning max-width and padding, which re-laid-out the page on
+          every frame for half a second, right as a visitor started to
+          scroll: the single biggest scroll stall on phones. An opacity
+          fade runs on the compositor and costs nothing. */}
+      <div className="relative mx-auto flex max-w-5xl items-center justify-between rounded-full py-1.5 pl-5 pr-1.5">
+        <div
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none absolute inset-0 rounded-full border border-line bg-background/80 shadow-[0_8px_30px_-12px_rgb(0_0_0/0.25)] backdrop-blur-xl transition-opacity duration-300",
+            scrolled ? "opacity-100" : "opacity-0"
+          )}
+        />
         <Link
           href="/"
-          className="inline-flex items-center py-2 font-heading text-lg font-semibold tracking-[-0.03em] text-foreground"
+          className="relative inline-flex items-center py-2 font-heading text-lg font-semibold tracking-[-0.03em] text-foreground"
         >
           {siteConfig.name}
           <span className="text-accent">.</span>
         </Link>
 
         {/* Desktop: centred link pill with a sliding active marker. */}
-        <ul className="hidden items-center gap-0.5 rounded-full border border-line bg-surface/50 p-1 backdrop-blur-md md:flex">
+        <ul className="relative hidden items-center gap-0.5 rounded-full border border-line bg-surface/50 p-1 md:flex">
           {navLinks.map((link) => {
             const isAnchorLink = link.href.startsWith("#");
             const sectionId = link.href.replace("#", "");
@@ -140,7 +137,7 @@ export function Navbar() {
           })}
         </ul>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="relative hidden items-center gap-2 md:flex">
           <AdminEditIcon />
           <ThemeToggle />
           <a
@@ -154,7 +151,7 @@ export function Navbar() {
         </div>
 
         {/* Mobile */}
-        <div className="flex items-center gap-1.5 md:hidden">
+        <div className="relative flex items-center gap-1.5 md:hidden">
           <AdminEditIcon />
           <ThemeToggle />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
