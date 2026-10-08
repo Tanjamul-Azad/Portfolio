@@ -6,12 +6,8 @@ import Link from "next/link";
 import Markdown, { type Components } from "react-markdown";
 import {
   ArrowUp,
-  Briefcase,
   Check,
   Copy,
-  FlaskConical,
-  FolderKanban,
-  Mail,
   RotateCcw,
   Square,
   X,
@@ -31,11 +27,11 @@ interface Message {
 const STORAGE_KEY = "portfolio_chat_v1";
 const firstName = siteConfig.author.name.split(" ").slice(-2, -1)[0] || siteConfig.name;
 
-const STARTERS: { icon: typeof Mail; label: string }[] = [
-  { icon: FlaskConical, label: "What research is he working on?" },
-  { icon: FolderKanban, label: "Which project should I look at first?" },
-  { icon: Briefcase, label: "What has he built professionally?" },
-  { icon: Mail, label: "How can I hire or contact him?" },
+/** A short chip label, and the full question it sends. */
+const STARTERS: { label: string; question: string }[] = [
+  { label: "His research", question: "What research is he working on?" },
+  { label: "Best project", question: "Which project should I look at first?" },
+  { label: "Hire or contact", question: "How can I hire or contact him?" },
 ];
 
 const ERROR_COPY: Record<string, string> = {
@@ -147,14 +143,7 @@ function Bubble({ children, role }: { children: ReactNode; role: Message["role"]
       </div>
     );
   }
-  return (
-    <div className="flex gap-2.5">
-      <span className="mt-0.5">
-        <Avatar size={26} />
-      </span>
-      <div className="min-w-0 flex-1 break-words text-[14px] leading-relaxed text-foreground/90">{children}</div>
-    </div>
-  );
+  return <div className="min-w-0 break-words text-[14px] leading-relaxed text-foreground/90">{children}</div>;
 }
 
 export default function AiChatPanel({ onClose }: { onClose: () => void }) {
@@ -344,24 +333,20 @@ export default function AiChatPanel({ onClose }: { onClose: () => void }) {
       >
         {messages.length === 0 ? (
           <div className="flex h-full flex-col justify-end">
-            <div className="mb-5">
-              <Avatar size={44} />
-              <p className="mt-3 text-lg font-semibold tracking-[-0.02em] text-foreground">
-                Hi — I&apos;m {firstName}&apos;s AI assistant.
-              </p>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                Ask about his research, projects, experience, or how to work with him. English or বাংলা.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2">
-              {STARTERS.map(({ icon: Icon, label }) => (
+            <p className="text-lg font-semibold tracking-[-0.02em] text-foreground">
+              Hi, ask me anything about {firstName}.
+            </p>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+              Research, projects, experience, or how to work with him. English or বাংলা.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-1.5">
+              {STARTERS.map(({ label, question }) => (
                 <button
                   key={label}
                   type="button"
-                  onClick={() => send(label)}
-                  className="flex items-start gap-2.5 rounded-2xl border border-line bg-surface p-3 text-left text-[13px] leading-snug text-foreground transition-colors hover:border-line-strong hover:bg-surface-2"
+                  onClick={() => send(question)}
+                  className="rounded-full border border-line bg-surface/70 px-3.5 py-1.5 text-[12.5px] font-medium text-foreground transition-colors hover:border-amber-500/50 hover:bg-surface-2"
                 >
-                  <Icon className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
                   {label}
                 </button>
               ))}
@@ -393,7 +378,7 @@ export default function AiChatPanel({ onClose }: { onClose: () => void }) {
                   )}
                 </Bubble>
                 {!isLive && !m.error && text && (
-                  <div className="ml-[2.1rem] mt-1">
+                  <div className="-ml-2.5 mt-1">
                     <CopyButton text={text} />
                   </div>
                 )}
@@ -403,7 +388,7 @@ export default function AiChatPanel({ onClose }: { onClose: () => void }) {
         )}
 
         {lastFollowUps.length > 0 && (
-          <div className="ml-[2.1rem] flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1.5">
             {lastFollowUps.map((q) => (
               <button
                 key={q}

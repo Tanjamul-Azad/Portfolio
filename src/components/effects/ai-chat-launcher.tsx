@@ -62,6 +62,10 @@ function useOpenSize() {
  */
 export function AiChatLauncher() {
   const [open, setOpen] = useState(false);
+  // The chat UI mounts only once the window has finished growing: its first
+  // render (markdown, history) would otherwise land on the morph's opening
+  // frames and stall them.
+  const [grown, setGrown] = useState(false);
   const [prompt, setPrompt] = useState(0);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
@@ -88,19 +92,30 @@ export function AiChatLauncher() {
     return () => window.clearInterval(id);
   }, [open, phone, reduceMotion]);
 
+  // Backstop for `grown`, in case the morph's completion never reports (an
+  // instant, reduced-motion transition, or a size that didn't change).
+  useEffect(() => {
+    if (!open) return;
+    const id = window.setTimeout(() => setGrown(true), reduceMotion ? 0 : 360);
+    return () => window.clearTimeout(id);
+  }, [open, reduceMotion]);
+
   const close = useCallback(() => {
     setOpen(false);
+    setGrown(false);
     // Wait for the surface to shrink back before handing focus to the button.
-    window.setTimeout(() => buttonRef.current?.focus(), 350);
+    window.setTimeout(() => buttonRef.current?.focus(), 300);
   }, []);
 
   if (onAdmin || !openSize) return null;
 
   const closedSize = openSize.phone ? DOT : PILL;
   const target = open ? openSize : closedSize;
-  const spring = reduceMotion
+  // A short ease-out rather than a spring: it settles in under a third of a
+  // second, where the spring's long tail made opening feel sluggish.
+  const morph = reduceMotion
     ? { duration: 0 }
-    : { type: "spring" as const, stiffness: 380, damping: 34, mass: 0.9 };
+    : { type: "tween" as const, ease: [0.32, 0.72, 0, 1] as const, duration: 0.28 };
 
   return (
     <>
@@ -113,7 +128,8 @@ export function AiChatLauncher() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-60 bg-black/45 backdrop-blur-[2px]"
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-60 bg-black/50"
           />
         )}
       </AnimatePresence>
@@ -121,8 +137,11 @@ export function AiChatLauncher() {
       <motion.div
         initial={false}
         animate={{ width: target.width, height: target.height, borderRadius: open ? 24 : 26 }}
-        transition={spring}
-        className="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] right-[max(0.75rem,env(safe-area-inset-right))] z-60 overflow-hidden border border-line bg-background/80 shadow-[0_24px_60px_-20px_rgb(0_0_0/0.5),inset_0_1px_0_0_rgb(255_255_255/0.06)] backdrop-blur-2xl animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-500 [animation-delay:800ms] sm:bottom-[max(1rem,env(safe-area-inset-bottom))] sm:right-[max(1rem,env(safe-area-inset-right))]"
+        transition={morph}
+        onAnimationComplete={() => {
+          if (open) setGrown(true);
+        }}
+        className="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] right-[max(0.75rem,env(safe-area-inset-right))] z-60 overflow-hidden border border-line bg-background/92 shadow-[0_24px_60px_-20px_rgb(0_0_0/0.5),inset_0_1px_0_0_rgb(255_255_255/0.06)] backdrop-blur-lg [will-change:width,height] animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-500 [animation-delay:800ms] sm:bottom-[max(1rem,env(safe-area-inset-bottom))] sm:right-[max(1rem,env(safe-area-inset-right))]"
       >
         {/* Warm sheen across the top edge, in the site's accent. */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_70%_at_15%_0%,rgb(245_158_11/0.14),transparent_60%)]" />
@@ -141,7 +160,7 @@ export function AiChatLauncher() {
           tabIndex={open ? -1 : 0}
           initial={false}
           animate={{ opacity: open ? 0 : 1 }}
-          transition={{ duration: open ? 0.1 : 0.25, delay: open ? 0 : 0.15 }}
+          transition={{ duration: open ? 0.08 : 0.2, delay: open ? 0 : 0.12 }}
           className="group absolute bottom-0 right-0 flex items-center gap-3 p-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-amber-500"
           style={{ width: closedSize.width, height: closedSize.height, pointerEvents: open ? "none" : "auto" }}
         >
@@ -186,12 +205,12 @@ export function AiChatLauncher() {
             the same corner, so the growing surface reveals it rather than
             squeezing it. */}
         <AnimatePresence>
-          {open && (
+          {open && grown && (
             <motion.div
               key="panel"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1, transition: { delay: reduceMotion ? 0 : 0.12, duration: 0.25 } }}
-              exit={{ opacity: 0, transition: { duration: 0.12 } }}
+              animate={{ opacity: 1, transition: { duration: reduceMotion ? 0 : 0.16 } }}
+              exit={{ opacity: 0, transition: { duration: 0.1 } }}
               className="absolute bottom-0 right-0"
               style={{ width: openSize.width, height: openSize.height }}
             >
