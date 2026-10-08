@@ -292,12 +292,12 @@ export function Hero() {
             variants={HERO_SEQUENCE.media}
             className="relative col-start-1 row-start-1 hero-wide:col-start-2 hero-wide:row-span-4 hero-wide:self-center"
           >
-            {/* No frame: the mask feathers every edge of the photo into the
-                hero. The halo behind it fades the backdrop grid out around
-                the photo, so no rectangle shows where the photo covers the
-                lines. */}
-            <div aria-hidden="true" className="pointer-events-none absolute -inset-x-[35%] -inset-y-[20%] bg-[radial-gradient(closest-side,var(--background)_62%,transparent)] dark:bg-[radial-gradient(closest-side,#000_62%,transparent)]" />
-            <div className="hero-portrait-fade relative mx-auto aspect-[2276/3360] w-[min(100%,calc(50svh*0.677))] hero-wide:w-[min(32rem,calc(86svh*0.677))]">
+            {/* Light mode: a framed card. Dark mode: no frame, the mask
+                feathers every edge of the photo into the black hero, and the
+                halo behind it fades the backdrop grid out around the photo so
+                no rectangle shows where the photo covers the lines. */}
+            <div aria-hidden="true" className="pointer-events-none absolute -inset-x-[35%] -inset-y-[20%] hidden bg-[radial-gradient(closest-side,#000_62%,transparent)] dark:block" />
+            <div className="hero-portrait-fade relative mx-auto aspect-[2276/3360] w-[min(100%,calc(46svh*0.677))] overflow-hidden rounded-[1.75rem] bg-black shadow-[0_30px_60px_-28px_rgb(0_0_0/0.55)] ring-1 ring-black/10 hero-wide:w-[min(30rem,calc(74svh*0.677))] dark:w-[min(100%,calc(50svh*0.677))] dark:overflow-visible dark:rounded-none dark:shadow-none dark:ring-0 dark:hero-wide:w-[min(32rem,calc(86svh*0.677))]">
               <HeroMedia reducedMotion={prefersReducedMotion} />
             </div>
           </motion.div>
@@ -305,7 +305,7 @@ export function Hero() {
           {/* Availability badge — floats over the portrait's faded top on phones. */}
           <motion.div
             variants={HERO_SEQUENCE.item}
-            className="relative z-10 col-start-1 row-start-1 self-start justify-self-center hero-wide:mb-8 hero-wide:justify-self-start"
+            className="relative z-10 col-start-1 row-start-1 self-start justify-self-center pt-3 dark:pt-0 hero-wide:mb-8 hero-wide:pt-0 hero-wide:justify-self-start"
           >
             <span className="inline-flex items-center gap-2.5 rounded-full border border-line bg-surface/70 py-1.5 pl-2.5 pr-3.5 text-foreground backdrop-blur-md">
               <span className="relative flex h-2 w-2">
@@ -319,12 +319,12 @@ export function Hero() {
             </span>
           </motion.div>
 
-          {/* Name. On phones it sits just under the portrait, rising into its
-              faded lower edge (the photo carries its own signature, which an
-              overlay would cover). The second line is set in the serif italic
-              for an editorial pairing. The svh term keeps it from eating a
-              short landscape screen. */}
-          <h1 className="display relative z-10 col-start-1 row-start-2 -mt-4 text-[clamp(2.75rem,13.5vw,4.5rem)] text-foreground hero-wide:mb-6 hero-wide:mt-0 hero-wide:text-[clamp(3.5rem,min(8vw,15svh),7.5rem)]">
+          {/* Name. On phones it sits under the portrait (the photo carries its
+              own signature, which an overlay would cover); in dark mode it
+              rises into the photo's faded lower edge. The second line is set
+              in the serif italic for an editorial pairing. The svh term keeps
+              it from eating a short landscape screen. */}
+          <h1 className="display relative z-10 col-start-1 row-start-2 mt-5 dark:-mt-4 dark:hero-wide:mt-0 text-[clamp(2.75rem,13.5vw,4.5rem)] text-foreground hero-wide:mb-6 hero-wide:mt-0 hero-wide:text-[clamp(3.5rem,min(8vw,15svh),7.5rem)]">
             {heroContent.headlineLines.map((line, i) => (
               <div key={`${line.text}-${i}`}>
                 <SplitText

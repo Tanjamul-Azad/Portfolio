@@ -500,10 +500,11 @@
     transform: translateX(calc(-100% - 1rem));
   }
 }
-/* Hero portrait: feathers all four edges so the photo's black background
-   dissolves into the hero's black with no visible frame. Two gradients,
-   intersected, so the corners fade on both axes. */
-.hero-portrait-fade {
+/* Hero portrait, dark mode only: feathers all four edges so the photo's
+   black background dissolves into the hero's black with no visible frame.
+   Two gradients, intersected, so the corners fade on both axes. Light mode
+   shows the same photo as a framed card instead. */
+.dark .hero-portrait-fade {
   -webkit-mask-image:
     linear-gradient(to bottom, transparent 0%, #000 8%, #000 80%, transparent 100%),
     linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
