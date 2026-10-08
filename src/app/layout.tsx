@@ -88,7 +88,7 @@ export const metadata: Metadata = {
     url: siteConfig.url,
     title: siteConfig.title,
     description: siteConfig.description,
-    siteName: siteConfig.name,
+    siteName: siteConfig.author.name,
     images: [
       {
         url: siteConfig.ogImage,
@@ -105,13 +105,17 @@ export const metadata: Metadata = {
     images: [siteConfig.ogImage],
     creator: siteConfig.author.twitterHandle,
   },
+  // Profile-photo favicons. Google's search-result favicon must be square and
+  // a multiple of 48px, so the 48/96 PNGs are what it picks up.
   icons: {
     icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
+      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
     ],
     shortcut: "/favicon.ico",
-    apple: "/icon.svg",
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
   },
   manifest: "/site.webmanifest",
   // Search Console ownership proof. Not a secret — Google reads it from the
@@ -151,42 +155,78 @@ export default function RootLayout({
           type="application/ld+json"
           // Static, developer-authored JSON built from siteConfig — no user input.
           dangerouslySetInnerHTML={{
+            // WebSite gives Google a site name to show instead of "Vercel";
+            // ProfilePage + Person tie every name spelling to this one entity.
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "Person",
-              name: siteConfig.author.name,
-              alternateName: siteConfig.author.alternateNames,
-              url: siteConfig.url,
-              image: siteConfig.ogImage,
-              jobTitle: siteConfig.author.role,
-              email: `mailto:${siteConfig.contact.email}`,
-              address: {
-                "@type": "PostalAddress",
-                addressLocality: siteConfig.author.location,
-              },
-              sameAs: [
-                siteConfig.links.github,
-                siteConfig.links.linkedin,
-                siteConfig.links.twitter,
-                siteConfig.links.facebook,
-              ],
-              alumniOf: {
-                "@type": "CollegeOrUniversity",
-                name: "United International University",
-              },
-              worksFor: {
-                "@type": "Organization",
-                name: "Complete Legal Aid",
-              },
-              knowsAbout: [
-                "Natural Language Processing",
-                "Generative AI",
-                "Large Language Models",
-                "Machine Learning",
-                "React",
-                "Next.js",
-                "TypeScript",
-                "Data Science",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "@id": `${siteConfig.url}/#website`,
+                  url: siteConfig.url,
+                  name: siteConfig.author.name,
+                  alternateName: [
+                    "Tanzamul Azad",
+                    "Tanjamul Azad",
+                    "Tanzamul Azad Portfolio",
+                  ],
+                  inLanguage: "en",
+                  publisher: { "@id": `${siteConfig.url}/#person` },
+                },
+                {
+                  "@type": "ProfilePage",
+                  "@id": `${siteConfig.url}/#profilepage`,
+                  url: siteConfig.url,
+                  name: siteConfig.title,
+                  isPartOf: { "@id": `${siteConfig.url}/#website` },
+                  mainEntity: { "@id": `${siteConfig.url}/#person` },
+                },
+                {
+                  "@type": "Person",
+                  "@id": `${siteConfig.url}/#person`,
+                  name: siteConfig.author.name,
+                  givenName: "Tanzamul",
+                  familyName: "Azad",
+                  additionalName: "Tonmoy",
+                  alternateName: siteConfig.author.alternateNames,
+                  url: siteConfig.url,
+                  image: `${siteConfig.url}${siteConfig.author.avatar ?? "/images/profile.jpg"}`,
+                  jobTitle: siteConfig.author.role,
+                  description: siteConfig.description,
+                  email: `mailto:${siteConfig.contact.email}`,
+                  nationality: { "@type": "Country", name: "Bangladesh" },
+                  address: {
+                    "@type": "PostalAddress",
+                    addressLocality: "Dhaka",
+                    addressCountry: "BD",
+                  },
+                  sameAs: [
+                    siteConfig.links.github,
+                    siteConfig.links.linkedin,
+                    siteConfig.links.twitter,
+                    siteConfig.links.facebook,
+                  ],
+                  alumniOf: [
+                    {
+                      "@type": "CollegeOrUniversity",
+                      name: "United International University",
+                      url: "https://www.uiu.ac.bd/",
+                    },
+                    { "@type": "EducationalOrganization", name: "Dhaka College" },
+                  ],
+                  knowsAbout: [
+                    "Natural Language Processing",
+                    "Generative AI",
+                    "Large Language Models",
+                    "Neuro-Symbolic AI",
+                    "AI Agents",
+                    "Retrieval-Augmented Generation",
+                    "Federated Learning",
+                    "Machine Learning",
+                    "Data Science",
+                    "Full-Stack Development",
+                  ],
+                },
               ],
             }),
           }}

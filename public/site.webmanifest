@@ -1,17 +1,13 @@
 {
-  "name": "Md. Tanzamul Azad — Full-Stack Developer & ML Researcher",
-  "short_name": "Tanzamul",
-  "description": "Full-Stack Developer & ML Researcher building ML-driven applications, AI + IoT systems, and production-grade full-stack platforms.",
+  "name": "Md. Tanzamul Azad — AI Engineer & NLP Researcher",
+  "short_name": "Tanzamul Azad",
+  "description": "Md. Tanzamul Azad (Tanjamul Azad Tonmoy): AI Engineer and NLP & Generative AI researcher from Dhaka, Bangladesh.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#f59e0b",
   "icons": [
-    {
-      "src": "/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    }
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
   ]
 }

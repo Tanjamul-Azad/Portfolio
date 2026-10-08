@@ -1,0 +1,149 @@
+\documentclass[10pt, a4paper]{article}
+
+% ── Packages ─────────────────────────────────────────────────────────────────
+\usepackage[top=1.0cm, bottom=0.9cm, left=1.4cm, right=1.4cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+% ── ATS: make the PDF text layer map cleanly to Unicode ──────────────────────
+\input{glyphtounicode}
+\pdfgentounicode=1
+
+\hypersetup{
+    pdftitle={Md. Tanzamul Azad - CV},
+    pdfauthor={Md. Tanzamul Azad},
+    pdfkeywords={AI Engineer, NLP, Generative AI, LLM, Machine Learning, Research}
+}
+
+% ── Plain, single-column layout: no icons, no tables, no columns ─────────────
+\pagestyle{empty}
+\setcounter{secnumdepth}{0}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\linespread{0.98}
+\raggedbottom
+
+\titleformat{\section}{\large\bfseries}{}{0pt}{}[\vspace{-9pt}\rule{\linewidth}{0.4pt}]
+\titlespacing{\section}{0pt}{5pt}{2pt}
+
+\setlist[itemize]{topsep=0pt, parsep=0pt, partopsep=0pt, itemsep=0pt, leftmargin=13pt}
+
+% Entry heading: bold title (left) ... date (right), then italic role/stack line
+\newcommand{\entry}[2]{\par\textbf{#1}\hfill #2\par}
+\newcommand{\sub}[1]{\textit{#1}\par}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+
+% ── HEADER ───────────────────────────────────────────────────────────────────
+\begin{center}
+    {\LARGE\textbf{Md. Tanzamul Azad}}\\[3pt]
+    AI Engineer \textbar{} NLP \& Generative AI Researcher\\[2pt]
+    Dhaka, Bangladesh \textbar{}
+    +880 1606-092143 \textbar{}
+    \href{mailto:i.m.tanjamul@gmail.com}{i.m.tanjamul@gmail.com}\\[1pt]
+    \href{https://tanjamul-azad.vercel.app}{tanjamul-azad.vercel.app} \textbar{}
+    \href{https://github.com/Tanjamul-Azad}{github.com/Tanjamul-Azad} \textbar{}
+    \href{https://www.linkedin.com/in/tanzamul-azad-tonmoy/}{linkedin.com/in/tanzamul-azad-tonmoy}
+\end{center}
+
+\vspace{-4pt}
+
+% ── SUMMARY ──────────────────────────────────────────────────────────────────
+\section{Summary}
+Final-year CSE (Data Science) student researching trustworthy LLM systems (faithful
+reasoning, agent security, federated learning) and building production AI agents, RAG
+pipelines, and real-time platforms. Seeking research, graduate, teaching, and AI/ML roles.
+
+% ── EDUCATION ────────────────────────────────────────────────────────────────
+\section{Education}
+\entry{United International University (UIU), Dhaka, Bangladesh}{2022 -- Present}
+B.Sc.\ in Computer Science \& Engineering, Major in Data Science \textbar{}
+\textbf{CGPA: 3.78/4.00} \textbar{} 50\% Merit Scholarship\\
+\textit{Core coursework:} Data Structures \& Algorithms, OOP, DBMS, Operating Systems,
+Linear Algebra, Statistics\\[1pt]
+\textbf{HSC}, Dhaka College, GPA 5.00/5.00 (2020) \textbar{}
+\textbf{SSC}, Govt.\ Laboratory High School, GPA 5.00/5.00 (2018)
+
+% ── RESEARCH ─────────────────────────────────────────────────────────────────
+\section{Research (Ongoing)}
+\textit{Interests:} NLP, LLM reasoning \& faithfulness, Generative AI, secure AI
+agents, federated learning, efficient edge AI.
+\begin{itemize}
+    \item \textbf{Faithfulness-Checked Neuro-Symbolic Reasoning with LLMs}
+    \hfill \textit{In progress; target: ACL}
+    \item \textbf{Effect-Level Security for MCP Tool Servers (LLM Agents)}
+    \hfill \textit{In preparation; target: USENIX Security 2027}
+    \item \textbf{Energy-Efficient Federated Intrusion Detection for IoT}
+    \hfill \textit{In preparation; target: IEEE IoT Journal}
+    \item \textbf{Camera-Free Indoor Scene Reconstruction (Embedded Sensing)}
+    \hfill \textit{In preparation; target: ICCV 2027}
+\end{itemize}
+
+% ── PROJECTS ─────────────────────────────────────────────────────────────────
+\section{Selected Projects}
+\entry{RadFlow: Offline AI Radiology Triage \textnormal{(Harvard HSIL Hackathon 2026)}}{2026}
+\sub{Full-Stack Developer \textbar{} PyTorch, DenseNet121, GradCAM, CheXagent-8b, RAG (ChromaDB), FastAPI, React}
+\begin{itemize}
+    \item Built the FastAPI backend for a 4-stage chest X-ray pipeline (18-pathology
+    detection, GradCAM localization, guideline retrieval, VLM report drafting) that runs
+    fully offline on CUDA, Apple Silicon, or Intel hardware.
+    \item Added an async inference queue with retries, latency/error monitoring, and a
+    7-day confidence-drift report.
+\end{itemize}
+\entry{Complete Legal Aid: AI Legal-Tech Platform \textnormal{(\href{https://complete-legal-aid-beta.vercel.app/}{live})}}{2025 -- 2026}
+\sub{Full-Stack Developer \& AI Integration Lead \textbar{} React, TypeScript, Django Channels, PostgreSQL, Gemini, FAISS, Docker}
+\begin{itemize}
+    \item Shipped a bilingual citizen--lawyer platform with four AI agents in production;
+    the AI auto-drafting API cut document drafting from $\sim$45 to under 3 minutes (15$\times$).
+    \item Engineered the full frontend for 3 user roles and end-to-end WebSocket
+    messaging, with JWT \& Google OAuth 2.0.
+\end{itemize}
+\entry{ChefMate: NLP Recipe Retrieval \textnormal{(Solo)} \textbar{} \textit{\textnormal{Python, spaCy, scikit-learn, TF-IDF, kNN, Flask}}}{2024}
+\begin{itemize}
+    \item Normalized noisy free-text ingredients with spaCy lemmatization and fuzzy
+    matching, then ranked recipes from a 643 MB Kaggle dataset with TF-IDF + kNN and
+    explainable match scores.
+\end{itemize}
+\entry{Care Companion: AI + IoT Health Rover \textnormal{(Team Lead)} \textbar{} \textit{\textnormal{Python, OpenCV, Raspberry Pi 4}}}{2024}
+\begin{itemize}
+    \item Wrote all rover software: MobileNet-SSD person detection for autonomous patient
+    tracking, vitals and gas sensing, voice commands, and a caregiver dashboard.
+\end{itemize}
+\textbf{Also:} ConvoVerse (multi-agent LLM HCI prototype) \textbullet{}
+AI Orchestrator (open-source contributor) \textbullet{} SkillEx (semantic matching, Spring Boot)
+
+% ── TEACHING ─────────────────────────────────────────────────────────────────
+\section{Teaching Experience}
+\entry{Academic Tutor (Independent) \textnormal{-- Mathematics \& Science, Classes 6--12; individual lesson plans}}{Ongoing}
+
+% ── SKILLS ───────────────────────────────────────────────────────────────────
+\section{Technical Skills}
+\textbf{ML / AI:} PyTorch, scikit-learn, spaCy, OpenCV, Pandas, NumPy, LLM APIs, RAG,
+FAISS, ChromaDB, AI Agents\\
+\textbf{Languages:} Python, Java, C, C++, TypeScript, JavaScript, SQL \textbar{}
+\textbf{Spoken:} Bangla (native), English (professional)\\
+\textbf{Engineering:} FastAPI, Django, Flask, Spring Boot, React, PostgreSQL, Redis,
+Docker, GCP, Git, Linux, LaTeX
+
+% ── AWARDS ───────────────────────────────────────────────────────────────────
+\section{Honors \& Awards}
+\begin{itemize}
+    \item \textbf{Champion}, UIU CSE Project Show (System Analysis \& Design),
+    Complete Legal Aid \hfill Summer 2025
+    \item \textbf{3rd Runner-Up}, UIU CSE Project Show (Software Engineering),
+    Complete Legal Aid \hfill Fall 2025
+    \item \textbf{4th Runner-Up}, UIU CSE Project Show, Care Companion (AI + IoT) \hfill 2024
+    \item \textbf{3rd Place}, National Math \& Physics Olympiad, Junior Level (BdMOC) \hfill 2016
+\end{itemize}
+
+% ── ACTIVITIES ───────────────────────────────────────────────────────────────
+\section{Activities}
+Delegate, Asian Youth MUN \& AYIMUN (2018--19) \textbullet{} Member, British Council
+Bangladesh (2015--18) \textbullet{} Executive Member, School Quiz Club (2015--16)
+
+\end{document}
