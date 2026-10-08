@@ -101,6 +101,14 @@ export default function HeroEditor() {
             onChange={(v) => set({ profileVideo: v })}
             hint="MP4/WebM video or an image. Upload or paste a path."
           />
+          <ImageField
+            label="Dark mode portrait"
+            folder="profile"
+            accept="image/*"
+            value={data.profileDark ?? ""}
+            onChange={(v) => set({ profileDark: v })}
+            hint="Shown in dark mode only. Use a photo on a pure black background; its edges are faded into the hero."
+          />
         </>
       )}
     </EditorPage>

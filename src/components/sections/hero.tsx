@@ -141,6 +141,8 @@ function HeroMedia({ reducedMotion }: { reducedMotion: boolean }) {
     const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
     if (connection?.saveData) return;
     if (!window.matchMedia("(min-width: 1024px)").matches) return;
+    // Dark mode shows the black portrait instead, so the video would be hidden.
+    if (document.documentElement.classList.contains("dark")) return;
 
     let idleId = 0;
     let timeoutId = 0;
@@ -181,9 +183,8 @@ function HeroMedia({ reducedMotion }: { reducedMotion: boolean }) {
           fill
           priority
           fetchPriority="high"
-          sizes="(max-width: 1024px) 90vw, 520px"
-          quality={90}
-          className="object-cover object-top"
+          sizes="(max-width: 1024px) 100vw, 520px"
+          className="object-cover"
         />
       ) : (
         <span className="sr-only">{siteConfig.author.name}</span>
@@ -259,14 +260,15 @@ export function Hero() {
   const prefersReducedMotion = useReducedMotion() ?? false;
 
   const [primaryAction, ...secondaryActions] = heroContent.actions;
+  const darkPortrait = heroContent.profileDark;
 
   return (
     <MotionConfig reducedMotion="user">
-    {/* Always dark, in either theme: the portrait is shot on pure black, and
+    {/* Dark mode goes to pure black: the dark portrait is shot on black, and
         the section has to match it exactly for the photo to dissolve into it. */}
     <section
       id="hero"
-      className="dark scroll-section relative z-10 flex min-h-svh items-center overflow-hidden bg-black text-foreground"
+      className="scroll-section relative z-10 flex min-h-svh items-center overflow-hidden bg-background dark:bg-black"
     >
       {/* Backdrop: a faint grid fading out from the top, and a warm glow
           behind the headline. Both static — painted once, never animated. */}
@@ -292,18 +294,38 @@ export function Hero() {
             variants={HERO_SEQUENCE.media}
             className="relative col-start-1 row-start-1 hero-wide:col-start-2 hero-wide:row-span-4 hero-wide:self-center"
           >
-            {/* No frame: the photo's black background is the section's black,
-                and the mask feathers every edge so there is no seam to see. The
-                halo behind it fades the backdrop grid out around the photo, so
-                no rectangle shows where the photo's black covers the lines. */}
-            <div aria-hidden="true" className="pointer-events-none absolute -inset-x-[35%] -inset-y-[20%] bg-[radial-gradient(closest-side,#000_62%,transparent)]" />
-            <div className="hero-portrait-fade relative mx-auto aspect-[2276/3360] w-[min(100%,calc(56svh*0.677))] hero-wide:w-[min(32rem,calc(86svh*0.677))]">
+            {/* Light mode: the framed card with the photo / video. */}
+            <div className={`relative aspect-[5/6] max-h-[50svh] w-full overflow-hidden rounded-[1.75rem] bg-surface-2 ring-1 ring-line hero-wide:aspect-[3/4] hero-wide:h-[min(40rem,74svh)] hero-wide:max-h-none hero-wide:w-auto ${darkPortrait ? "dark:hidden" : ""}`}>
               <HeroMedia reducedMotion={prefersReducedMotion} />
+              {/* Phone only: darkens the lower half so the overlaid name stays legible. */}
+              <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/85 via-black/25 to-black/10 hero-wide:hidden" />
+              <div className="pointer-events-none absolute inset-0 rounded-[1.75rem] ring-1 ring-inset ring-white/10" />
             </div>
 
-            {/* Desktop: location + local time, docked on the portrait's left
-                edge, clear of the signature along the bottom. */}
-            <div className="absolute -left-10 top-[42%] hidden items-center gap-3 rounded-2xl border border-line bg-background/80 px-4 py-3 shadow-xl backdrop-blur-xl hero-wide:flex">
+            {/* Dark mode: no frame. The photo's black background is the
+                section's black, and the mask feathers every edge so there is
+                no seam to see. The halo behind it fades the backdrop grid out
+                around the photo, so no rectangle shows where the photo's black
+                covers the lines. */}
+            {darkPortrait && (
+              <div className="hidden dark:block">
+                <div aria-hidden="true" className="pointer-events-none absolute -inset-x-[35%] -inset-y-[20%] bg-[radial-gradient(closest-side,#000_62%,transparent)]" />
+                <div className="hero-portrait-fade relative mx-auto aspect-[2276/3360] w-[min(100%,calc(56svh*0.677))] hero-wide:w-[min(32rem,calc(86svh*0.677))]">
+                  <Image
+                    src={darkPortrait}
+                    alt={siteConfig.author.name}
+                    fill
+                    sizes="(max-width: 1024px) 90vw, 520px"
+                    quality={90}
+                    className="object-cover object-top"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Desktop: location + local time, docked on the portrait's edge.
+                In dark mode it moves up, clear of the photo's signature. */}
+            <div className="absolute -left-6 bottom-8 dark:-left-10 dark:bottom-auto dark:top-[42%] hidden items-center gap-3 rounded-2xl border border-line bg-background/80 px-4 py-3 shadow-xl backdrop-blur-xl hero-wide:flex">
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2">
                 <MapPin className="h-4 w-4 text-accent" />
               </span>
@@ -333,12 +355,12 @@ export function Hero() {
             </span>
           </motion.div>
 
-          {/* Name. On phones it sits just under the portrait, rising into its
-              faded lower edge (the photo carries its own signature, which an
-              overlay would cover). The second line is set in the serif italic
-              for an editorial pairing. The svh term keeps it from eating a
-              short landscape screen. */}
-          <h1 className="display relative z-10 col-start-1 row-start-2 -mt-6 text-[clamp(3rem,15vw,4.5rem)] text-white hero-wide:mb-6 hero-wide:mt-0 hero-wide:text-[clamp(3.5rem,min(8vw,15svh),7.5rem)]">
+          {/* Name. Overlaid on the portrait's lower edge on phones; in dark
+              mode it sits just under the portrait instead, rising into its
+              faded edge, since that photo carries its own signature. The
+              second line is set in the serif italic for an editorial pairing.
+              The svh term keeps it from eating a short landscape screen. */}
+          <h1 className={`display relative z-10 col-start-1 row-start-1 self-end p-5 pb-6 text-[clamp(3rem,15vw,4.5rem)] text-white hero-wide:row-start-2 hero-wide:mb-6 hero-wide:self-auto hero-wide:p-0 hero-wide:text-[clamp(3.5rem,min(8vw,15svh),7.5rem)] hero-wide:text-foreground ${darkPortrait ? "dark:row-start-2 dark:-mt-6 dark:self-auto dark:p-0 dark:hero-wide:mt-0" : ""}`}>
             {heroContent.headlineLines.map((line, i) => (
               <div key={`${line.text}-${i}`}>
                 <SplitText

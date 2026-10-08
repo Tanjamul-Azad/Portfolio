@@ -37,6 +37,7 @@
       "label": "Competition Podiums"
     }
   ],
-  "profileVideo": "/images/hero-portrait.jpg",
-  "profilePoster": "/images/hero-portrait.jpg"
+  "profileVideo": "/PROFILE VIDEO/profile vid.mp4",
+  "profilePoster": "/images/profile.jpg",
+  "profileDark": "/images/hero-portrait.jpg"
 }
