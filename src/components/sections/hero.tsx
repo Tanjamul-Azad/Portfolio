@@ -141,8 +141,6 @@ function HeroMedia({ reducedMotion }: { reducedMotion: boolean }) {
     const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
     if (connection?.saveData) return;
     if (!window.matchMedia("(min-width: 1024px)").matches) return;
-    // Dark mode shows the black portrait instead, so the video would be hidden.
-    if (document.documentElement.classList.contains("dark")) return;
 
     let idleId = 0;
     let timeoutId = 0;
@@ -183,8 +181,9 @@ function HeroMedia({ reducedMotion }: { reducedMotion: boolean }) {
           fill
           priority
           fetchPriority="high"
-          sizes="(max-width: 1024px) 100vw, 520px"
-          className="object-cover"
+          sizes="(max-width: 1024px) 90vw, 520px"
+          quality={90}
+          className="object-cover object-top"
         />
       ) : (
         <span className="sr-only">{siteConfig.author.name}</span>
@@ -260,12 +259,11 @@ export function Hero() {
   const prefersReducedMotion = useReducedMotion() ?? false;
 
   const [primaryAction, ...secondaryActions] = heroContent.actions;
-  const darkPortrait = heroContent.profileDark;
 
   return (
     <MotionConfig reducedMotion="user">
-    {/* Dark mode goes to pure black: the dark portrait is shot on black, and
-        the section has to match it exactly for the photo to dissolve into it. */}
+    {/* Dark mode goes to pure black: the portrait is shot on black, and the
+        section has to match it exactly for the photo to dissolve into it. */}
     <section
       id="hero"
       className="scroll-section relative z-10 flex min-h-svh items-center overflow-hidden bg-background dark:bg-black"
@@ -278,11 +276,11 @@ export function Hero() {
       </div>
 
       <div className="shell relative z-10 pb-10 pt-20 sm:pt-24 hero-wide:pb-16 hero-wide:pt-28">
-        {/* One grid, two arrangements. On a phone the badge and the name sit
-            in the same cell as the portrait, overlaid on it, so name and face
-            read as a single composed card instead of separate floating
-            blocks. Once there is room across — desktop, or a phone turned
-            landscape — the portrait moves out to its own right-hand column. */}
+        {/* One grid, two arrangements. On a phone everything stacks, with the
+            badge floating over the portrait's faded top and the name rising
+            into its faded bottom. Once there is room across — desktop, or a
+            phone turned landscape — the portrait moves out to its own
+            right-hand column. */}
         <motion.div
           variants={HERO_SEQUENCE.container}
           initial="hidden"
@@ -294,73 +292,39 @@ export function Hero() {
             variants={HERO_SEQUENCE.media}
             className="relative col-start-1 row-start-1 hero-wide:col-start-2 hero-wide:row-span-4 hero-wide:self-center"
           >
-            {/* Light mode: the framed card with the photo / video. */}
-            <div className={`relative aspect-[5/6] max-h-[50svh] w-full overflow-hidden rounded-[1.75rem] bg-surface-2 ring-1 ring-line hero-wide:aspect-[3/4] hero-wide:h-[min(40rem,74svh)] hero-wide:max-h-none hero-wide:w-auto ${darkPortrait ? "dark:hidden" : ""}`}>
+            {/* No frame: the mask feathers every edge of the photo into the
+                hero. The halo behind it fades the backdrop grid out around
+                the photo, so no rectangle shows where the photo covers the
+                lines. */}
+            <div aria-hidden="true" className="pointer-events-none absolute -inset-x-[35%] -inset-y-[20%] bg-[radial-gradient(closest-side,var(--background)_62%,transparent)] dark:bg-[radial-gradient(closest-side,#000_62%,transparent)]" />
+            <div className="hero-portrait-fade relative mx-auto aspect-[2276/3360] w-[min(100%,calc(50svh*0.677))] hero-wide:w-[min(32rem,calc(86svh*0.677))]">
               <HeroMedia reducedMotion={prefersReducedMotion} />
-              {/* Phone only: darkens the lower half so the overlaid name stays legible. */}
-              <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/85 via-black/25 to-black/10 hero-wide:hidden" />
-              <div className="pointer-events-none absolute inset-0 rounded-[1.75rem] ring-1 ring-inset ring-white/10" />
-            </div>
-
-            {/* Dark mode: no frame. The photo's black background is the
-                section's black, and the mask feathers every edge so there is
-                no seam to see. The halo behind it fades the backdrop grid out
-                around the photo, so no rectangle shows where the photo's black
-                covers the lines. */}
-            {darkPortrait && (
-              <div className="hidden dark:block">
-                <div aria-hidden="true" className="pointer-events-none absolute -inset-x-[35%] -inset-y-[20%] bg-[radial-gradient(closest-side,#000_62%,transparent)]" />
-                <div className="hero-portrait-fade relative mx-auto aspect-[2276/3360] w-[min(100%,calc(56svh*0.677))] hero-wide:w-[min(32rem,calc(86svh*0.677))]">
-                  <Image
-                    src={darkPortrait}
-                    alt={siteConfig.author.name}
-                    fill
-                    sizes="(max-width: 1024px) 90vw, 520px"
-                    quality={90}
-                    className="object-cover object-top"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Desktop: location + local time, docked on the portrait's edge.
-                In dark mode it moves up, clear of the photo's signature. */}
-            <div className="absolute -left-6 bottom-8 dark:-left-10 dark:bottom-auto dark:top-[42%] hidden items-center gap-3 rounded-2xl border border-line bg-background/80 px-4 py-3 shadow-xl backdrop-blur-xl hero-wide:flex">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2">
-                <MapPin className="h-4 w-4 text-accent" />
-              </span>
-              <span className="flex flex-col">
-                <span className="text-[13px] font-medium text-foreground">{siteConfig.author.location}</span>
-                <span className="font-mono text-[11px] text-muted-foreground">
-                  <LocalTime /> · GMT+6
-                </span>
-              </span>
             </div>
           </motion.div>
 
-          {/* Availability badge — glass over the photo on phones. */}
+          {/* Availability badge — floats over the portrait's faded top on phones. */}
           <motion.div
             variants={HERO_SEQUENCE.item}
-            className="relative z-10 col-start-1 row-start-1 self-start p-3.5 hero-wide:mb-8 hero-wide:p-0"
+            className="relative z-10 col-start-1 row-start-1 self-start justify-self-center hero-wide:mb-8 hero-wide:justify-self-start"
           >
-            <span className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-black/35 py-1.5 pl-2.5 pr-3.5 text-white backdrop-blur-md hero-wide:border-line hero-wide:bg-surface/70 hero-wide:text-foreground">
+            <span className="inline-flex items-center gap-2.5 rounded-full border border-line bg-surface/70 py-1.5 pl-2.5 pr-3.5 text-foreground backdrop-blur-md">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:hidden" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
               </span>
-              <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-300 hero-wide:text-emerald-700 dark:hero-wide:text-emerald-400">
+              <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-700 dark:text-emerald-400">
                 {heroContent.badge.status}
               </span>
               <span className="text-xs font-medium">{heroContent.badge.text}</span>
             </span>
           </motion.div>
 
-          {/* Name. Overlaid on the portrait's lower edge on phones; in dark
-              mode it sits just under the portrait instead, rising into its
-              faded edge, since that photo carries its own signature. The
-              second line is set in the serif italic for an editorial pairing.
-              The svh term keeps it from eating a short landscape screen. */}
-          <h1 className={`display relative z-10 col-start-1 row-start-1 self-end p-5 pb-6 text-[clamp(3rem,15vw,4.5rem)] text-white hero-wide:row-start-2 hero-wide:mb-6 hero-wide:self-auto hero-wide:p-0 hero-wide:text-[clamp(3.5rem,min(8vw,15svh),7.5rem)] hero-wide:text-foreground ${darkPortrait ? "dark:row-start-2 dark:-mt-6 dark:self-auto dark:p-0 dark:hero-wide:mt-0" : ""}`}>
+          {/* Name. On phones it sits just under the portrait, rising into its
+              faded lower edge (the photo carries its own signature, which an
+              overlay would cover). The second line is set in the serif italic
+              for an editorial pairing. The svh term keeps it from eating a
+              short landscape screen. */}
+          <h1 className="display relative z-10 col-start-1 row-start-2 -mt-4 text-[clamp(2.75rem,13.5vw,4.5rem)] text-foreground hero-wide:mb-6 hero-wide:mt-0 hero-wide:text-[clamp(3.5rem,min(8vw,15svh),7.5rem)]">
             {heroContent.headlineLines.map((line, i) => (
               <div key={`${line.text}-${i}`}>
                 <SplitText
@@ -381,18 +345,18 @@ export function Hero() {
           {/* Copy, actions, proof */}
           <motion.div
             variants={HERO_SEQUENCE.container}
-            className="col-start-1 row-start-3 mt-5 max-w-xl hero-wide:mt-0"
+            className="col-start-1 row-start-3 mt-4 max-w-xl hero-wide:mt-0"
           >
             <motion.p
               variants={HERO_SEQUENCE.item}
-              className="text-balance text-xl font-medium leading-snug tracking-[-0.02em] text-foreground sm:text-2xl"
+              className="text-balance text-lg font-medium leading-snug tracking-[-0.02em] text-foreground sm:text-2xl"
             >
               {heroContent.tagline}
             </motion.p>
 
             <motion.div
               variants={HERO_SEQUENCE.item}
-              className="mt-3 font-mono text-[12px] leading-relaxed text-muted-foreground sm:text-[13px]"
+              className="mt-2 font-mono text-[12px] leading-relaxed text-muted-foreground sm:mt-3 sm:text-[13px]"
             >
               <TypewriterText
                 text={heroContent.typewriter}
@@ -402,11 +366,11 @@ export function Hero() {
               />
             </motion.div>
 
-            <motion.div variants={HERO_SEQUENCE.item} className="mt-6 flex gap-2.5 sm:mt-7 sm:gap-3">
+            <motion.div variants={HERO_SEQUENCE.item} className="mt-5 flex gap-2.5 sm:mt-7 sm:gap-3">
               {primaryAction && (
                 <a
                   href={primaryAction.href}
-                  className="group inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-5 text-[13px] font-semibold text-background shadow-[0_10px_30px_-10px_rgb(0_0_0/0.45)] transition-transform duration-300 hover:-translate-y-0.5 sm:flex-none sm:px-7 sm:text-sm"
+                  className="group inline-flex h-12 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-foreground px-4 text-[13px] font-semibold text-background shadow-[0_10px_30px_-10px_rgb(0_0_0/0.45)] transition-transform duration-300 hover:-translate-y-0.5 sm:flex-none sm:px-7 sm:text-sm"
                 >
                   {primaryAction.label}
                   <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 max-[400px]:hidden" />
@@ -416,7 +380,7 @@ export function Hero() {
                 <a
                   key={`${action.label}-${i}`}
                   href={action.href}
-                  className="inline-flex h-12 flex-1 items-center justify-center rounded-full border border-line-strong bg-surface/60 px-5 text-[13px] font-medium text-foreground backdrop-blur transition-colors duration-300 hover:bg-surface-2 sm:flex-none sm:px-7 sm:text-sm"
+                  className="inline-flex h-12 flex-1 items-center justify-center whitespace-nowrap rounded-full border border-line-strong bg-surface/60 px-4 text-[13px] font-medium text-foreground backdrop-blur transition-colors duration-300 hover:bg-surface-2 sm:flex-none sm:px-7 sm:text-sm"
                 >
                   {action.label}
                 </a>
@@ -442,7 +406,7 @@ export function Hero() {
               </motion.dl>
             )}
 
-            <motion.ul variants={HERO_SEQUENCE.item} className="mt-6 hidden items-center gap-5 hero-wide:flex">
+            <motion.ul variants={HERO_SEQUENCE.item} className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2">
               {heroSocials.map((social) => (
                 <li key={social.label}>
                   <a
@@ -456,6 +420,14 @@ export function Hero() {
                   </a>
                 </li>
               ))}
+              {/* Where I am and what time it is there: the clock is live Dhaka time. */}
+              <li className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
+                <MapPin className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
+                <span>Dhaka</span>
+                <span aria-hidden="true">·</span>
+                <LocalTime />
+                <span>GMT+6</span>
+              </li>
             </motion.ul>
           </motion.div>
         </motion.div>

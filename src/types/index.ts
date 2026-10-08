@@ -211,8 +211,6 @@ export interface HeroContent {
   /** Optional still shown before the video decodes, and in place of it when the
    *  visitor has asked for reduced motion. */
   profilePoster?: string;
-  /** Dark-theme portrait, shot on pure black so it dissolves into the hero. */
-  profileDark?: string;
 }
 
 export interface AboutContent {

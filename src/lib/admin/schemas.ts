@@ -174,7 +174,6 @@ const hero = z.object({
   stats: z.array(z.object({ value: str, label: str })),
   profileVideo: str,
   profilePoster: str.optional(),
-  profileDark: str.optional(),
 });
 
 const about = z.object({
