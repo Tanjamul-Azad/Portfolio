@@ -199,7 +199,6 @@ export interface ArchitectureDiagram {
 }
 
 export interface HeroContent {
-  badge: { status: string; text: string };
   headlineLines: { text: string; muted?: boolean }[];
   /** Small line shown under the headline — the value-proposition tagline. */
   tagline: string;

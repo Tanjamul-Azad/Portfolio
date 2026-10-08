@@ -14,13 +14,11 @@ export default function HeroEditor() {
   const { data, setData, loading, error, saving, save } = useContent<HeroContent>("hero");
 
   const set = (patch: Partial<HeroContent>) => setData((p) => (p ? { ...p, ...patch } : p));
-  const setBadge = (patch: Partial<HeroContent["badge"]>) =>
-    setData((p) => (p ? { ...p, badge: { ...p.badge, ...patch } } : p));
 
   return (
     <EditorPage
       title="Hero"
-      description="The first thing visitors see — headline, availability badge, buttons, and profile video."
+      description="The first thing visitors see — headline, buttons, and profile photo."
       loading={loading}
       error={error}
       saving={saving}
@@ -28,12 +26,6 @@ export default function HeroEditor() {
     >
       {data && (
         <>
-          <FormSection title="Availability badge" />
-          <div className="grid gap-3 sm:grid-cols-[8rem_1fr]">
-            <TextField label="Status" value={data.badge.status} onChange={(v) => setBadge({ status: v })} hint="e.g. OPEN" />
-            <TextField label="Text" value={data.badge.text} onChange={(v) => setBadge({ text: v })} />
-          </div>
-
           <FormSection title="Headline" />
           <ObjectListField<HeadlineLine>
             hint="Each line animates in. Tick 'muted' for the greyed-out line."

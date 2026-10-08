@@ -166,7 +166,6 @@ const site = z.object({
 });
 
 const hero = z.object({
-  badge: z.object({ status: str, text: str }),
   headlineLines: z.array(z.object({ text: str, muted: z.boolean().optional() })),
   tagline: str,
   typewriter: str,

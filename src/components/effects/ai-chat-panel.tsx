@@ -278,192 +278,204 @@ export default function AiChatPanel({ onClose }: { onClose: () => void }) {
   const lastFollowUps =
     !streaming && last?.role === "assistant" && !last.error ? splitFollowUps(last.content).followUps : [];
 
-  // Positioning, size and the glass surface belong to the launcher, which
-  // morphs into this window; the panel only fills it.
   return (
-    <div role="dialog" aria-label={`Chat with ${firstName}'s AI assistant`} className="flex h-full flex-col">
-      {/* Header */}
-      <div className="relative shrink-0 border-b border-line px-4 py-3">
-        <div className="flex items-center gap-3">
-          <span className="relative">
-            <Avatar size={38} />
-            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background bg-emerald-400" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-[15px] font-semibold tracking-[-0.01em] text-foreground">
-              {firstName}&apos;s AI
-            </p>
-            <p className="truncate font-mono text-[10.5px] uppercase tracking-[0.12em] text-muted-foreground">
-              <span className="text-emerald-600 dark:text-emerald-400">Online</span> · English / বাংলা
-            </p>
-          </div>
-          {messages.length > 0 && (
+    <>
+      {/* Phone: a dimmed backdrop under a bottom sheet. Tapping it closes. */}
+      <div
+        aria-hidden="true"
+        onClick={onClose}
+        className="fixed inset-0 z-60 bg-black/40 animate-in fade-in duration-200 sm:hidden"
+      />
+
+      <div
+        role="dialog"
+        aria-label={`Chat with ${firstName}'s AI assistant`}
+        className="fixed inset-x-0 bottom-0 z-60 flex h-[88dvh] flex-col overflow-hidden rounded-t-[1.75rem] border border-line bg-background shadow-2xl animate-in slide-in-from-bottom-8 fade-in duration-300 sm:inset-x-auto sm:bottom-24 sm:right-4 sm:h-[min(40rem,calc(100dvh-8rem))] sm:w-[25rem] sm:rounded-3xl sm:slide-in-from-bottom-4"
+      >
+        {/* Header */}
+        <div className="relative shrink-0 border-b border-line px-4 pb-3 pt-2.5 sm:pt-3.5">
+          <div aria-hidden="true" className="mx-auto mb-2.5 h-1 w-10 rounded-full bg-line-strong sm:hidden" />
+          <div className="flex items-center gap-3">
+            <span className="relative">
+              <Avatar size={38} />
+              <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background bg-emerald-400" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[15px] font-semibold tracking-[-0.01em] text-foreground">
+                {firstName}&apos;s AI
+              </p>
+              <p className="truncate font-mono text-[10.5px] uppercase tracking-[0.12em] text-muted-foreground">
+                <span className="text-emerald-600 dark:text-emerald-400">Online</span> · English / বাংলা
+              </p>
+            </div>
+            {messages.length > 0 && (
+              <button
+                type="button"
+                onClick={reset}
+                aria-label="Start a new chat"
+                title="New chat"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </button>
+            )}
             <button
               type="button"
-              onClick={reset}
-              aria-label="Start a new chat"
-              title="New chat"
+              onClick={onClose}
+              aria-label="Close assistant"
               className="inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
             >
-              <RotateCcw className="h-4 w-4" />
+              <X className="h-5 w-5" />
             </button>
-          )}
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close assistant"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          </div>
         </div>
-      </div>
 
-      {/* Conversation */}
-      <div
-        ref={listRef}
-        onScroll={(e) => {
-          const el = e.currentTarget;
-          stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
-        }}
-        role="log"
-        aria-live="polite"
-        aria-busy={streaming}
-        className="flex-1 space-y-5 overflow-y-auto overscroll-contain px-4 py-5"
-      >
-        {messages.length === 0 ? (
-          <div className="flex h-full flex-col justify-end">
-            <p className="text-lg font-semibold tracking-[-0.02em] text-foreground">
-              Hi, ask me anything about {firstName}.
-            </p>
-            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              Research, projects, experience, or how to work with him. English or বাংলা.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-1.5">
-              {STARTERS.map(({ label, question }) => (
+        {/* Conversation */}
+        <div
+          ref={listRef}
+          onScroll={(e) => {
+            const el = e.currentTarget;
+            stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
+          }}
+          role="log"
+          aria-live="polite"
+          aria-busy={streaming}
+          className="flex-1 space-y-5 overflow-y-auto overscroll-contain px-4 py-5"
+        >
+          {messages.length === 0 ? (
+            <div className="flex h-full flex-col justify-end">
+              <p className="text-lg font-semibold tracking-[-0.02em] text-foreground">
+                Hi, ask me anything about {firstName}.
+              </p>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                Research, projects, experience, or how to work with him. English or বাংলা.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {STARTERS.map(({ label, question }) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => send(question)}
+                    className="rounded-full border border-line bg-surface/70 px-3.5 py-1.5 text-[12.5px] font-medium text-foreground transition-colors hover:border-amber-500/50 hover:bg-surface-2"
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            messages.map((m) => {
+              if (m.role === "user") return <Bubble key={m.id} role="user">{m.content}</Bubble>;
+              const isLive = streaming && m.id === last?.id;
+              const { text } = splitFollowUps(m.content);
+              return (
+                <div key={m.id}>
+                  <Bubble role="assistant">
+                    {m.error ? (
+                      <p className="text-muted-foreground">{text}</p>
+                    ) : text ? (
+                      <>
+                        <Markdown components={markdown}>{text}</Markdown>
+                        {isLive && (
+                          <span aria-hidden="true" className="ml-0.5 inline-block h-[1em] w-[0.45ch] translate-y-[0.15em] animate-pulse bg-foreground/70" />
+                        )}
+                      </>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 py-1.5" aria-label="Thinking">
+                        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-amber-500 [animation-delay:-0.3s]" />
+                        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-amber-500 [animation-delay:-0.15s]" />
+                        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-amber-500" />
+                      </span>
+                    )}
+                  </Bubble>
+                  {!isLive && !m.error && text && (
+                    <div className="-ml-2.5 mt-1">
+                      <CopyButton text={text} />
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+
+          {lastFollowUps.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {lastFollowUps.map((q) => (
                 <button
-                  key={label}
+                  key={q}
                   type="button"
-                  onClick={() => send(question)}
-                  className="rounded-full border border-line bg-surface/70 px-3.5 py-1.5 text-[12.5px] font-medium text-foreground transition-colors hover:border-amber-500/50 hover:bg-surface-2"
+                  onClick={() => send(q)}
+                  className="rounded-full border border-line bg-surface px-3 py-1.5 text-left text-[12.5px] leading-snug text-foreground transition-colors hover:border-amber-500/50 hover:bg-surface-2"
                 >
-                  {label}
+                  {q}
                 </button>
               ))}
             </div>
-          </div>
-        ) : (
-          messages.map((m) => {
-            if (m.role === "user") return <Bubble key={m.id} role="user">{m.content}</Bubble>;
-            const isLive = streaming && m.id === last?.id;
-            const { text } = splitFollowUps(m.content);
-            return (
-              <div key={m.id}>
-                <Bubble role="assistant">
-                  {m.error ? (
-                    <p className="text-muted-foreground">{text}</p>
-                  ) : text ? (
-                    <>
-                      <Markdown components={markdown}>{text}</Markdown>
-                      {isLive && (
-                        <span aria-hidden="true" className="ml-0.5 inline-block h-[1em] w-[0.45ch] translate-y-[0.15em] animate-pulse bg-foreground/70" />
-                      )}
-                    </>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 py-1.5" aria-label="Thinking">
-                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-amber-500 [animation-delay:-0.3s]" />
-                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-amber-500 [animation-delay:-0.15s]" />
-                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-amber-500" />
-                    </span>
-                  )}
-                </Bubble>
-                {!isLive && !m.error && text && (
-                  <div className="-ml-2.5 mt-1">
-                    <CopyButton text={text} />
-                  </div>
-                )}
-              </div>
-            );
-          })
-        )}
-
-        {lastFollowUps.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {lastFollowUps.map((q) => (
-              <button
-                key={q}
-                type="button"
-                onClick={() => send(q)}
-                className="rounded-full border border-line bg-surface px-3 py-1.5 text-left text-[12.5px] leading-snug text-foreground transition-colors hover:border-amber-500/50 hover:bg-surface-2"
-              >
-                {q}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Composer */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          void send(input);
-        }}
-        className="shrink-0 border-t border-line px-3 pb-3 pt-3"
-      >
-        <div className="flex items-end gap-2 rounded-[1.4rem] border border-line bg-surface/80 px-3 py-1.5 transition-colors focus-within:border-amber-500/50">
-          <label htmlFor="ai-chat-input" className="sr-only">
-            Message
-          </label>
-          <textarea
-            id="ai-chat-input"
-            ref={inputRef}
-            rows={1}
-            value={input}
-            maxLength={2000}
-            onChange={(e) => {
-              setInput(e.target.value);
-              const el = e.target;
-              el.style.height = "auto";
-              el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-                e.preventDefault();
-                void send(input);
-              }
-            }}
-            placeholder={`Ask anything about ${firstName}…`}
-            className="max-h-[120px] flex-1 resize-none bg-transparent py-2 text-[15px] leading-snug text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 sm:text-sm"
-          />
-          {streaming ? (
-            <button
-              type="button"
-              onClick={() => abortRef.current?.abort()}
-              aria-label="Stop answering"
-              className="mb-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-foreground text-background"
-            >
-              <Square className="h-3 w-3 fill-current" />
-            </button>
-          ) : (
-            <button
-              type="submit"
-              disabled={!input.trim()}
-              aria-label="Send message"
-              className="mb-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-foreground text-background transition-opacity disabled:opacity-30"
-            >
-              <ArrowUp className="h-4 w-4" />
-            </button>
           )}
         </div>
-        <p className="mt-2 text-center text-[10.5px] text-muted-foreground">
-          AI answers can be imperfect — the{" "}
-          <a href={siteConfig.links.resume} className="underline underline-offset-2 hover:text-foreground">
-            resume
-          </a>{" "}
-          is the source of truth.
-        </p>
-      </form>
-    </div>
+
+        {/* Composer */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void send(input);
+          }}
+          className="shrink-0 border-t border-line bg-background px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3"
+        >
+          <div className="flex items-end gap-2 rounded-[1.4rem] border border-line bg-surface px-3 py-1.5 transition-colors focus-within:border-line-strong">
+            <label htmlFor="ai-chat-input" className="sr-only">
+              Message
+            </label>
+            <textarea
+              id="ai-chat-input"
+              ref={inputRef}
+              rows={1}
+              value={input}
+              maxLength={2000}
+              onChange={(e) => {
+                setInput(e.target.value);
+                const el = e.target;
+                el.style.height = "auto";
+                el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+                  e.preventDefault();
+                  void send(input);
+                }
+              }}
+              placeholder={`Ask anything about ${firstName}…`}
+              className="max-h-[120px] flex-1 resize-none bg-transparent py-2 text-[15px] leading-snug text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 sm:text-sm"
+            />
+            {streaming ? (
+              <button
+                type="button"
+                onClick={() => abortRef.current?.abort()}
+                aria-label="Stop answering"
+                className="mb-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-foreground text-background"
+              >
+                <Square className="h-3 w-3 fill-current" />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={!input.trim()}
+                aria-label="Send message"
+                className="mb-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-foreground text-background transition-opacity disabled:opacity-30"
+              >
+                <ArrowUp className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          <p className="mt-2 text-center text-[10.5px] text-muted-foreground">
+            AI answers can be imperfect — the{" "}
+            <a href={siteConfig.links.resume} className="underline underline-offset-2 hover:text-foreground">
+              resume
+            </a>{" "}
+            is the source of truth.
+          </p>
+        </form>
+      </div>
+    </>
   );
 }

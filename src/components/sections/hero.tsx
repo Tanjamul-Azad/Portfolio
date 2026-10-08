@@ -277,10 +277,9 @@ export function Hero() {
 
       <div className="shell relative z-10 pb-10 pt-20 sm:pt-24 hero-wide:pb-16 hero-wide:pt-28">
         {/* One grid, two arrangements. On a phone everything stacks, with the
-            badge floating over the portrait's faded top and the name rising
-            into its faded bottom. Once there is room across — desktop, or a
-            phone turned landscape — the portrait moves out to its own
-            right-hand column. */}
+            name rising into the portrait's faded bottom. Once there is room
+            across — desktop, or a phone turned landscape — the portrait moves
+            out to its own right-hand column. */}
         <motion.div
           variants={HERO_SEQUENCE.container}
           initial="hidden"
@@ -300,23 +299,6 @@ export function Hero() {
             <div className="hero-portrait-fade relative mx-auto aspect-[2276/3360] w-[min(100%,calc(46svh*0.677))] overflow-hidden rounded-[1.75rem] bg-black shadow-[0_30px_60px_-28px_rgb(0_0_0/0.55)] ring-1 ring-black/10 hero-wide:w-[min(30rem,calc(74svh*0.677))] dark:w-[min(100%,calc(50svh*0.677))] dark:overflow-visible dark:rounded-none dark:shadow-none dark:ring-0 dark:hero-wide:w-[min(32rem,calc(86svh*0.677))]">
               <HeroMedia reducedMotion={prefersReducedMotion} />
             </div>
-          </motion.div>
-
-          {/* Availability badge — floats over the portrait's faded top on phones. */}
-          <motion.div
-            variants={HERO_SEQUENCE.item}
-            className="relative z-10 col-start-1 row-start-1 self-start justify-self-center pt-3 dark:pt-0 hero-wide:mb-8 hero-wide:pt-0 hero-wide:justify-self-start"
-          >
-            <span className="inline-flex items-center gap-2.5 rounded-full border border-line bg-surface/70 py-1.5 pl-2.5 pr-3.5 text-foreground backdrop-blur-md">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:hidden" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-              </span>
-              <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-700 dark:text-emerald-400">
-                {heroContent.badge.status}
-              </span>
-              <span className="text-xs font-medium">{heroContent.badge.text}</span>
-            </span>
           </motion.div>
 
           {/* Name. On phones it sits under the portrait (the photo carries its
