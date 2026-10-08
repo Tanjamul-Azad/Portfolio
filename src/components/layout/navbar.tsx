@@ -82,7 +82,12 @@ export function Navbar() {
     href.startsWith("#") ? (isHome ? href : `/${href}`) : href;
 
   return (
-    <nav aria-label="Main" className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4">
+    // Resting over the always-black hero, the bar takes dark-theme colours so
+    // it stays legible in light mode; it reverts once its own backdrop fades in.
+    <nav
+      aria-label="Main"
+      className={cn("fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4", isHome && !scrolled && "dark")}
+    >
       {/* The bar keeps one fixed geometry; only its background fades in once
           the page moves. It used to morph from full-width to an island by
           transitioning max-width and padding, which re-laid-out the page on
