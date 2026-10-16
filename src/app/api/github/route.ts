@@ -3,12 +3,19 @@ import { siteConfig } from "@/config";
 import { parseContributionCalendar } from "@/lib/github-contributions";
 import type { GitHubActivity } from "@/types/github";
 
-export const revalidate = 900;
+// Run on every request so the contribution calendar never waits for ISR.
+export const revalidate = 0;
+
+const responseHeaders = {
+  "Cache-Control": "private, no-store, max-age=0",
+  "CDN-Cache-Control": "no-store",
+  "Vercel-CDN-Cache-Control": "no-store",
+};
 
 export async function GET() {
   const username = new URL(siteConfig.links.github).pathname.split("/").filter(Boolean)[0];
   if (!username || !/^[a-z\d-]+$/i.test(username)) {
-    return NextResponse.json({ error: "GitHub profile is not configured" }, { status: 503 });
+    return NextResponse.json({ error: "GitHub profile is not configured" }, { status: 503, headers: responseHeaders });
   }
 
   const headers: Record<string, string> = {
@@ -19,8 +26,8 @@ export async function GET() {
 
   const [calendar, profile] = await Promise.allSettled([
     fetch(`https://github.com/users/${username}/contributions`, {
-      headers: { Accept: "text/html", "User-Agent": headers["User-Agent"] },
-      next: { revalidate: 900 },
+      headers: { Accept: "text/html", "User-Agent": headers["User-Agent"], "Cache-Control": "no-cache" },
+      cache: "no-store",
       signal: AbortSignal.timeout(8000),
     }).then(async (response) => {
       if (!response.ok) throw new Error("GitHub calendar request failed");
@@ -28,7 +35,9 @@ export async function GET() {
     }),
     fetch(`https://api.github.com/users/${username}`, {
       headers,
-      next: { revalidate: 900 },
+      // Only repository metadata is cached, to protect the unauthenticated
+      // REST rate limit. The contribution calendar above is always fresh.
+      next: { revalidate: 300 },
       signal: AbortSignal.timeout(8000),
     }).then(async (response) => {
       if (!response.ok) throw new Error("GitHub profile request failed");
@@ -41,7 +50,7 @@ export async function GET() {
   ]);
 
   if (calendar.status === "rejected" && profile.status === "rejected") {
-    return NextResponse.json({ error: "GitHub activity is temporarily unavailable" }, { status: 503 });
+    return NextResponse.json({ error: "GitHub activity is temporarily unavailable" }, { status: 503, headers: responseHeaders });
   }
 
   const activity: GitHubActivity = {
@@ -51,5 +60,5 @@ export async function GET() {
     repositories: profile.status === "fulfilled" ? profile.value.repositories : null,
     updatedAt: new Date().toISOString(),
   };
-  return NextResponse.json(activity);
+  return NextResponse.json(activity, { headers: responseHeaders });
 }

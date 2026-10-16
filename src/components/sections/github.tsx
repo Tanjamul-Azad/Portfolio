@@ -15,6 +15,7 @@ const activityColors = [
   "bg-[#603711] ring-[#48280c]/20 dark:bg-[#d49a44] dark:ring-[#e2b060]/25",
 ];
 const formatNumber = (number: number) => number.toLocaleString("en-US");
+const REFRESH_INTERVAL = 30_000;
 const dateLabel = (date: string) => new Date(`${date}T00:00:00Z`).toLocaleDateString("en-US", {
   month: "long", day: "numeric", year: "numeric", timeZone: "UTC",
 });
@@ -112,29 +113,55 @@ export function GitHub() {
   const [data, setData] = useState<GitHubActivity | null>(null);
   const [error, setError] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
     let lastRequested = 0;
+    let inFlight = false;
     async function load() {
+      if (inFlight) return;
+      inFlight = true;
       lastRequested = Date.now();
+      setRefreshing(true);
       try {
-        const response = await fetch("/api/github", { signal: controller.signal, cache: "no-store" });
+        const response = await fetch("/api/github", {
+          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(12_000)]),
+          cache: "no-store",
+        });
         if (!response.ok) throw new Error("GitHub activity unavailable");
         const activity: GitHubActivity = await response.json();
-        if (!controller.signal.aborted) { setData(activity); setError(false); }
+        if (!controller.signal.aborted) {
+          // Keep the last usable values if one GitHub endpoint is unavailable.
+          setData((previous) => ({
+            ...activity,
+            calendar: activity.calendar ?? previous?.calendar ?? null,
+            repositories: activity.repositories ?? previous?.repositories ?? null,
+            updatedAt: activity.calendar ? activity.updatedAt : previous?.updatedAt ?? activity.updatedAt,
+          }));
+          setError(activity.calendar === null);
+        }
       } catch {
         if (!controller.signal.aborted) setError(true);
+      } finally {
+        inFlight = false;
+        if (!controller.signal.aborted) setRefreshing(false);
       }
     }
     function refresh() {
-      if (document.visibilityState === "visible" && Date.now() - lastRequested >= 900_000) void load();
+      if (document.visibilityState === "visible" && Date.now() - lastRequested >= 5_000) void load();
     }
     setError(false);
     void load();
-    const interval = window.setInterval(refresh, 900_000);
+    const interval = window.setInterval(refresh, REFRESH_INTERVAL);
     document.addEventListener("visibilitychange", refresh);
-    return () => { controller.abort(); window.clearInterval(interval); document.removeEventListener("visibilitychange", refresh); };
+    window.addEventListener("focus", refresh);
+    return () => {
+      controller.abort();
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", refresh);
+      window.removeEventListener("focus", refresh);
+    };
   }, [attempt]);
 
   const stats = [
@@ -177,8 +204,11 @@ export function GitHub() {
           )}
 
           <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-[#9a713d]/15 px-4 py-1.5 sm:px-6 dark:border-[#b2874b]/10">
-            <p className="flex items-center gap-1.5 text-[10px] text-muted-foreground"><span className={cn("h-1 w-1 rounded-full", data && !error ? "bg-[#ad7939] dark:bg-[#c28f48]" : "bg-muted-foreground/50")} aria-hidden="true" />{data ? (error ? "Refresh delayed" : <>Synced <time dateTime={data.updatedAt}>{new Date(data.updatedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</time> · auto-updates</>) : "Activity from GitHub"}</p>
-            <a href={siteConfig.links.github} target="_blank" rel="noopener noreferrer" className="group inline-flex min-h-8 items-center gap-1 text-[11px] font-medium text-accent">View profile<ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" /></a>
+            <p className="flex items-center gap-1.5 text-[10px] text-muted-foreground"><span className={cn("h-1 w-1 rounded-full", data && !error ? "bg-[#ad7939] dark:bg-[#c28f48]" : "bg-muted-foreground/50")} aria-hidden="true" />{refreshing ? "Checking GitHub…" : data ? (error ? "Refresh delayed" : <>Checked <time dateTime={data.updatedAt}>{new Date(data.updatedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</time> · every 30s</>) : "Activity from GitHub"}</p>
+            <div className="flex items-center gap-2">
+              <button type="button" onClick={() => setAttempt((value) => value + 1)} disabled={refreshing} aria-label="Refresh GitHub activity" title="Refresh GitHub activity" className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground disabled:cursor-wait disabled:opacity-60"><RefreshCw className={cn("h-3 w-3", refreshing && "animate-spin")} aria-hidden="true" /></button>
+              <a href={siteConfig.links.github} target="_blank" rel="noopener noreferrer" className="group inline-flex min-h-8 items-center gap-1 text-[11px] font-medium text-accent">View profile<ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" /></a>
+            </div>
           </div>
         </div>
       </div>
