@@ -303,8 +303,8 @@ export function Hero() {
 
           {/* Name. On phones it sits under the portrait (the photo carries its
               own signature, which an overlay would cover); in dark mode it
-              rises into the photo's faded lower edge. The second line is set
-              in the serif italic for an editorial pairing. The svh term keeps
+              rises into the photo's faded lower edge. Both lines share the
+              same typography. The svh term keeps
               it from eating a short landscape screen. */}
           <h1 className="display relative z-10 col-start-1 row-start-2 mt-5 dark:-mt-4 dark:hero-wide:mt-0 text-[clamp(2.75rem,13.5vw,4.5rem)] text-foreground hero-wide:mb-6 hero-wide:mt-0 hero-wide:text-[clamp(3.5rem,min(8vw,15svh),7.5rem)]">
             {heroContent.headlineLines.map((line, i) => (
@@ -312,13 +312,7 @@ export function Hero() {
                 <SplitText
                   text={line.text}
                   delay={0.16 + i * 0.08}
-                  className={
-                    i > 0
-                      ? "accent-serif -mt-[0.06em] pr-[0.12em] text-[1.08em]"
-                      : line.muted
-                        ? "text-muted-foreground"
-                        : ""
-                  }
+                  className={line.muted ? "text-muted-foreground" : ""}
                 />
               </div>
             ))}

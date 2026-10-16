@@ -440,7 +440,7 @@ export function Projects() {
           eyebrow="Selected Work"
           title={
             <>
-              Things I&apos;ve <em className="accent-serif">built</em>
+              Things I&apos;ve built
             </>
           }
           description="Production platforms, AI tooling and research prototypes — each with a written case study."

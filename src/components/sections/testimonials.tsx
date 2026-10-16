@@ -68,7 +68,7 @@ export function Testimonials() {
           eyebrow="References"
           title={
             <>
-              Kind <em className="accent-serif">words</em>
+              Kind words
             </>
           }
           description="From people I've built, researched, and studied with."

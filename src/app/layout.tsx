@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Geist } from "next/font/google";
 import "./globals.css";
 import {
   HashScrollManager,
@@ -18,25 +18,10 @@ import {
 import { Analytics } from "@vercel/analytics/next";
 import { themeScript } from "@/lib/theme-script";
 
-// Geist carries both display and body; Instrument Serif supplies the italic
-// accent words in headings; Geist Mono sets the small labels and indices.
+// Use Geist consistently for headings, body text, and small labels.
 const geist = Geist({
   subsets: ["latin"],
   variable: "--font-geist",
-  display: "swap",
-});
-
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
-  display: "swap",
-});
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-instrument",
   display: "swap",
 });
 
@@ -149,7 +134,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
-        className={`${geist.variable} ${geistMono.variable} ${instrumentSerif.variable} font-sans antialiased`}
+        className={`${geist.variable} font-sans antialiased`}
       >
         <script
           type="application/ld+json"

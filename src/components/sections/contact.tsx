@@ -54,7 +54,7 @@ export function Contact() {
           <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14">
             <div className="flex flex-col">
               <div className="mb-5 flex items-center gap-3">
-                <span className="eyebrow text-accent">09</span>
+                <span className="eyebrow text-accent">10</span>
                 <span aria-hidden="true" className="h-px w-8 bg-line-strong" />
                 <span className="eyebrow">{sectionsContent.contact.eyebrow}</span>
               </div>
@@ -62,7 +62,7 @@ export function Contact() {
               <h2 className="display text-[clamp(2.5rem,8vw,4.75rem)] text-foreground">
                 {sectionsContent.contact.headingLine1}
                 <br />
-                <em className="accent-serif text-[1.06em]">{sectionsContent.contact.headingLine2}</em>
+                {sectionsContent.contact.headingLine2}
               </h2>
 
               <p className="mt-5 max-w-md text-[15px] leading-relaxed text-muted-foreground sm:text-base">

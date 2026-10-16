@@ -3,7 +3,7 @@
 import { motion, type Variants } from "framer-motion";
 import { Brain, Compass, Mail, MapPin } from "lucide-react";
 import Markdown, { type Components } from "react-markdown";
-import { SectionHeading, withSerifAccent } from "@/components/common";
+import { SectionHeading } from "@/components/common";
 import { siteConfig } from "@/config";
 import { aboutContent } from "@/data/site-content";
 
@@ -57,7 +57,7 @@ export function About() {
   return (
     <section id="about" className="scroll-section section-y relative">
       <div className="shell">
-        <SectionHeading index="01" eyebrow={aboutContent.eyebrow} title={withSerifAccent(aboutContent.heading)} />
+        <SectionHeading index="01" eyebrow={aboutContent.eyebrow} title={aboutContent.heading} />
 
         <motion.div
           variants={container}
@@ -106,10 +106,10 @@ export function About() {
             ))}
 
             <motion.figure variants={item} className="relative mt-2 border-t border-line pt-6 sm:pt-8">
-              <span aria-hidden="true" className="accent-serif absolute -top-1 left-0 text-5xl leading-none text-accent">
+              <span aria-hidden="true" className="absolute -top-1 left-0 text-5xl leading-none text-accent">
                 &ldquo;
               </span>
-              <blockquote className="accent-serif pl-8 text-2xl leading-snug text-foreground sm:text-[1.75rem]">
+              <blockquote className="pl-8 text-2xl leading-snug text-foreground sm:text-[1.75rem]">
                 {aboutContent.quote}
               </blockquote>
             </motion.figure>

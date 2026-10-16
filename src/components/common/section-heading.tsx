@@ -6,10 +6,10 @@ import { MOTION_TOKENS } from "@/lib";
 import { cn } from "@/lib/utils";
 
 interface SectionHeadingProps {
-  /** Two-digit section number, e.g. "01". Rendered as a mono index. */
+  /** Two-digit section number, e.g. "01". */
   index?: string;
   eyebrow: string;
-  /** Plain text or JSX — wrap a word in `<em className="accent-serif">` for the serif accent. */
+  /** Plain text or JSX, using the shared heading typography. */
   title: ReactNode;
   description?: ReactNode;
   /** Optional control aligned to the heading's baseline on wide screens (e.g. "View all"). */
@@ -22,7 +22,7 @@ interface SectionHeadingProps {
 /**
  * The one section header used across the home page.
  *
- * Left-aligned, editorial: a mono index + hairline + eyebrow, then the title,
+ * Left-aligned: an index + hairline + eyebrow, then the title,
  * with the description and an optional action sitting to the right on wide
  * screens and stacking under the title on phones. Every section previously
  * rolled its own — centred here, left there, three eyebrow sizes, headings
@@ -69,22 +69,5 @@ export function SectionHeading({
         )}
       </div>
     </motion.header>
-  );
-}
-
-/**
- * Sets the last word of an editor-supplied heading in the serif italic, so
- * headings that come from content JSON get the same editorial accent as the
- * hand-written ones without the editor having to know about it.
- */
-export function withSerifAccent(text: string): ReactNode {
-  const trimmed = text.trim();
-  const cut = trimmed.lastIndexOf(" ");
-  if (cut === -1) return trimmed;
-  return (
-    <>
-      {trimmed.slice(0, cut)}{" "}
-      <em className="accent-serif">{trimmed.slice(cut + 1)}</em>
-    </>
   );
 }

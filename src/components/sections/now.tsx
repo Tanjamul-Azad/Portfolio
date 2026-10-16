@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Rocket, Microscope, Search } from "lucide-react";
 import { nowItems } from "@/data";
 import { sectionsContent } from "@/data/site-content";
-import { SectionHeading, withSerifAccent } from "@/components/common";
+import { SectionHeading } from "@/components/common";
 
 const categoryConfig = {
   building: {
@@ -31,7 +31,7 @@ export function Now() {
         <SectionHeading
           index="02"
           eyebrow={sectionsContent.now.eyebrow}
-          title={withSerifAccent(sectionsContent.now.heading)}
+          title={sectionsContent.now.heading}
           description={sectionsContent.now.subtext}
         />
 

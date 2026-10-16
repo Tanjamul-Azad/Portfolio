@@ -15,6 +15,7 @@ import {
   Now,
   Testimonials,
   Blog,
+  GitHub,
   Contact,
 } from "@/components/sections";
 import { MOTION_TOKENS } from "@/lib";
@@ -105,6 +106,9 @@ export default function Home() {
         </Suspense>
         <Suspense>
           <Blog />
+        </Suspense>
+        <Suspense>
+          <GitHub />
         </Suspense>
         <Suspense>
           <Contact />

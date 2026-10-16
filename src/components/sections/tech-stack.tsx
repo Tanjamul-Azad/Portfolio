@@ -191,7 +191,7 @@ export function TechStack() {
           eyebrow="Tech Stack"
           title={
             <>
-              Tools I <em className="accent-serif">work with</em>
+              Tools I work with
             </>
           }
           description="The languages, frameworks, and tools I reach for across frontend, backend, AI, and hardware work."

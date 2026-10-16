@@ -438,7 +438,7 @@ export function Achievements() {
           eyebrow="Recognition"
           title={
             <>
-              Achievements &amp; <em className="accent-serif">awards</em>
+              Achievements &amp; awards
             </>
           }
           description="Milestones from competitions, academics, and the projects I've shipped. Open any card for the certificate and full details."

@@ -170,7 +170,7 @@ export function Experience() {
           eyebrow="Experience"
           title={
             <>
-              Where I&apos;ve <em className="accent-serif">shipped</em>
+              Where I&apos;ve shipped
             </>
           }
           action={

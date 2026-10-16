@@ -24,7 +24,7 @@ export function Blog() {
           eyebrow="Blog & Notes"
           title={
             <>
-              Latest <em className="accent-serif">writing</em>
+              Latest writing
             </>
           }
           action={

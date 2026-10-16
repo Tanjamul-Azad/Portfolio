@@ -238,7 +238,7 @@ export function Research() {
           eyebrow="Research"
           title={
             <>
-              Research &amp; <em className="accent-serif">papers</em>
+              Research &amp; papers
             </>
           }
           description="Papers in progress and where each is headed. Open a project for the summary and its stage."

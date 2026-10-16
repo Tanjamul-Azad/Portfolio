@@ -24,8 +24,7 @@
 
   --font-sans: var(--font-geist);
   --font-heading: var(--font-geist);
-  --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-instrument);
+  --font-mono: var(--font-geist);
 
   /* Layered surfaces: page → surface (cards) → surface-2 (wells, chips). */
   --color-surface: var(--surface);
@@ -263,11 +262,6 @@
 /* Display type: tight, heavy, slightly negative tracking. */
 @utility display {
   @apply font-heading font-semibold tracking-[-0.035em] leading-[0.95];
-}
-
-/* Serif italic accent word inside a sans heading. */
-@utility accent-serif {
-  @apply font-serif font-normal italic tracking-[-0.01em];
 }
 
 @layer utilities {
