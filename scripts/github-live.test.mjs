@@ -11,6 +11,7 @@ function loadModule(file, dependencies = {}, globals = {}) {
   });
   const context = {
     exports: {}, URL, AbortSignal, process: { env: {} },
+    Date: class extends Date { constructor(value) { super(value ?? "2026-10-16T19:00:00Z"); } },
     require: (name) => {
       if (!(name in dependencies)) throw new Error(`Unexpected dependency: ${name}`);
       return dependencies[name];
@@ -48,7 +49,7 @@ test("consecutive requests read new contributions and prohibit browser/CDN cachi
   count = 663;
   const second = await api.GET();
   assert.equal((await second.json()).calendar.total, 663);
-  assert.equal(calendarRequests.length, 2);
+  assert.equal(calendarRequests.length, 4);
   for (const options of calendarRequests) assert.equal(options.cache, "no-store");
   for (const response of [first, second]) {
     assert.match(response.headers.get("Cache-Control"), /no-store/);

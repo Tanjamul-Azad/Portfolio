@@ -41,3 +41,21 @@ test("rejects missing counts and out-of-range color levels when markup changes",
   assert.throws(() => parse('<td data-date="2026-10-11" id="missing" data-level="2"></td>'), /format changed/);
   assert.throws(() => parse('<td data-date="2026-10-11" id="bad" data-level="9"></td><tool-tip for="bad">1 contribution on October 11th.</tool-tip>'), /format changed/);
 });
+
+test("includes the new Dhaka day after midnight while UTC is still on yesterday", () => {
+  const range = JSON.parse(JSON.stringify(context.exports.getContributionRange(new Date("2026-10-16T19:00:00Z"))));
+  assert.deepEqual(range, { startDate: "2025-10-12", endDate: "2026-10-17", years: ["2025", "2026"] });
+});
+
+test("handles a new year and merges overlapping calendar days without duplicates or future cells", () => {
+  const range = context.exports.getContributionRange(new Date("2026-12-31T19:00:00Z"));
+  assert.equal(range.endDate, "2027-01-01");
+  const shared = { date: "2026-12-31", count: 3, level: 2 };
+  const merged = context.exports.mergeContributionCalendars([
+    { days: [{ date: "2025-01-01", count: 100, level: 4 }, shared] },
+    { days: [shared, { date: "2027-01-01", count: 2, level: 1 }, { date: "2027-01-02", count: 0, level: 0 }] },
+  ], range);
+  assert.equal(merged.total, 5);
+  assert.equal(merged.days.length, 2);
+  assert.equal(merged.days.at(-1).date, "2027-01-01");
+});

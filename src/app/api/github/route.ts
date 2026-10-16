@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { siteConfig } from "@/config";
-import { parseContributionCalendar } from "@/lib/github-contributions";
+import { getContributionRange, mergeContributionCalendars, parseContributionCalendar } from "@/lib/github-contributions";
 import type { GitHubActivity } from "@/types/github";
 
 // Run on every request so the contribution calendar never waits for ISR.
@@ -23,16 +23,20 @@ export async function GET() {
     "User-Agent": "Tanzamul-Azad-Portfolio",
   };
   if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  const range = getContributionRange(new Date());
 
   const [calendar, profile] = await Promise.allSettled([
-    fetch(`https://github.com/users/${username}/contributions`, {
-      headers: { Accept: "text/html", "User-Agent": headers["User-Agent"], "Cache-Control": "no-cache" },
-      cache: "no-store",
-      signal: AbortSignal.timeout(8000),
-    }).then(async (response) => {
+    // Explicit yearly calendars include today's local-date commits even when
+    // GitHub's anonymous rolling calendar still stops at yesterday in UTC.
+    Promise.all(range.years.map(async (year) => {
+      const response = await fetch(`https://github.com/users/${username}/contributions?from=${year}-01-01&to=${year}-12-31`, {
+        headers: { Accept: "text/html", "User-Agent": headers["User-Agent"], "Cache-Control": "no-cache" },
+        cache: "no-store",
+        signal: AbortSignal.timeout(8000),
+      });
       if (!response.ok) throw new Error("GitHub calendar request failed");
       return parseContributionCalendar(await response.text());
-    }),
+    })).then((calendars) => mergeContributionCalendars(calendars, range)),
     fetch(`https://api.github.com/users/${username}`, {
       headers,
       // Only repository metadata is cached, to protect the unauthenticated
