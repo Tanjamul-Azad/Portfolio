@@ -22,7 +22,7 @@ export function Blog() {
             All posts<ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </Link>
         } />
-        <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
+        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {recentPosts.map((post, index) => (
             <motion.li key={post.slug} variants={SECTION_REVEAL.item} initial="hidden"
               whileInView={isRouteTransitioning ? undefined : "visible"} viewport={{ once: true }}

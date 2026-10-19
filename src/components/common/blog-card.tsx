@@ -10,21 +10,20 @@ export function BlogCard({ post, priority = false }: { post: BlogPost; priority?
         {post.image && (
           <div className="relative aspect-video shrink-0 overflow-hidden bg-neutral-950">
             <Image src={post.image} alt={post.imageAlt || post.title} fill
-              sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) 50vw, 560px"
+              sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) 50vw, (max-width: 1279px) 33vw, 260px"
               priority={priority} className="object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.03]" />
           </div>
         )}
-        <div className="flex flex-1 flex-col p-5 sm:p-6">
-          <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-muted-foreground">
+        <div className="flex flex-1 flex-col p-4">
+          <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[10px] text-muted-foreground">
             <time dateTime={post.date}>{new Date(`${post.date}T12:00:00Z`).toLocaleDateString("en-US", {
               month: "short", day: "numeric", year: "numeric", timeZone: "UTC",
             })}</time>
             <span aria-hidden="true">·</span><span>{post.readTime}</span>
           </div>
-          <h3 className="text-lg font-semibold leading-snug tracking-tight text-foreground transition-colors group-hover:text-accent sm:text-xl">{post.title}</h3>
-          <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{post.excerpt}</p>
-          <div className="mt-4 flex flex-wrap gap-1.5">{post.tags.slice(0, 3).map(tag => <span key={tag} className="chip">{tag}</span>)}</div>
-          <div className="mt-auto flex items-center justify-between gap-3 pt-5 text-sm font-medium text-foreground">
+          <h3 className="line-clamp-2 text-base font-semibold leading-snug tracking-tight text-foreground transition-colors group-hover:text-accent">{post.title}</h3>
+          <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{post.excerpt}</p>
+          <div className="mt-auto flex items-center justify-between gap-3 pt-3 text-xs font-medium text-foreground">
             <span>Read article</span>
             <ArrowUpRight className="size-4 transition-transform motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5" aria-hidden="true" />
           </div>

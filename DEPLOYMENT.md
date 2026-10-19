@@ -6,14 +6,14 @@ Production: https://tanzamul.dev
 - VM: `deployments`, zone `us-central1-f`
 - Reserved address: `deployments-ip`, `35.232.136.37`
 - Source folder on VM: `/home/User/tanzamul-portfolio`
-- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3001`
+- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3002`
 - Nginx site: `/etc/nginx/sites-available/tanzamul.dev`
 - TLS: Certbot with automatic renewal (`certbot.timer`)
 - Runtime secrets: `/home/User/tanzamul-runtime.env`, mode 600. Never commit this file.
 
 Build on Linux with `sudo docker build -t tanzamul-portfolio:latest .`.
 The image uses Next.js standalone output; local Windows node_modules are not uploaded.
-Run with `sudo docker run -d --name tanzamul-portfolio --restart unless-stopped --memory=768m --memory-swap=1g --cpus=1 --env-file /home/User/tanzamul-runtime.env -p 127.0.0.1:3001:3000 tanzamul-portfolio:latest`. The current deployed image is `tanzamul-portfolio:visual-blog`. Include the Search Console verification file from `public/` in the image and keep it accessible after updates.
+Run with `sudo docker run -d --name tanzamul-portfolio --restart unless-stopped --memory=768m --memory-swap=1g --cpus=1 --env-file /home/User/tanzamul-runtime.env -p 127.0.0.1:3002:3000 tanzamul-portfolio:latest`. The current deployed image is `tanzamul-portfolio:compact-blog`. Include the Search Console verification file from `public/` in the image and keep it accessible after updates.
 For later updates, build before replacing the running container, retain the previous image for rollback, and check the homepage and `/sitemap.xml` afterward.
 
 The existing ahbab.dev containers use different ports and Nginx server names.
@@ -27,6 +27,6 @@ Google Search Console ownership was verified on October 19, 2026; the sitemap wa
 
 Latest content restores the AI Engineer / Generative AI Researcher identity, adds five dark scientific blog illustrations with alt text, captions and image sitemap entries, updates Current Priorities, and provides an Activities & hackathons section awaiting the user's event details. See `BLOG-IMAGE-PROMPTS-V2.md` for current image provenance and `ACTIVITIES.md` for event content fields. The CV source and both PDF copies now point to tanzamul.dev. The stopped `tanzamul-portfolio-before-dark` container retains the preceding content version for rollback.
 
-The homepage and blog index share image-first article cards. Desktop uses two columns; phones use a single vertical list. Responsive views were checked at approximately 1280px and 390px with loaded cover images and no horizontal overflow. Production build and TypeScript checks passed. ESLint passed with one existing React Hook Form / React Compiler warning in contact-form.tsx. The stopped `tanzamul-portfolio-before-visual` container preserves the version immediately before the article-card update.
+The homepage and blog index share image-first article cards. Desktop uses three columns from 1024px and four from 1280px; phones use a single vertical list. Cards use compact typography, spacing and two-line title/excerpt limits. Production build and TypeScript checks passed. ESLint passed with one existing React Hook Form / React Compiler warning in contact-form.tsx. The stopped `tanzamul-portfolio-before-compact` container preserves the version immediately before the compact-card update.
 
 On October 20, 2026, 17 indexed URLs under the deleted tanjamul-azad.vercel.app deployment were submitted through Google's Refresh Outdated Content tool. All 17 requests were Pending when checked; submission does not mean the search results have already disappeared. The GitHub profile website and repository homepage now use tanzamul.dev.

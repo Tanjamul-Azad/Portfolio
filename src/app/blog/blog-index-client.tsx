@@ -10,7 +10,7 @@ export default function BlogPageClient() {
   return (
     <main className="min-h-svh bg-background">
       <Navbar />
-      <section className="relative overflow-hidden pb-10 pt-24 sm:pb-14 sm:pt-28 md:pt-32">
+      <section className="relative overflow-hidden pb-8 pt-24 sm:pb-10 sm:pt-28">
         <div className="shell relative">
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="max-w-3xl">
             <motion.p variants={fadeInUp} className="eyebrow mb-4">Blog & Notes</motion.p>
@@ -26,7 +26,7 @@ export default function BlogPageClient() {
       <section className="pb-16 sm:pb-24" aria-labelledby="all-posts-heading">
         <div className="shell">
           <h2 id="all-posts-heading" className="eyebrow mb-6">All articles · {blogPosts.length}</h2>
-          <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
+          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {blogPosts.map((post, index) => (
               <li key={post.slug} className="min-w-0"><BlogCard post={post} priority={index === 0} /></li>
             ))}
