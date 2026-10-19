@@ -25,6 +25,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
+  // Full article archive
+  mainPages.push({ url: `${baseUrl}/blog/all`, changeFrequency: "weekly", priority: 0.7 });
+
   // Project pages
   const projectPages: MetadataRoute.Sitemap = projects.map((project) => ({
     url: `${baseUrl}/projects/${project.slug}`,

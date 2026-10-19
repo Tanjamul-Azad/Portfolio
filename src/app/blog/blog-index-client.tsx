@@ -5,8 +5,11 @@ import { Navbar, Footer } from "@/components/layout";
 import { BlogCollection } from "@/components/common/blog-collection";
 import { blogPosts } from "@/data";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 
-export default function BlogPageClient() {
+export default function BlogPageClient({ showAll = false }: { showAll?: boolean }) {
+  const visiblePosts = showAll ? blogPosts : blogPosts.slice(0, 4);
   return (
     <main className="min-h-svh bg-background">
       <Navbar />
@@ -25,8 +28,15 @@ export default function BlogPageClient() {
       </section>
       <section className="pb-16 sm:pb-24" aria-labelledby="all-posts-heading">
         <div className="shell">
-          <h2 id="all-posts-heading" className="eyebrow mb-6">All articles · {blogPosts.length}</h2>
-          <BlogCollection posts={blogPosts} priorityFirst />
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <h2 id="all-posts-heading" className="eyebrow">{showAll ? "All articles" : "Latest articles"} · {visiblePosts.length}</h2>
+            {!showAll && blogPosts.length > visiblePosts.length && (
+              <Link href="/blog/all" className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-line-strong px-4 text-[13px] font-medium text-foreground transition-colors hover:bg-surface-2">
+                View all<ArrowUpRight className="size-3.5" aria-hidden="true" />
+              </Link>
+            )}
+          </div>
+          <BlogCollection posts={visiblePosts} priorityFirst />
         </div>
       </section>
       <Footer />
