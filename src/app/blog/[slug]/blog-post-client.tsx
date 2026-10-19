@@ -13,6 +13,10 @@ import { fadeInUp, staggerContainer } from "@/lib/animations";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 
+function headingId(text: string) {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
 export default function BlogPostClient({ slug }: { slug: string }) {
   const post = getPostBySlug(slug);
 
@@ -46,6 +50,8 @@ export default function BlogPostClient({ slug }: { slug: string }) {
       toast.error("Couldn't copy the link. You can copy it from the address bar.");
     }
   };
+
+  const sections = post.content.split("\n").filter(line => /^## /.test(line)).map(line => line.slice(3).trim());
 
   return (
     <main className="bg-background min-h-screen">
@@ -105,6 +111,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                     <Clock className="w-4 h-4" />
                     {post.readTime}
                   </span>
+                  {post.updatedAt && <span>Updated {new Date(`${post.updatedAt}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })}</span>}
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -146,6 +153,17 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                 </figure>
               )}
 
+              {sections.length > 0 && (
+                <details className="mt-8 rounded-xl border border-line bg-surface p-4 sm:p-5">
+                  <summary className="cursor-pointer text-sm font-semibold text-foreground">In this article · {sections.length} sections</summary>
+                  <nav aria-label="Article contents" className="mt-4">
+                    <ol className="grid gap-2 text-sm text-muted-foreground">
+                      {sections.map(section => <li key={section}><a href={`#${headingId(section)}`} className="inline-block py-1 hover:text-foreground hover:underline">{section}</a></li>)}
+                    </ol>
+                  </nav>
+                </details>
+              )}
+
               {/* Content */}
               <motion.div
                 variants={fadeInUp}
@@ -161,7 +179,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                   prose-li:text-neutral-600 dark:prose-li:text-neutral-300
                   prose-hr:border-neutral-200 dark:prose-hr:border-neutral-800"
               >
-                <ReactMarkdown>{post.content}</ReactMarkdown>
+                <ReactMarkdown components={{ h2: ({ children }) => <h2 id={headingId(String(children))} className="scroll-mt-28">{children}</h2> }}>{post.content}</ReactMarkdown>
               </motion.div>
             </motion.div>
           </motion.div>

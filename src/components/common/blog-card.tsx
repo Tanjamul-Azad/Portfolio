@@ -10,7 +10,7 @@ export function BlogCard({ post, priority = false }: { post: BlogPost; priority?
         {post.image && (
           <div className="relative aspect-video shrink-0 overflow-hidden bg-neutral-950">
             <Image src={post.image} alt={post.imageAlt || post.title} fill
-              sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) 50vw, (max-width: 1279px) 33vw, 260px"
+              sizes="(max-width: 639px) 84vw, (max-width: 1023px) 46vw, (max-width: 1279px) 33vw, 260px"
               priority={priority} className="object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.03]" />
           </div>
         )}

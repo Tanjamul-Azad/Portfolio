@@ -1,17 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { blogPosts } from "@/data";
-import { SECTION_REVEAL } from "@/lib";
 import { SectionHeading } from "@/components/common";
-import { BlogCard } from "@/components/common/blog-card";
-import { useRouteTransitioning } from "@/components/providers/page-transition";
+import { BlogCollection } from "@/components/common/blog-collection";
 
 export function Blog() {
   const recentPosts = blogPosts.slice(0, 4);
-  const { isRouteTransitioning } = useRouteTransitioning();
   if (!recentPosts.length) return null;
 
   return (
@@ -22,15 +18,7 @@ export function Blog() {
             All posts<ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </Link>
         } />
-        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {recentPosts.map((post, index) => (
-            <motion.li key={post.slug} variants={SECTION_REVEAL.item} initial="hidden"
-              whileInView={isRouteTransitioning ? undefined : "visible"} viewport={{ once: true }}
-              transition={{ delay: index * 0.06 }} className="min-w-0">
-              <BlogCard post={post} />
-            </motion.li>
-          ))}
-        </ul>
+        <BlogCollection posts={recentPosts} />
       </div>
     </section>
   );

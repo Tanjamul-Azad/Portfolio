@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Navbar, Footer } from "@/components/layout";
-import { BlogCard } from "@/components/common/blog-card";
+import { BlogCollection } from "@/components/common/blog-collection";
 import { blogPosts } from "@/data";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 
@@ -26,11 +26,7 @@ export default function BlogPageClient() {
       <section className="pb-16 sm:pb-24" aria-labelledby="all-posts-heading">
         <div className="shell">
           <h2 id="all-posts-heading" className="eyebrow mb-6">All articles · {blogPosts.length}</h2>
-          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {blogPosts.map((post, index) => (
-              <li key={post.slug} className="min-w-0"><BlogCard post={post} priority={index === 0} /></li>
-            ))}
-          </ul>
+          <BlogCollection posts={blogPosts} priorityFirst />
         </div>
       </section>
       <Footer />

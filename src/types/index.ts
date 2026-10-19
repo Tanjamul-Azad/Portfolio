@@ -130,6 +130,7 @@ export interface BlogPost {
   excerpt: string;
   content: string;
   date: string;
+  updatedAt?: string;
   readTime: string;
   tags: string[];
   featured?: boolean;
