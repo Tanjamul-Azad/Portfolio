@@ -9,7 +9,7 @@
     "outcome": "Locally selected",
     "project": "PolarWindow · CLPS Lunar Mission Browser",
     "projectUrl": "/projects/polarwindow",
-    "summary": "Selected at the local stage with PolarWindow and now progressing to the global stage. My contribution focuses on mission-analysis research and data inputs for the CLPS lunar mission browser.",
+    "summary": "Contributing mission-analysis research and data inputs to PolarWindow, a CLPS lunar mission browser. The team progressed from the local stage to the ongoing global stage.",
     "tags": [
       "Space science",
       "Mission analysis",
@@ -25,7 +25,7 @@
     "category": "Hackathon",
     "role": "Participant",
     "outcome": "Participation",
-    "summary": "Participated in the online hackathon focused on AI-assisted software development with IBM Bob.",
+    "summary": "Participated in an online build sprint exploring AI-assisted software-development workflows and rapid prototyping with IBM Bob.",
     "tags": [
       "AI-assisted development",
       "Online hackathon"
@@ -39,7 +39,7 @@
     "category": "Hackathon",
     "role": "Participant",
     "outcome": "Participation",
-    "summary": "Participated in CloudCamp Bangladesh’s Infinity AI BuildFest, a gathering of builders exploring practical AI-powered products and solutions.",
+    "summary": "Participated in CloudCamp Bangladesh’s builder community event, exploring practical AI product development and solution design.",
     "tags": [
       "AI product building",
       "CloudCamp Bangladesh"
@@ -52,16 +52,20 @@
     "date": "2026-04-10",
     "endDate": "2026-04-11",
     "category": "Hackathon",
-    "role": "Team participant · Full-Stack Developer",
+    "role": "Team member · Full-Stack Developer",
     "outcome": "National selection",
     "project": "RadFlow",
     "projectUrl": "/projects/radflow",
-    "summary": "Selected for participation at the Bangladesh national / Dhaka hub of the Harvard Health Systems Innovation Lab Hackathon. Worked with the team on RadFlow, an offline-first AI radiology triage prototype for district hospitals.",
+    "summary": "Officially selected for the Dhaka, Bangladesh Hub of the 7th Harvard HSIL Hackathon. Contributed to RadFlow, an offline-first AI-supported radiology triage prototype for resource-constrained district hospitals.",
     "tags": [
       "Healthcare AI",
       "Team collaboration",
       "Dhaka hub"
     ],
-    "url": "https://iriic.uiu.ac.bd/harvard-hsil-hackthon-2026/"
+    "url": "https://iriic.uiu.ac.bd/harvard-hsil-hackthon-2026/",
+    "image": "/images/activities/hsil-selection-2026.png",
+    "imageAlt": "Official HSIL Hackathon 2026 Dhaka Hub selection confirmation",
+    "secondaryImage": "/images/activities/hsil-team-2026.png",
+    "secondaryImageAlt": "RadFlow team at the HSIL Hackathon 2026 Dhaka Hub"
   }
 ]
