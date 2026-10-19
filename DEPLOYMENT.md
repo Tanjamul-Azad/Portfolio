@@ -6,14 +6,14 @@ Production: https://tanzamul.dev
 - VM: `deployments`, zone `us-central1-f`
 - Reserved address: `deployments-ip`, `35.232.136.37`
 - Source folder on VM: `/home/User/tanzamul-portfolio`
-- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3006`
+- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3007`
 - Nginx site: `/etc/nginx/sites-available/tanzamul.dev`
 - TLS: Certbot with automatic renewal (`certbot.timer`)
 - Runtime secrets: `/home/User/tanzamul-runtime.env`, mode 600. Never commit this file.
 
 Build on Linux with `sudo docker build -t tanzamul-portfolio:latest .`.
 The image uses Next.js standalone output; local Windows node_modules are not uploaded.
-Run with `sudo docker run -d --name tanzamul-portfolio --restart unless-stopped --memory=768m --memory-swap=1g --cpus=1 --env-file /home/User/tanzamul-runtime.env -p 127.0.0.1:3006:3000 tanzamul-portfolio:latest`. The current deployed image is `tanzamul-portfolio:activities-minimal`. Include the Search Console verification file from `public/` in the image and keep it accessible after updates.
+Run with `sudo docker run -d --name tanzamul-portfolio --restart unless-stopped --memory=768m --memory-swap=1g --cpus=1 --env-file /home/User/tanzamul-runtime.env -p 127.0.0.1:3007:3000 tanzamul-portfolio:latest`. The current deployed image is `tanzamul-portfolio:activities-fast`. Include the Search Console verification file from `public/` in the image and keep it accessible after updates.
 For later updates, build before replacing the running container, retain the previous image for rollback, and check the homepage and `/sitemap.xml` afterward.
 
 The existing ahbab.dev containers use different ports and Nginx server names.
@@ -49,4 +49,6 @@ The activities-content version used localhost port 3004. The stopped `tanzamul-p
 
 The activities-media version used localhost port 3005. The stopped `tanzamul-portfolio-before-activities-media` container preserves the earlier version on port 3004 with restart disabled.
 
-The current activities-minimal version uses localhost port 3006. Cards contain an official poster, year/status, event name, two-line summary, and Details button. Roles, full dates, full description, original posters and the supplied HSIL selection/team images are available in a scrollable dialog with full-image links. The blog's desktop grid and mobile swipe dimensions are retained. Case-study actions are removed from ExtraCurricular. Poster provenance is recorded in ACTIVITIES.md and linked in each dialog. The stopped `tanzamul-portfolio-before-activities-minimal` container retains the preceding version on port 3005 with restart disabled; restore that container and Nginx port 3005 to roll back.
+The activities-minimal version used localhost port 3006. Cards contain an official poster, year/status, event name, two-line summary, and Details button. Roles, full dates, full description, original posters and the supplied HSIL selection/team images are available in a scrollable dialog with full-image links. The blog's desktop grid and mobile swipe dimensions are retained. Case-study actions are removed from ExtraCurricular. Poster provenance is recorded in ACTIVITIES.md and linked in each dialog. The stopped `tanzamul-portfolio-before-activities-minimal` container retains the earlier version on port 3005 with restart disabled.
+
+The current activities-fast version uses localhost port 3007. HSIL is second with the original official event poster as its cover; selection confirmation and team photo appear only in Details. All activity cards use small pre-generated WebP thumbnails and direct static delivery to avoid on-demand AVIF conversion on the VM. The four thumbnails total about 110 KB and load eagerly with low fetch priority. Details uses WebP previews with links to the original files. The stopped `tanzamul-portfolio-before-activities-fast` container preserves the preceding version on port 3006 with restart disabled; start it and restore the Nginx proxy to port 3006 for rollback.

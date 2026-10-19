@@ -16,9 +16,38 @@
     ],
     "url": "https://www.spaceappschallenge.org/",
     "image": "/images/activities/nasa-space-apps-2026.png",
+    "thumbnail": "/images/activities/nasa-space-apps-2026-card-v1.webp",
+    "preview": "/images/activities/nasa-space-apps-2026-preview-v1.webp",
+    "imageWidth": 896,
+    "imageHeight": 600,
     "imageAlt": "NASA Space Apps Challenge 2026 official The Next Frontier artwork",
     "imageLabel": "Official 2026 event artwork · The Next Frontier",
     "imageSource": "https://www.spaceappschallenge.org/blog/explore-the-next-frontier-at-the-2026-nasa-space-apps-challenge/"
+  },
+  {
+    "id": "harvard-hsil-2026",
+    "name": "Harvard HSIL Hackathon",
+    "date": "2026-04-10",
+    "endDate": "2026-04-11",
+    "category": "Hackathon",
+    "role": "Team member · Full-Stack Developer",
+    "outcome": "National selection",
+    "project": "RadFlow",
+    "summary": "Officially selected for the Dhaka, Bangladesh Hub of the 7th Harvard HSIL Hackathon. Contributed to RadFlow, an offline-first AI-supported radiology triage prototype for resource-constrained district hospitals.",
+    "tags": ["Healthcare AI", "Team collaboration", "Dhaka hub"],
+    "url": "https://iriic.uiu.ac.bd/harvard-hsil-hackthon-2026/",
+    "image": "/images/activities/hsil-official-2026.png",
+    "thumbnail": "/images/activities/hsil-official-2026-card-v1.webp",
+    "preview": "/images/activities/hsil-official-2026-preview-v1.webp",
+    "imageWidth": 1920,
+    "imageHeight": 1080,
+    "imageAlt": "Official 7th Harvard HSIL Hackathon 2026 event poster",
+    "imageLabel": "Official Harvard HSIL Hackathon 2026 poster",
+    "imageSource": "https://iriic.uiu.ac.bd/harvard-hsil-hackthon-2026/",
+    "gallery": [
+      { "src": "/images/activities/hsil-selection-2026.png", "preview": "/images/activities/hsil-selection-2026-preview-v1.webp", "alt": "Official HSIL Hackathon 2026 Dhaka Hub selection confirmation", "label": "Official selection confirmation · Dhaka, Bangladesh Hub", "width": 1500, "height": 1500 },
+      { "src": "/images/activities/hsil-team-2026.png", "preview": "/images/activities/hsil-team-2026-preview-v1.webp", "alt": "RadFlow team at the HSIL Hackathon 2026 Dhaka Hub", "label": "Team photograph · HSIL Dhaka Hub", "width": 720, "height": 540 }
+    ]
   },
   {
     "id": "ibm-bob-2026",
@@ -35,6 +64,10 @@
     ],
     "url": "https://developer.ibm.com/events/ibm-bob-20-hackathon/",
     "image": "/images/activities/ibm-bob-2026.jpg",
+    "thumbnail": "/images/activities/ibm-bob-2026-card-v1.webp",
+    "preview": "/images/activities/ibm-bob-2026-preview-v1.webp",
+    "imageWidth": 1200,
+    "imageHeight": 628,
     "imageAlt": "Official IBM Bob 2.0 Hackathon event banner",
     "imageLabel": "Official IBM Bob 2.0 Hackathon poster",
     "imageSource": "https://lablab.ai/ai-hackathons/ibm-bob-2-hackathon/"
@@ -53,30 +86,12 @@
     ],
     "url": "https://cloudcampbd.com/the-infinity-ai-buildfest",
     "image": "/images/activities/infinity-ai-buildfest-2026.jpg",
+    "thumbnail": "/images/activities/infinity-ai-buildfest-2026-card-v1.webp",
+    "preview": "/images/activities/infinity-ai-buildfest-2026-preview-v1.webp",
+    "imageWidth": 1200,
+    "imageHeight": 630,
     "imageAlt": "Official Infinity AI BuildFest poster from CloudCamp Bangladesh",
     "imageLabel": "Official Infinity AI BuildFest poster",
     "imageSource": "https://cloudcampbd.com/the-infinity-ai-buildfest"
-  },
-  {
-    "id": "harvard-hsil-2026",
-    "name": "Harvard HSIL Hackathon",
-    "date": "2026-04-10",
-    "endDate": "2026-04-11",
-    "category": "Hackathon",
-    "role": "Team member · Full-Stack Developer",
-    "outcome": "National selection",
-    "project": "RadFlow",
-    "summary": "Officially selected for the Dhaka, Bangladesh Hub of the 7th Harvard HSIL Hackathon. Contributed to RadFlow, an offline-first AI-supported radiology triage prototype for resource-constrained district hospitals.",
-    "tags": [
-      "Healthcare AI",
-      "Team collaboration",
-      "Dhaka hub"
-    ],
-    "url": "https://iriic.uiu.ac.bd/harvard-hsil-hackthon-2026/",
-    "image": "/images/activities/hsil-selection-2026.png",
-    "imageAlt": "Official HSIL Hackathon 2026 Dhaka Hub selection confirmation",
-    "imageLabel": "Official selection confirmation · Dhaka, Bangladesh Hub",
-    "secondaryImage": "/images/activities/hsil-team-2026.png",
-    "secondaryImageAlt": "RadFlow team at the HSIL Hackathon 2026 Dhaka Hub"
   }
 ]

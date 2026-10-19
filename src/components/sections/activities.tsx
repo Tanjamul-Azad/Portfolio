@@ -23,8 +23,11 @@ export interface Activity {
   url?: string;
   image?: string;
   imageAlt?: string;
-  secondaryImage?: string;
-  secondaryImageAlt?: string;
+  thumbnail?: string;
+  preview?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  gallery?: { src: string; preview?: string; alt: string; label: string; width: number; height: number }[];
   imageLabel?: string;
   imageSource?: string;
 }
@@ -39,12 +42,8 @@ function ActivityVisual({ activity }: { activity: Activity }) {
   const Icon = activity.category === "Hackathon" ? Code2 : Users;
   if (activity.image) {
     return (
-      <div className="relative aspect-video shrink-0 overflow-hidden bg-surface-2 [perspective:1200px]">
-        {activity.secondaryImage ? <div className="relative size-full transition-transform duration-700 ease-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
-          <div className="absolute inset-0 [backface-visibility:hidden]"><Image src={activity.image} alt={activity.imageAlt || activity.name} fill sizes="(max-width: 639px) 84vw, (max-width: 1023px) 46vw, (max-width: 1279px) 33vw, 260px" className="object-contain" /></div>
-          <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)]"><Image src={activity.secondaryImage} alt={activity.secondaryImageAlt || "Team photograph"} fill sizes="(max-width: 639px) 84vw, (max-width: 1023px) 46vw, (max-width: 1279px) 33vw, 260px" className="object-cover" /></div>
-        </div> : <Image src={activity.image} alt={activity.imageAlt || activity.name} fill sizes="(max-width: 639px) 84vw, (max-width: 1023px) 46vw, (max-width: 1279px) 33vw, 260px" className="object-contain" />}
-        {activity.secondaryImage && <span className="pointer-events-none absolute bottom-2.5 right-2.5 hidden rounded-full bg-black/60 px-2 py-1 text-[9px] font-medium text-white/90 backdrop-blur-sm sm:block">Hover for team photo</span>}
+      <div className="relative aspect-video shrink-0 overflow-hidden bg-surface-2">
+        <Image src={activity.thumbnail || activity.image} alt={activity.imageAlt || activity.name} fill unoptimized loading="eager" fetchPriority="low" className="object-contain" />
       </div>
     );
   }
@@ -56,6 +55,10 @@ function ActivityVisual({ activity }: { activity: Activity }) {
 }
 
 function ActivityCard({ activity }: { activity: Activity }) {
+  const media = [
+    ...(activity.image ? [{ src: activity.image, preview: activity.preview, alt: activity.imageAlt || activity.name, label: activity.imageLabel || "Official event poster", width: activity.imageWidth || 1200, height: activity.imageHeight || 675 }] : []),
+    ...(activity.gallery || []),
+  ];
   return <article className="group surface flex h-full flex-col overflow-hidden transition-[border-color,transform] duration-300 hover:-translate-y-1 hover:border-line-strong">
     <ActivityVisual activity={activity} />
     <div className="flex flex-1 flex-col p-3.5">
@@ -72,8 +75,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
               <DialogDescription className="mt-2 leading-relaxed">{activity.role}{activity.project ? ` · ${activity.project}` : ""}</DialogDescription>
             </div>
             <p className="text-sm leading-relaxed text-muted-foreground">{activity.summary}</p>
-            {activity.image && <figure className="min-w-0"><a href={activity.image} target="_blank" rel="noopener noreferrer" className="block rounded-lg bg-neutral-950 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"><Image src={activity.image} alt={activity.imageAlt || activity.name} width={1500} height={1500} sizes="(max-width: 640px) 90vw, 720px" className="h-auto max-h-[65dvh] w-full rounded-lg object-contain" /></a><figcaption className="mt-2 flex flex-wrap justify-between gap-2 text-xs text-muted-foreground"><span>{activity.imageLabel || "Official event poster"}</span><a href={activity.image} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Open full image<span className="sr-only"> — {activity.imageLabel || activity.name}</span></a></figcaption></figure>}
-            {activity.secondaryImage && <figure className="min-w-0"><a href={activity.secondaryImage} target="_blank" rel="noopener noreferrer" className="block rounded-lg bg-neutral-950 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"><Image src={activity.secondaryImage} alt={activity.secondaryImageAlt || "Team photograph"} width={720} height={540} sizes="(max-width: 640px) 90vw, 720px" className="h-auto max-h-[65dvh] w-full rounded-lg object-contain" /></a><figcaption className="mt-2 flex flex-wrap justify-between gap-2 text-xs text-muted-foreground"><span>Team photograph · HSIL Dhaka Hub</span><a href={activity.secondaryImage} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Open full image<span className="sr-only"> — team photograph</span></a></figcaption></figure>}
+            {media.map(item => <figure key={item.src} className="min-w-0"><a href={item.src} target="_blank" rel="noopener noreferrer" className="block rounded-lg bg-neutral-950 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"><Image src={item.preview || item.src} alt={item.alt} width={item.width} height={item.height} unoptimized loading="eager" className="h-auto max-h-[65dvh] w-full rounded-lg object-contain" /></a><figcaption className="mt-2 flex flex-wrap justify-between gap-2 text-xs text-muted-foreground"><span>{item.label}</span><a href={item.src} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Open full image<span className="sr-only"> — {item.label}</span></a></figcaption></figure>)}
             <div className="flex flex-wrap gap-x-5 gap-y-2 border-t border-line pt-3 text-xs font-medium">
               {activity.url && <a href={activity.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1.5 hover:text-accent">Official event website<ArrowUpRight className="size-3.5" /></a>}
               {activity.imageSource && <a href={activity.imageSource} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1.5 text-muted-foreground hover:text-foreground">Poster source<ArrowUpRight className="size-3.5" /></a>}
