@@ -6,14 +6,14 @@ Production: https://tanzamul.dev
 - VM: `deployments`, zone `us-central1-f`
 - Reserved address: `deployments-ip`, `35.232.136.37`
 - Source folder on VM: `/home/User/tanzamul-portfolio`
-- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3004`
+- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3005`
 - Nginx site: `/etc/nginx/sites-available/tanzamul.dev`
 - TLS: Certbot with automatic renewal (`certbot.timer`)
 - Runtime secrets: `/home/User/tanzamul-runtime.env`, mode 600. Never commit this file.
 
 Build on Linux with `sudo docker build -t tanzamul-portfolio:latest .`.
 The image uses Next.js standalone output; local Windows node_modules are not uploaded.
-Run with `sudo docker run -d --name tanzamul-portfolio --restart unless-stopped --memory=768m --memory-swap=1g --cpus=1 --env-file /home/User/tanzamul-runtime.env -p 127.0.0.1:3004:3000 tanzamul-portfolio:latest`. The current deployed image is `tanzamul-portfolio:activities-content`. Include the Search Console verification file from `public/` in the image and keep it accessible after updates.
+Run with `sudo docker run -d --name tanzamul-portfolio --restart unless-stopped --memory=768m --memory-swap=1g --cpus=1 --env-file /home/User/tanzamul-runtime.env -p 127.0.0.1:3005:3000 tanzamul-portfolio:latest`. The current deployed image is `tanzamul-portfolio:activities-media`. Include the Search Console verification file from `public/` in the image and keep it accessible after updates.
 For later updates, build before replacing the running container, retain the previous image for rollback, and check the homepage and `/sitemap.xml` afterward.
 
 The existing ahbab.dev containers use different ports and Nginx server names.
@@ -45,4 +45,6 @@ The section heading and shared navigation label are now ExtraCurricular; the exi
 
 Four ExtraCurricular event cards are now populated from the owner's participation list: NASA Space Apps 2026 with PolarWindow (local selection, progressing to the global stage), IBM Bob 2.0 (September 25–27, 2026, participation), Infinity AI BuildFest (June 12, 2026, participation), and Harvard HSIL (April 10–11, 2026, national selection with RadFlow). NASA shows 2026 / Ongoing because the local date was not provided. Selection and participation use neutral badges; no prizes, rankings, or global finalist claims are shown. Event links and two related project case studies are available. The HSIL card uses the owner's official selection confirmation as the cover image and reveals the supplied RadFlow team photo on desktop hover. Date-source notes are in ACTIVITIES.md.
 
-The current activities-content version uses localhost port 3004. The stopped `tanzamul-portfolio-before-activities-content` container preserves the preceding version on port 3003 with restart disabled. To roll back, start that container, restore the tanzamul.dev Nginx proxy to port 3003, test and reload Nginx, then stop the newer container.
+The activities-content version used localhost port 3004. The stopped `tanzamul-portfolio-before-activities-content` container preserves the preceding version on port 3003 with restart disabled.
+
+The current activities-media version uses localhost port 3005. The stopped `tanzamul-portfolio-before-activities-media` container preserves the immediately preceding version on port 3004 with restart disabled. It includes the compact, image-first ExtraCurricular card layout shared with the blog grid and the two owner-supplied HSIL images. To roll back, start that container, restore the tanzamul.dev Nginx proxy to port 3004, test and reload Nginx, then stop the newer container.
