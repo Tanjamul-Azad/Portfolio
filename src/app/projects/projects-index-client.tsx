@@ -1,5 +1,7 @@
 "use client";
 
+import { ProjectStatus } from "@/components/common/project-status";
+
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { getPinnedProjects, projects } from "@/data/projects";
@@ -199,7 +201,7 @@ export default function ProjectsPageClient() {
               variants={fadeInUp}
               className="mb-8 text-base sm:text-lg md:text-xl leading-relaxed text-neutral-600 dark:text-neutral-300"
             >
-              Every project I&apos;ve shipped, in one place. Open any card for the full case study, or jump straight to the live preview, source code, or demo video.
+              Selected builds, student utilities, and projects in development, in one place. Open any card for the full case study, or jump straight to the live preview, source code, or demo video.
             </motion.p>
 
             <motion.div variants={fadeInUp} className="flex flex-wrap items-center gap-2">
@@ -312,6 +314,7 @@ export default function ProjectsPageClient() {
                 </div>
 
                 <div className="p-4 max-[360px]:p-3 sm:p-5">
+                  {project.status === "building" && <div className="mb-3"><ProjectStatus project={project} /></div>}
                   <div className="mb-3 max-[360px]:mb-2.5 flex flex-wrap gap-1.5 max-[360px]:gap-1">
                     {project.tags.slice(0, 3).map((tag, tagIndex) => (
                       <Badge key={tag} variant="secondary" className={`text-[10px] max-[360px]:text-[9px] uppercase tracking-wider ${tagIndex === 2 ? "max-[360px]:hidden" : ""}`}>

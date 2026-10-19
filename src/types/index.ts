@@ -18,8 +18,10 @@ export interface Project {
   videoUrl?: string;
   featured?: boolean;
   pinned?: boolean;
+  status?: "building";
   // Case study details
   overview?: string;
+  contribution?: string;
   problem?: string;
   solution?: string;
   architecture?: string;

@@ -1,5 +1,351 @@
 [
   {
+    "id": "10",
+    "slug": "polarwindow",
+    "title": "PolarWindow",
+    "description": "A CLPS lunar mission browser for exploring landing sites, sunlight windows, and Earth contact using public NASA terrain and mission data.",
+    "role": "Research & Mission Analysis Contributor",
+    "impact": "Contributing research and data preparation for mission constraints, with frontend work planned next.",
+    "color": "#73b8df",
+    "tags": [
+      "React",
+      "TypeScript",
+      "FastAPI",
+      "Three.js",
+      "SPICE",
+      "PostgreSQL"
+    ],
+    "sourceUrl": "https://github.com/MdAhbab/PolarWindow",
+    "status": "building",
+    "featured": true,
+    "pinned": true,
+    "overview": "PolarWindow is an independent lunar mission exploration project being developed for the NASA International Space Apps Challenge. It brings CLPS mission information, terrain-aware sunlight analysis, and Earth visibility into a visual planning interface. It is not a NASA product or an operational mission certification tool.",
+    "problem": "A promising lunar landing site is not defined by coordinates alone. Local terrain can block sunlight or Earth visibility, and a single combined score can hide long periods of darkness or lost contact. Comparing candidate sites requires the underlying assumptions and data sources to remain visible.",
+    "solution": "Organize mission and landing-site exploration around separate sunlight, Earth-contact, longest-darkness, and longest-no-contact measures. Connect map and skyline views to source-grounded calculations, while clearly labeling saved data, fallbacks, and uncertainty.",
+    "architecture": "A React and Three.js interface consumes typed FastAPI endpoints. Python geometry and ephemeris calculations are separated from API and application services, with PostgreSQL persistence and background workers for computation and data feeds. NASA LOLA terrain and JPL/NAIF SPICE data support the analysis; a labeled snapshot mode allows browsing a saved copy without the full backend.",
+    "architectureDiagram": {
+      "caption": "From public lunar data to an explorable mission and landing-site view.",
+      "layers": [
+        {
+          "title": "Experience",
+          "nodes": [
+            {
+              "label": "Mission & site browser",
+              "detail": "React · TypeScript · Three.js"
+            }
+          ],
+          "edgeLabel": "Typed API requests"
+        },
+        {
+          "title": "Application",
+          "nodes": [
+            {
+              "label": "FastAPI services"
+            },
+            {
+              "label": "Compute workers"
+            }
+          ],
+          "edgeLabel": "Geometry and data queries"
+        },
+        {
+          "title": "Analysis & sources",
+          "nodes": [
+            {
+              "label": "Terrain horizons",
+              "detail": "NASA LOLA"
+            },
+            {
+              "label": "Ephemerides",
+              "detail": "JPL / NAIF SPICE"
+            },
+            {
+              "label": "Persistence",
+              "detail": "PostgreSQL"
+            }
+          ]
+        }
+      ]
+    },
+    "features": [
+      {
+        "title": "Mission and site exploration",
+        "description": "Browse CLPS deliveries and compare candidate landing locations through linked visual views."
+      },
+      {
+        "title": "Separate visibility measures",
+        "description": "Inspect illumination and Earth contact independently, including the longest interruptions rather than only total available hours."
+      },
+      {
+        "title": "Terrain-aware skylines",
+        "description": "Explore how the local horizon changes Sun and Earth visibility over a selected date range."
+      },
+      {
+        "title": "Traceable planning outputs",
+        "description": "Inspect data provenance, saved-copy labels, and exportable planning reports and intervals."
+      }
+    ],
+    "challenges": [
+      {
+        "challenge": "Communicating the limits of a planning model",
+        "learned": "Expose source provenance and fallback assumptions alongside the visual result; illumination is not a thermal-survival or operational go/no-go guarantee."
+      },
+      {
+        "challenge": "Keeping exploration separate from expensive calculations",
+        "learned": "Separate browser presentation, service orchestration, and pure geometry so computed results and saved snapshots have clear boundaries."
+      }
+    ],
+    "contribution": "My work focuses on research and mission-analysis inputs: wind checks, finer terrain for rover line of sight, and launch-window constraints from launch-pad direction limits. Supporting work involves SPENVIS and Copernicus Marine data access and ESA Lunar Pathfinder orbit documentation. These analysis areas are ongoing; frontend implementation is my next planned contribution."
+  },
+  {
+    "id": "1",
+    "slug": "complete-legal-aid",
+    "title": "Complete Legal Aid",
+    "description": "Bilingual legal-aid platform connecting Bangladeshi citizens with verified lawyers — escrow payments, encrypted evidence, and four AI agents on one real-time stack.",
+    "role": "Full-Stack Developer & AI Integration Lead",
+    "impact": "Produced a deployable justice platform rather than a demo: Docker Compose brings up PostgreSQL, Redis, Daphne, nginx, and certbot with automatic TLS, and production settings actively refuse to start with DEBUG on, SQLite, or default passwords.",
+    "image": "/images/projects/complete_legal_aid-1787918564663.png",
+    "color": "#3b82f6",
+    "tags": [
+      "React 19",
+      "TypeScript",
+      "Django 4.2",
+      "Django Channels",
+      "PostgreSQL 16",
+      "Redis",
+      "WebSocket",
+      "Gemini",
+      "OpenAI Agents",
+      "FAISS",
+      "SSLCommerz",
+      "Docker",
+      "JWT"
+    ],
+    "liveUrl": "https://complete-legal-aid-beta.vercel.app/",
+    "sourceUrl": "https://github.com/Tanjamul-Azad/Complete-Legal-Aid",
+    "sourcePrivate": true,
+    "videoUrl": "https://drive.google.com/file/d/1zrjia-IavEF5-NyQJsUkYX3Q8uPbcd13/view?usp=sharing",
+    "featured": true,
+    "pinned": true,
+    "overview": "Legal help in Bangladesh is hard to price, hard to verify, and hard to reach. CLA puts citizens, verified lawyers, and administrators on one platform in both Bangla and English, and treats the awkward parts of the problem — proving a lawyer is real, holding money safely until work is done, and keeping evidence private — as first-class features rather than afterthoughts.",
+    "problem": "A citizen looking for legal help has no reliable way to check that a lawyer is genuine, no protection when paying up front, and no safe channel for sensitive documents. Lawyers, meanwhile, lose hours drafting standard filings by hand. Both sides fall back on personal referrals, which excludes anyone without the right contacts.",
+    "solution": "Every role gets its own dashboard over a shared Django backend. Payments run through an escrow flow with an immutable ledger, so money is only released against completed work and the books can be proven consistent. Evidence never sits at a public URL — nginx denies /media by default and files are reachable only through short-lived signed links. Four server-side AI agents handle triage, case-strength estimation, drafting, and emergency routing, each restricted to an allow-listed set of tools and scoped to the caller's role.",
+    "architecture": "The stack is event-driven rather than poll-driven: a service or signal pushes through a Redis channel layer into Django Channels, and the browser's WebSocket provider updates the UI directly. Polling exists only as a fallback. The AI layer is deliberately isolated — all keys stay server-side, and every AI feature degrades gracefully to a non-AI path when a key or an optional ML dependency is missing, so a missing API key never takes the platform down.",
+    "architectureDiagram": {
+      "caption": "Complete Legal Aid pushes state changes outward through Redis and Django Channels; the browser subscribes rather than polls.",
+      "layers": [
+        {
+          "title": "Clients - React 19 + Vite",
+          "nodes": [
+            {
+              "label": "Citizen",
+              "detail": "cases, booking, vault"
+            },
+            {
+              "label": "Lawyer",
+              "detail": "drafting, earnings"
+            },
+            {
+              "label": "Admin",
+              "detail": "verification, ledger"
+            }
+          ],
+          "edgeLabel": "JWT over HTTPS and WSS"
+        },
+        {
+          "title": "Edge - nginx",
+          "nodes": [
+            {
+              "label": "TLS + SPA",
+              "detail": "certbot auto-renewal"
+            },
+            {
+              "label": "Media Policy",
+              "detail": "default-deny, signed links only"
+            }
+          ],
+          "edgeLabel": "proxies /api /ws /admin"
+        },
+        {
+          "title": "Application - Django 4.2 on Daphne (ASGI)",
+          "nodes": [
+            {
+              "label": "DRF Views",
+              "detail": "HTTP layer"
+            },
+            {
+              "label": "Channels Consumers",
+              "detail": "notifications, dashboard, presence"
+            },
+            {
+              "label": "Agent Runtime",
+              "detail": "SSE, tool allow-list"
+            }
+          ],
+          "edgeLabel": "service calls"
+        },
+        {
+          "title": "Services",
+          "nodes": [
+            {
+              "label": "Wallet",
+              "detail": "escrow + immutable ledger"
+            },
+            {
+              "label": "Document",
+              "detail": "bilingual generation"
+            },
+            {
+              "label": "AI",
+              "detail": "Gemini + FAISS RAG"
+            },
+            {
+              "label": "Search",
+              "detail": "statutes, case law, news"
+            }
+          ],
+          "edgeLabel": "persisted"
+        },
+        {
+          "title": "Infrastructure",
+          "nodes": [
+            {
+              "label": "PostgreSQL 16",
+              "detail": "SQLite for local dev"
+            },
+            {
+              "label": "Redis 7",
+              "detail": "channel layer"
+            },
+            {
+              "label": "Secure Media Store",
+              "detail": "signed-link access"
+            }
+          ]
+        }
+      ]
+    },
+    "features": [
+      {
+        "title": "Four scoped AI agents",
+        "description": "Counsel Match triages a citizen's problem into a ranked lawyer shortlist; Justice Lens gives a calibrated case-strength estimate with cited articles; Document Forge drafts from a lawyer's own cases and flags unfilled placeholders; Sentinel handles emergency triage with anonymity-respecting NGO routing. All use function-calling against allow-listed tools, stream over SSE, and are throttled per user."
+      },
+      {
+        "title": "Escrow payments on an immutable ledger",
+        "description": "SSLCommerz payments flow through a single audited path that writes append-only WalletLedgerEntry records. A reconcile_wallets management command proves the ledger and balances agree."
+      },
+      {
+        "title": "Signed-link evidence vault",
+        "description": "Evidence, identity papers, and chat attachments are never served from public URLs. nginx default-denies /media except explicit public folders; everything else is reachable only via short-lived signed links, behind extension, MIME, and magic-byte validation with a 25 MB cap."
+      },
+      {
+        "title": "Constitution RAG in plain Bangla",
+        "description": "A Gemini-backed assistant answers in everyday Bangla, retrieving over the Constitution with FAISS so answers cite real articles instead of paraphrasing from memory."
+      },
+      {
+        "title": "Ban-aware JWT sessions",
+        "description": "One-hour access tokens with seven-day rotating refresh and a blacklist. Banning a user invalidates their existing tokens immediately rather than waiting for expiry."
+      },
+      {
+        "title": "Court-ready bilingual drafting",
+        "description": "Generates bail applications, deeds, notices, and affidavits in Bangla or English from lawyer-owned, database-backed templates that can be shared across the firm."
+      }
+    ],
+    "challenges": [
+      {
+        "challenge": "Keeping money movement auditable when payments, refunds, and withdrawals all touch the same balance.",
+        "learned": "Routed every balance change through one service instead of letting views update wallets directly, and made the ledger append-only so a mistake produces a correcting entry rather than a silent edit. That made a reconciliation command possible — consistency became something to verify on demand rather than assume."
+      },
+      {
+        "challenge": "Confidential uploads are easy to leak, because the obvious setup serves them from a guessable static path.",
+        "learned": "Inverted the default: nginx denies everything under /media unless explicitly allowed, and private files are reachable only through expiring signed links. Deny-by-default means a new upload type is private until someone deliberately publishes it — the opposite of the usual failure mode."
+      },
+      {
+        "challenge": "The on-box ML extras (FAISS, sentence-transformers) pull in torch at roughly 2.5 GB, which is unacceptable in a CI image.",
+        "learned": "Split them into a separate requirements-ml.txt and made every dependent feature detect their absence and fall back. The Docker image and CI skip them entirely, and the same codebase runs in both shapes without branching."
+      },
+      {
+        "challenge": "Giving LLM agents real capability without giving them free rein over the database.",
+        "learned": "Each agent gets an explicit allow-list of tools and inherits the caller's role, so a citizen's agent cannot reach a lawyer's cases. Capability is granted per tool rather than withheld per query, which is far easier to reason about when reviewing what an agent can actually do."
+      }
+    ],
+    "results": [
+      {
+        "metric": "AI Agents",
+        "value": "4",
+        "description": "Counsel Match, Justice Lens, Document Forge, Sentinel — each role-scoped and tool-restricted"
+      },
+      {
+        "metric": "User Roles",
+        "value": "3",
+        "description": "Citizen, lawyer, and admin, each with a separate code-split dashboard"
+      },
+      {
+        "metric": "Languages",
+        "value": "বাংলা + EN",
+        "description": "Full i18n with Bangla code-split from the main bundle"
+      },
+      {
+        "metric": "Production Stack",
+        "value": "5 services",
+        "description": "PostgreSQL 16, Redis 7, Daphne, nginx, and certbot via one Docker Compose deploy"
+      }
+    ]
+  },
+  {
+    "id": "11",
+    "slug": "duet",
+    "title": "Duet",
+    "description": "A couples app in development, bringing one-to-one messaging, shared memories, date planning, and daily connection rituals into one personal space.",
+    "role": "Solo Full-Stack Developer",
+    "impact": "A couples app in development, bringing one-to-one messaging, shared memories, date planning, and daily connection rituals into one personal space.",
+    "color": "#d58b9b",
+    "tags": [
+      "React Native",
+      "Expo",
+      "TypeScript",
+      "Firebase",
+      "Reanimated"
+    ],
+    "sourceUrl": "https://github.com/Tanjamul-Azad/Duet",
+    "status": "building",
+    "featured": true,
+    "pinned": true,
+    "overview": "Duet is a mobile app in development for two people to share everyday moments. It combines messaging, memories, date ideas, and small daily rituals with a warm visual system and an offline local mode.",
+    "problem": "Conversations, photos, plans, and little relationship rituals are often scattered across unrelated apps. A dedicated shared space needs to feel personal while keeping pairing, local state, and optional synchronization understandable.",
+    "solution": "Bring the core experiences into a coordinated mobile interface: a conversation, a shared memory timeline, date planning, and daily prompts. Keep local usage available and support optional Firebase synchronization for a paired experience.",
+    "architecture": "React Native and Expo power the mobile interface, navigation, and device integrations. TypeScript models and shared UI primitives connect the feature screens to local persistence and optional Firebase services. Suggestions use an interchangeable provider interface; the current offline implementation selects curated text by context and tone, rather than running an on-device language model.",
+    "features": [
+      {
+        "title": "A shared conversation",
+        "description": "Messaging screens support text, photos, voice notes, reactions, and stickers in a one-to-one experience."
+      },
+      {
+        "title": "Memories and small rituals",
+        "description": "Collect shared moments and use daily questions with mutual reveal to encourage regular connection."
+      },
+      {
+        "title": "Date planning and suggestions",
+        "description": "Plan time together and explore tone-based message drafts and occasion-based gift ideas through the offline suggestion provider."
+      },
+      {
+        "title": "Device-aware privacy controls",
+        "description": "App-lock and local-vault flows use Expo device capabilities and are being developed alongside pairing and synchronization."
+      }
+    ],
+    "challenges": [
+      {
+        "challenge": "Designing a cohesive experience across many small features",
+        "learned": "Use shared typography, spacing, motion, and component primitives so messaging, memories, and rituals feel like parts of the same app."
+      },
+      {
+        "challenge": "Supporting local use alongside optional cloud services",
+        "learned": "Keep persistence and suggestion providers behind explicit interfaces so the app can evolve without tying every screen to a remote service."
+      }
+    ],
+    "contribution": "I am building Duet independently across the React Native interface, application state, local storage, optional Firebase integration, and suggestion-provider architecture. The app is still in development."
+  },
+  {
     "id": "8",
     "slug": "radflow",
     "title": "RadFlow",
@@ -300,201 +646,6 @@
         "metric": "Spawn Timeout",
         "value": "10s",
         "description": "Hard budget added to PTY spawn so a stuck Windows terminal fails visibly"
-      }
-    ]
-  },
-  {
-    "id": "1",
-    "slug": "complete-legal-aid",
-    "title": "Complete Legal Aid",
-    "description": "Bilingual legal-aid platform connecting Bangladeshi citizens with verified lawyers — escrow payments, encrypted evidence, and four AI agents on one real-time stack.",
-    "role": "Full-Stack Developer & AI Integration Lead",
-    "impact": "Produced a deployable justice platform rather than a demo: Docker Compose brings up PostgreSQL, Redis, Daphne, nginx, and certbot with automatic TLS, and production settings actively refuse to start with DEBUG on, SQLite, or default passwords.",
-    "image": "/images/projects/complete_legal_aid-1787918564663.png",
-    "color": "#3b82f6",
-    "tags": [
-      "React 19",
-      "TypeScript",
-      "Django 4.2",
-      "Django Channels",
-      "PostgreSQL 16",
-      "Redis",
-      "WebSocket",
-      "Gemini",
-      "OpenAI Agents",
-      "FAISS",
-      "SSLCommerz",
-      "Docker",
-      "JWT"
-    ],
-    "liveUrl": "https://complete-legal-aid-beta.vercel.app/",
-    "sourceUrl": "https://github.com/Tanjamul-Azad/Complete-Legal-Aid",
-    "sourcePrivate": true,
-    "videoUrl": "https://drive.google.com/file/d/1zrjia-IavEF5-NyQJsUkYX3Q8uPbcd13/view?usp=sharing",
-    "featured": true,
-    "pinned": true,
-    "overview": "Legal help in Bangladesh is hard to price, hard to verify, and hard to reach. CLA puts citizens, verified lawyers, and administrators on one platform in both Bangla and English, and treats the awkward parts of the problem — proving a lawyer is real, holding money safely until work is done, and keeping evidence private — as first-class features rather than afterthoughts.",
-    "problem": "A citizen looking for legal help has no reliable way to check that a lawyer is genuine, no protection when paying up front, and no safe channel for sensitive documents. Lawyers, meanwhile, lose hours drafting standard filings by hand. Both sides fall back on personal referrals, which excludes anyone without the right contacts.",
-    "solution": "Every role gets its own dashboard over a shared Django backend. Payments run through an escrow flow with an immutable ledger, so money is only released against completed work and the books can be proven consistent. Evidence never sits at a public URL — nginx denies /media by default and files are reachable only through short-lived signed links. Four server-side AI agents handle triage, case-strength estimation, drafting, and emergency routing, each restricted to an allow-listed set of tools and scoped to the caller's role.",
-    "architecture": "The stack is event-driven rather than poll-driven: a service or signal pushes through a Redis channel layer into Django Channels, and the browser's WebSocket provider updates the UI directly. Polling exists only as a fallback. The AI layer is deliberately isolated — all keys stay server-side, and every AI feature degrades gracefully to a non-AI path when a key or an optional ML dependency is missing, so a missing API key never takes the platform down.",
-    "architectureDiagram": {
-      "caption": "Complete Legal Aid pushes state changes outward through Redis and Django Channels; the browser subscribes rather than polls.",
-      "layers": [
-        {
-          "title": "Clients - React 19 + Vite",
-          "nodes": [
-            {
-              "label": "Citizen",
-              "detail": "cases, booking, vault"
-            },
-            {
-              "label": "Lawyer",
-              "detail": "drafting, earnings"
-            },
-            {
-              "label": "Admin",
-              "detail": "verification, ledger"
-            }
-          ],
-          "edgeLabel": "JWT over HTTPS and WSS"
-        },
-        {
-          "title": "Edge - nginx",
-          "nodes": [
-            {
-              "label": "TLS + SPA",
-              "detail": "certbot auto-renewal"
-            },
-            {
-              "label": "Media Policy",
-              "detail": "default-deny, signed links only"
-            }
-          ],
-          "edgeLabel": "proxies /api /ws /admin"
-        },
-        {
-          "title": "Application - Django 4.2 on Daphne (ASGI)",
-          "nodes": [
-            {
-              "label": "DRF Views",
-              "detail": "HTTP layer"
-            },
-            {
-              "label": "Channels Consumers",
-              "detail": "notifications, dashboard, presence"
-            },
-            {
-              "label": "Agent Runtime",
-              "detail": "SSE, tool allow-list"
-            }
-          ],
-          "edgeLabel": "service calls"
-        },
-        {
-          "title": "Services",
-          "nodes": [
-            {
-              "label": "Wallet",
-              "detail": "escrow + immutable ledger"
-            },
-            {
-              "label": "Document",
-              "detail": "bilingual generation"
-            },
-            {
-              "label": "AI",
-              "detail": "Gemini + FAISS RAG"
-            },
-            {
-              "label": "Search",
-              "detail": "statutes, case law, news"
-            }
-          ],
-          "edgeLabel": "persisted"
-        },
-        {
-          "title": "Infrastructure",
-          "nodes": [
-            {
-              "label": "PostgreSQL 16",
-              "detail": "SQLite for local dev"
-            },
-            {
-              "label": "Redis 7",
-              "detail": "channel layer"
-            },
-            {
-              "label": "Secure Media Store",
-              "detail": "signed-link access"
-            }
-          ]
-        }
-      ]
-    },
-    "features": [
-      {
-        "title": "Four scoped AI agents",
-        "description": "Counsel Match triages a citizen's problem into a ranked lawyer shortlist; Justice Lens gives a calibrated case-strength estimate with cited articles; Document Forge drafts from a lawyer's own cases and flags unfilled placeholders; Sentinel handles emergency triage with anonymity-respecting NGO routing. All use function-calling against allow-listed tools, stream over SSE, and are throttled per user."
-      },
-      {
-        "title": "Escrow payments on an immutable ledger",
-        "description": "SSLCommerz payments flow through a single audited path that writes append-only WalletLedgerEntry records. A reconcile_wallets management command proves the ledger and balances agree."
-      },
-      {
-        "title": "Signed-link evidence vault",
-        "description": "Evidence, identity papers, and chat attachments are never served from public URLs. nginx default-denies /media except explicit public folders; everything else is reachable only via short-lived signed links, behind extension, MIME, and magic-byte validation with a 25 MB cap."
-      },
-      {
-        "title": "Constitution RAG in plain Bangla",
-        "description": "A Gemini-backed assistant answers in everyday Bangla, retrieving over the Constitution with FAISS so answers cite real articles instead of paraphrasing from memory."
-      },
-      {
-        "title": "Ban-aware JWT sessions",
-        "description": "One-hour access tokens with seven-day rotating refresh and a blacklist. Banning a user invalidates their existing tokens immediately rather than waiting for expiry."
-      },
-      {
-        "title": "Court-ready bilingual drafting",
-        "description": "Generates bail applications, deeds, notices, and affidavits in Bangla or English from lawyer-owned, database-backed templates that can be shared across the firm."
-      }
-    ],
-    "challenges": [
-      {
-        "challenge": "Keeping money movement auditable when payments, refunds, and withdrawals all touch the same balance.",
-        "learned": "Routed every balance change through one service instead of letting views update wallets directly, and made the ledger append-only so a mistake produces a correcting entry rather than a silent edit. That made a reconciliation command possible — consistency became something to verify on demand rather than assume."
-      },
-      {
-        "challenge": "Confidential uploads are easy to leak, because the obvious setup serves them from a guessable static path.",
-        "learned": "Inverted the default: nginx denies everything under /media unless explicitly allowed, and private files are reachable only through expiring signed links. Deny-by-default means a new upload type is private until someone deliberately publishes it — the opposite of the usual failure mode."
-      },
-      {
-        "challenge": "The on-box ML extras (FAISS, sentence-transformers) pull in torch at roughly 2.5 GB, which is unacceptable in a CI image.",
-        "learned": "Split them into a separate requirements-ml.txt and made every dependent feature detect their absence and fall back. The Docker image and CI skip them entirely, and the same codebase runs in both shapes without branching."
-      },
-      {
-        "challenge": "Giving LLM agents real capability without giving them free rein over the database.",
-        "learned": "Each agent gets an explicit allow-list of tools and inherits the caller's role, so a citizen's agent cannot reach a lawyer's cases. Capability is granted per tool rather than withheld per query, which is far easier to reason about when reviewing what an agent can actually do."
-      }
-    ],
-    "results": [
-      {
-        "metric": "AI Agents",
-        "value": "4",
-        "description": "Counsel Match, Justice Lens, Document Forge, Sentinel — each role-scoped and tool-restricted"
-      },
-      {
-        "metric": "User Roles",
-        "value": "3",
-        "description": "Citizen, lawyer, and admin, each with a separate code-split dashboard"
-      },
-      {
-        "metric": "Languages",
-        "value": "বাংলা + EN",
-        "description": "Full i18n with Bangla code-split from the main bundle"
-      },
-      {
-        "metric": "Production Stack",
-        "value": "5 services",
-        "description": "PostgreSQL 16, Redis 7, Daphne, nginx, and certbot via one Docker Compose deploy"
       }
     ]
   },
@@ -1371,6 +1522,74 @@
         "metric": "Password Hashing",
         "value": "cost 12",
         "description": "password_hash with bcrypt work factor 12, never plaintext or MD5"
+      }
+    ]
+  },
+  {
+    "id": "12",
+    "slug": "uiu-cgpa-calculator",
+    "title": "UIU CGPA Calculator",
+    "description": "A lightweight student utility for credit-weighted GPA and CGPA calculations, retake scenarios, and assessment tracking.",
+    "role": "Frontend Developer",
+    "impact": "A lightweight student utility for credit-weighted GPA and CGPA calculations, retake scenarios, and assessment tracking.",
+    "color": "#a78bfa",
+    "tags": [
+      "React",
+      "TypeScript",
+      "Vite"
+    ],
+    "sourceUrl": "https://github.com/Tanjamul-Azad/uiu-cgpa-calculator",
+    "overview": "A client-side academic planning utility for UIU students, combining a CGPA calculator, assessment tracker, and grading-policy reference in one interface.",
+    "problem": "Students need to understand how course credits, expected grades, and retakes affect their trimester GPA and overall CGPA without rebuilding the same spreadsheet each time.",
+    "solution": "Provide focused calculator, assessment, and policy views. Let students enter course information and inspect credit-weighted results and projected grade scenarios directly in the browser.",
+    "architecture": "A React and TypeScript single-page app built with Vite. Form components calculate and pass typed GPA results and chart data to the result display; assessment tracking and grading-policy views are separate components. The core calculator does not require a server or an account.",
+    "features": [
+      {
+        "title": "Credit-weighted results",
+        "description": "Calculate trimester GPA and overall CGPA from course credits and grades."
+      },
+      {
+        "title": "Retakes and grade scenarios",
+        "description": "Explore how retaken courses and expected grades change the calculation."
+      },
+      {
+        "title": "Assessment tracking",
+        "description": "Review course assessment inputs alongside a dedicated grading-policy reference."
+      }
+    ]
+  },
+  {
+    "id": "13",
+    "slug": "uiu-coverpage-generator",
+    "title": "UIU Cover Page Generator",
+    "description": "A browser-based utility for creating assignment cover pages, exporting A4 PDFs, and merging a cover with an existing assignment.",
+    "role": "Frontend Developer",
+    "impact": "A browser-based utility for creating assignment cover pages, exporting A4 PDFs, and merging a cover with an existing assignment.",
+    "color": "#fb923c",
+    "tags": [
+      "React",
+      "TypeScript",
+      "Vite",
+      "pdf-lib",
+      "jsPDF"
+    ],
+    "sourceUrl": "https://github.com/Tanjamul-Azad/Generate-coverpage",
+    "overview": "A small document-preparation tool that turns student and course details into an assignment cover page, with preview, PDF export, and optional assignment-file merging.",
+    "problem": "Preparing a consistent cover page and attaching it to an assignment is repetitive, especially when the final submission needs to be a single PDF.",
+    "solution": "Collect the cover information in a form, render a preview, and export an A4 cover PDF. Optionally prepend it to an uploaded assignment PDF so the student can download one submission file.",
+    "architecture": "React and TypeScript manage the form and preview. html2canvas renders the cover at a fixed A4 layout, jsPDF creates the cover PDF, and pdf-lib combines it with assignment pages in the browser. Mammoth supports a Word-import conversion path, whose layout fidelity depends on the document.",
+    "features": [
+      {
+        "title": "Cover preview",
+        "description": "Populate student and course information and preview the assignment cover before export."
+      },
+      {
+        "title": "A4 PDF export",
+        "description": "Generate an A4 cover with a course- and student-based filename."
+      },
+      {
+        "title": "One submission file",
+        "description": "Merge the generated cover with an assignment PDF, with progress feedback during preparation."
       }
     ]
   }

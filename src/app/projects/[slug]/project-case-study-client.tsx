@@ -1,5 +1,7 @@
 "use client";
 
+import { ProjectStatus } from "@/components/common/project-status";
+
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowUpRight, Github, ExternalLink, Layers, Lightbulb, Lock, Target, Trophy, Zap } from "lucide-react";
@@ -71,7 +73,8 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
             animate="visible"
             className="max-w-4xl"
           >
-            <motion.div variants={fadeInUp} className="flex flex-wrap gap-2 mb-6">
+            <motion.div variants={fadeInUp} className="flex flex-wrap items-center gap-2 mb-6">
+              <ProjectStatus project={project} />
               {project.tags.map((tag) => (
                 <Badge 
                   key={tag} 
@@ -131,6 +134,17 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
           </motion.div>
         </div>
       </section>
+
+      {project.contribution && (
+        <section className="border-y border-line bg-surface/50 py-8 sm:py-12">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="max-w-3xl">
+              <h2 className="mb-3 text-xl font-semibold text-foreground">My contribution</h2>
+              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">{project.contribution}</p>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Hero Parallax Image */}
       {project.image && imageVisible && (

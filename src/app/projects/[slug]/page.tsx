@@ -81,6 +81,7 @@ export default async function ProjectCaseStudyPage({ params }: PageProps) {
           name: project.title, description: project.overview || project.description,
           author: { "@id": `${siteConfig.url}/#person` },
           keywords: project.tags.join(", "), inLanguage: "en",
+          ...(project.status === "building" ? { creativeWorkStatus: "In development" } : {}),
           mainEntityOfPage: { "@type": "WebPage", "@id": url },
         },
         {

@@ -6,14 +6,14 @@ Production: https://tanzamul.dev
 - VM: `deployments`, zone `us-central1-f`
 - Reserved address: `deployments-ip`, `35.232.136.37`
 - Source folder on VM: `/home/User/tanzamul-portfolio`
-- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3001`
+- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3002`
 - Nginx site: `/etc/nginx/sites-available/tanzamul.dev`
 - TLS: Certbot with automatic renewal (`certbot.timer`)
 - Runtime secrets: `/home/User/tanzamul-runtime.env`, mode 600. Never commit this file.
 
 Build on Linux with `sudo docker build -t tanzamul-portfolio:latest .`.
 The image uses Next.js standalone output; local Windows node_modules are not uploaded.
-Run with `sudo docker run -d --name tanzamul-portfolio --restart unless-stopped --memory=768m --memory-swap=1g --cpus=1 --env-file /home/User/tanzamul-runtime.env -p 127.0.0.1:3001:3000 tanzamul-portfolio:latest`. The current deployed image is `tanzamul-portfolio:mcp-article`. Include the Search Console verification file from `public/` in the image and keep it accessible after updates.
+Run with `sudo docker run -d --name tanzamul-portfolio --restart unless-stopped --memory=768m --memory-swap=1g --cpus=1 --env-file /home/User/tanzamul-runtime.env -p 127.0.0.1:3002:3000 tanzamul-portfolio:latest`. The current deployed image is `tanzamul-portfolio:project-showcase`. Include the Search Console verification file from `public/` in the image and keep it accessible after updates.
 For later updates, build before replacing the running container, retain the previous image for rollback, and check the homepage and `/sitemap.xml` afterward.
 
 The existing ahbab.dev containers use different ports and Nginx server names.
@@ -36,3 +36,7 @@ Five articles were expanded to approximately 1,550–1,730 words each, with chec
 The homepage and /blog preview show four articles. View all opens /blog/all, which lists the complete collection. The archive has its own canonical metadata and sitemap entry; mobile swipe and desktop compact columns apply to both views.
 
 A sixth, general MCP security tutorial was added with an imagegen cover. It uses public protocol/security references and a fictional example, without unpublished project/paper identities, links or experimental results. Research venues and existing research cards are unchanged. The preview still shows four articles; the complete archive now contains six.
+
+The project showcase now contains 13 projects. PolarWindow is first, Complete Legal Aid second, and Duet third in both the homepage and project archive. PolarWindow and Duet carry an In development badge and a separate personal-contribution section. PolarWindow is presented as an independent NASA Space Apps / CLPS exploration project; the owner's contribution is research and mission analysis, with frontend work planned next. Duet is a solo full-stack build. UIU CGPA Calculator and UIU Cover Page Generator appear as smaller utilities. The four new projects intentionally have no thumbnail or live URL until the owner provides them; source links and case-study pages are available. Current Priorities now names PolarWindow, and the hero counts 13 Projects Showcased rather than treating ongoing work as shipped.
+
+The project update uses localhost port 3002 behind the existing Nginx domain. The stopped `tanzamul-portfolio-before-projects` container retains the preceding version on port 3001 with automatic restart disabled. To roll back, start that container, restore the domain proxy to port 3001, test Nginx configuration, and reload Nginx before stopping the new container.

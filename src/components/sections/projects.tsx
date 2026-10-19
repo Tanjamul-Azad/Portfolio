@@ -1,5 +1,7 @@
 "use client";
 
+import { ProjectStatus } from "@/components/common/project-status";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowUpRight, ExternalLink, Github, Lock, Play } from "lucide-react";
@@ -191,6 +193,7 @@ function MobileProjectCard({ project, index, isPinned }: { project: Project; ind
       </Link>
 
       <div className="flex flex-1 flex-col p-4">
+        {project.status === "building" && <div className="mb-2"><ProjectStatus project={project} /></div>}
         <p className="eyebrow mb-1.5 truncate text-[10px]">{project.role}</p>
         <h3 className="text-lg font-semibold leading-tight tracking-[-0.02em] text-foreground">
           {project.title}
@@ -273,7 +276,7 @@ function RailRow({ project, index, isActive, isPinned, onActivate, rowRef }: Rai
             </span>
           )}
         </div>
-        <p className="mt-1 truncate text-xs text-muted-foreground">{project.role}</p>
+        <div className="mt-1 flex flex-wrap items-center gap-2"><p className="truncate text-xs text-muted-foreground">{project.role}</p><ProjectStatus project={project} /></div>
       </div>
 
       <ArrowUpRight
@@ -325,6 +328,7 @@ function ProjectPreview({ project, isPinned }: { project: Project; isPinned: boo
         <div className="relative px-6 pb-6 pt-4">
           <div className="flex items-start justify-between gap-6">
             <div className="min-w-0">
+              {project.status === "building" && <div className="mb-3"><ProjectStatus project={project} /></div>}
               <p className="eyebrow mb-2 truncate text-[10px]">{project.role}</p>
               <h3 className="flex items-center gap-2.5 text-2xl font-semibold tracking-[-0.025em] text-foreground">
                 {project.title}
