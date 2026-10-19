@@ -133,6 +133,9 @@ export interface BlogPost {
   readTime: string;
   tags: string[];
   featured?: boolean;
+  image?: string;
+  imageAlt?: string;
+  imageCaption?: string;
 }
 
 export interface ContactFormData {

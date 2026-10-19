@@ -10,3 +10,4 @@ export { Testimonials } from "./testimonials";
 export { Blog } from "./blog";
 export { Research } from "./research";
 export { GitHub } from "./github";
+export { Activities } from "./activities";

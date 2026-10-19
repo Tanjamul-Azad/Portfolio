@@ -12,6 +12,7 @@ import {
   Research,
   Experience,
   Achievements,
+  Activities,
   Now,
   Testimonials,
   Blog,
@@ -19,6 +20,7 @@ import {
   Contact,
 } from "@/components/sections";
 import { MOTION_TOKENS } from "@/lib";
+import { siteConfig } from "@/config";
 
 // Persists across in-app (client-side) navigations but resets on a real page
 // load, so the preloader plays once per visit — not every time you return to
@@ -46,6 +48,15 @@ export default function Home() {
 
   return (
     <main className="scroll-container relative min-h-svh overflow-x-hidden">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        "@id": `${siteConfig.url}/#profilepage`,
+        url: siteConfig.url,
+        name: siteConfig.title,
+        isPartOf: { "@id": `${siteConfig.url}/#website` },
+        mainEntity: { "@id": `${siteConfig.url}/#person` },
+      }).replace(/</g, "\\u003c") }} />
       {/* The preloader is an overlay, not a gate.
           It used to be the other branch of an `AnimatePresence mode="wait"`, which
           meant the server-rendered HTML contained the loading screen and nothing
@@ -100,6 +111,9 @@ export default function Home() {
         </Suspense>
         <Suspense>
           <Achievements />
+        </Suspense>
+        <Suspense>
+          <Activities />
         </Suspense>
         <Suspense>
           <Testimonials />

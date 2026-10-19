@@ -15,7 +15,6 @@ import {
   ScrollProgress,
   StickyEmail,
 } from "@/components/effects";
-import { Analytics } from "@vercel/analytics/next";
 import { themeScript } from "@/lib/theme-script";
 
 // Use Geist consistently for headings, body text, and small labels.
@@ -45,7 +44,7 @@ export const metadata: Metadata = {
     siteConfig.author.name,
     `${siteConfig.author.name} portfolio`,
     `${siteConfig.author.name} developer`,
-    "AI Engineer Bangladesh",
+    "Generative AI Researcher Bangladesh",
     "NLP Researcher Dhaka",
     "Generative AI Researcher",
     "United International University CSE",
@@ -159,14 +158,6 @@ export default function RootLayout({
                   publisher: { "@id": `${siteConfig.url}/#person` },
                 },
                 {
-                  "@type": "ProfilePage",
-                  "@id": `${siteConfig.url}/#profilepage`,
-                  url: siteConfig.url,
-                  name: siteConfig.title,
-                  isPartOf: { "@id": `${siteConfig.url}/#website` },
-                  mainEntity: { "@id": `${siteConfig.url}/#person` },
-                },
-                {
                   "@type": "Person",
                   "@id": `${siteConfig.url}/#person`,
                   name: siteConfig.author.name,
@@ -191,12 +182,13 @@ export default function RootLayout({
                     siteConfig.links.twitter,
                     siteConfig.links.facebook,
                   ],
-                  alumniOf: [
+                  affiliation:
                     {
                       "@type": "CollegeOrUniversity",
                       name: "United International University",
                       url: "https://www.uiu.ac.bd/",
                     },
+                  alumniOf: [
                     { "@type": "EducationalOrganization", name: "Dhaka College" },
                   ],
                   knowsAbout: [
@@ -230,7 +222,6 @@ export default function RootLayout({
             </div>
           </RouteTransitionProvider>
           <Toaster position="bottom-right" />
-          <Analytics />
         </ThemeProvider>
       </body>
     </html>

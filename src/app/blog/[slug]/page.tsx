@@ -39,13 +39,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: siteConfig.name,
       publishedTime: post.date,
       tags: post.tags,
-      images: [{ url: siteConfig.ogImage, width: 1200, height: 630, alt: post.title }],
+      images: [{ url: post.image ? new URL(post.image, siteConfig.url).toString() : siteConfig.ogImage, alt: post.imageAlt || post.title }],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
-      images: [siteConfig.ogImage],
+      images: [post.image ? new URL(post.image, siteConfig.url).toString() : siteConfig.ogImage],
       creator: siteConfig.author.twitterHandle,
     },
   };
@@ -59,5 +59,30 @@ export default async function BlogPostPage({ params }: PageProps) {
     notFound();
   }
 
-  return <BlogPostClient slug={slug} />;
+  const url = `${siteConfig.url}/blog/${post.slug}`;
+  return <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BlogPosting", "@id": `${url}#article`, url,
+          headline: post.title, description: post.excerpt,
+          datePublished: `${post.date}T00:00:00+06:00`,
+          image: [post.image ? new URL(post.image, siteConfig.url).toString() : siteConfig.ogImage], inLanguage: "en",
+          author: { "@type": "Person", "@id": `${siteConfig.url}/#person`, name: siteConfig.author.name, url: siteConfig.url },
+          publisher: { "@id": `${siteConfig.url}/#person` },
+          mainEntityOfPage: { "@type": "WebPage", "@id": url },
+          keywords: post.tags.join(", "),
+        },
+        {
+          "@type": "BreadcrumbList", itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: siteConfig.url },
+            { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/blog` },
+            { "@type": "ListItem", position: 3, name: post.title, item: url },
+          ],
+        },
+      ],
+    }).replace(/</g, "\\u003c") }} />
+    <BlogPostClient slug={slug} />
+  </>;
 }

@@ -8,6 +8,7 @@ import { getPostBySlug, blogPosts } from "@/data";
 import { siteConfig } from "@/config";
 import { Navbar, Footer } from "@/components/layout";
 import Link from "next/link";
+import Image from "next/image";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
@@ -133,6 +134,17 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                   </Button>
                 </div>
               </motion.div>
+
+              {post.image && (
+                <figure className="mt-10 sm:mt-12">
+                  <div className="overflow-hidden rounded-2xl border border-line bg-muted">
+                    <Image src={post.image} alt={post.imageAlt || post.title}
+                      width={1672} height={941} sizes="(max-width: 800px) 100vw, 768px"
+                      className="h-auto w-full" />
+                  </div>
+                  {post.imageCaption && <figcaption className="mt-3 text-sm leading-relaxed text-muted-foreground">{post.imageCaption}</figcaption>}
+                </figure>
+              )}
 
               {/* Content */}
               <motion.div

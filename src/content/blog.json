@@ -13,7 +13,10 @@
       "LLM",
       "AI Research"
     ],
-    "featured": true
+    "featured": true,
+    "image": "/images/blog/neuro-symbolic-v2.webp",
+    "imageAlt": "Neural representations combine with explicit rules to support hybrid reasoning and checked outputs.",
+    "imageCaption": "A conceptual view of neuro-symbolic reasoning. The illustration summarizes the relationship between learned representations and explicit rules; it is not an architecture or experimental result from a specific paper."
   },
   {
     "slug": "the-reversal-curse-llm-knowledge-is-one-directional",
@@ -29,7 +32,10 @@
       "Interpretability",
       "Machine Learning"
     ],
-    "featured": true
+    "featured": true,
+    "image": "/images/blog/reversal-curse-v2.webp",
+    "imageAlt": "A learned forward relationship from A to B contrasts with an incomplete reverse relationship from B to A.",
+    "imageCaption": "The reversal curse, illustrated: learning a directional fact does not automatically establish the inverse. AI-generated conceptual illustration."
   },
   {
     "slug": "building-complete-legal-aid-production",
@@ -45,7 +51,10 @@
       "WebSocket",
       "Legal Tech"
     ],
-    "featured": true
+    "featured": true,
+    "image": "/images/blog/legal-aid-v2.webp",
+    "imageAlt": "Citizen, lawyer and administrator workflows connect messaging, documents, bookings, payments and AI-assisted drafting.",
+    "imageCaption": "Conceptual overview of the workflows discussed in this case study. This AI-generated illustration is not a screenshot or a security audit."
   },
   {
     "slug": "chefmate-nlp-and-ml-pipeline",
@@ -61,7 +70,10 @@
       "scikit-learn",
       "spaCy"
     ],
-    "featured": true
+    "featured": true,
+    "image": "/images/blog/chefmate-v2.webp",
+    "imageAlt": "Noisy ingredient text passes through normalization, fuzzy matching and recipe ranking to produce suggestions.",
+    "imageCaption": "A simplified conceptual illustration of ingredient normalization and recipe recommendation. The examples illustrate processing stages rather than measured model outputs."
   },
   {
     "slug": "care-companion-ai-iot-system-design",
@@ -77,6 +89,9 @@
       "Raspberry Pi",
       "Flask"
     ],
-    "featured": false
+    "featured": false,
+    "image": "/images/blog/care-companion-v2.webp",
+    "imageAlt": "A conceptual rover connects vision, processing, sensing and control with a caregiver dashboard.",
+    "imageCaption": "Conceptual illustration of an AI and IoT rover system. The hardware layout and dashboard are illustrative, not photographs or exact specifications of our prototype."
   }
 ]

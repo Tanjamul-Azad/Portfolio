@@ -71,5 +71,27 @@ export default async function ProjectCaseStudyPage({ params }: PageProps) {
     notFound();
   }
 
-  return <ProjectCaseStudyClient slug={slug} />;
+  const url = `${siteConfig.url}/projects/${project.slug}`;
+  return <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "CreativeWork", "@id": `${url}#project`, url,
+          name: project.title, description: project.overview || project.description,
+          author: { "@id": `${siteConfig.url}/#person` },
+          keywords: project.tags.join(", "), inLanguage: "en",
+          mainEntityOfPage: { "@type": "WebPage", "@id": url },
+        },
+        {
+          "@type": "BreadcrumbList", itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: siteConfig.url },
+            { "@type": "ListItem", position: 2, name: "Projects", item: `${siteConfig.url}/projects` },
+            { "@type": "ListItem", position: 3, name: project.title, item: url },
+          ],
+        },
+      ],
+    }).replace(/</g, "\\u003c") }} />
+    <ProjectCaseStudyClient slug={slug} />
+  </>;
 }

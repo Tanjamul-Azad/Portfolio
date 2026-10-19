@@ -2,17 +2,16 @@
   {
     "category": "building",
     "items": [
-      "Complete Legal Aid — adding blockchain-backed security for tamper-proof evidence integrity",
-      "SkillEx — peer skill-exchange platform (React 19 + Spring Boot 3, AOOP project)",
-      "UniShare — real-time university community platform (React 19 + Socket.IO)"
+      "Dawat — a platform for creating and sharing digital wedding invitations",
+      "CLPS — developing a NASA-focused project",
+      "Personal AI Habit Tracker — personalized habit tracking with AI-assisted guidance"
     ]
   },
   {
     "category": "learning",
     "items": [
-      "Ongoing Final Year Design Project",
-      "Green Computing: Federated Learning Based Intrusion Detection for IoT",
-      "ML Research: Conflict-Aware Hallucination Detection in Multi-Document Summarization"
+      "MCP Security — investigating how attacks through MCP servers affect LLM-based agents",
+      "Final Year Design Project — ongoing research and development"
     ]
   },
   {
