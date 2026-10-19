@@ -106,7 +106,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop: centred link pill with a sliding active marker. */}
-        <ul className="relative hidden items-center gap-0.5 rounded-full border border-line bg-surface/50 p-1 md:flex">
+        <ul className="relative hidden items-center gap-0.5 rounded-full border border-line bg-surface/50 p-1 lg:flex">
           {navLinks.map((link) => {
             const isAnchorLink = link.href.startsWith("#");
             const sectionId = link.href.replace("#", "");
@@ -137,7 +137,7 @@ export function Navbar() {
           })}
         </ul>
 
-        <div className="relative hidden items-center gap-2 md:flex">
+        <div className="relative hidden items-center gap-2 lg:flex">
           <AdminEditIcon />
           <ThemeToggle />
           <a
@@ -151,7 +151,7 @@ export function Navbar() {
         </div>
 
         {/* Mobile */}
-        <div className="relative flex items-center gap-1.5 md:hidden">
+        <div className="relative flex items-center gap-1.5 lg:hidden">
           <AdminEditIcon />
           <ThemeToggle />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>

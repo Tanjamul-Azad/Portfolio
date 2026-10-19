@@ -6,14 +6,14 @@ Production: https://tanzamul.dev
 - VM: `deployments`, zone `us-central1-f`
 - Reserved address: `deployments-ip`, `35.232.136.37`
 - Source folder on VM: `/home/User/tanzamul-portfolio`
-- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3002`
+- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3003`
 - Nginx site: `/etc/nginx/sites-available/tanzamul.dev`
 - TLS: Certbot with automatic renewal (`certbot.timer`)
 - Runtime secrets: `/home/User/tanzamul-runtime.env`, mode 600. Never commit this file.
 
 Build on Linux with `sudo docker build -t tanzamul-portfolio:latest .`.
 The image uses Next.js standalone output; local Windows node_modules are not uploaded.
-Run with `sudo docker run -d --name tanzamul-portfolio --restart unless-stopped --memory=768m --memory-swap=1g --cpus=1 --env-file /home/User/tanzamul-runtime.env -p 127.0.0.1:3002:3000 tanzamul-portfolio:latest`. The current deployed image is `tanzamul-portfolio:project-showcase`. Include the Search Console verification file from `public/` in the image and keep it accessible after updates.
+Run with `sudo docker run -d --name tanzamul-portfolio --restart unless-stopped --memory=768m --memory-swap=1g --cpus=1 --env-file /home/User/tanzamul-runtime.env -p 127.0.0.1:3003:3000 tanzamul-portfolio:latest`. The current deployed image is `tanzamul-portfolio:extracurricular`. Include the Search Console verification file from `public/` in the image and keep it accessible after updates.
 For later updates, build before replacing the running container, retain the previous image for rollback, and check the homepage and `/sitemap.xml` afterward.
 
 The existing ahbab.dev containers use different ports and Nginx server names.
@@ -39,4 +39,6 @@ A sixth, general MCP security tutorial was added with an imagegen cover. It uses
 
 The project showcase now contains 13 projects. PolarWindow is first, Complete Legal Aid second, and Duet third in both the homepage and project archive. PolarWindow and Duet carry an In development badge and a separate personal-contribution section. PolarWindow is presented as an independent NASA Space Apps / CLPS exploration project; the owner's contribution is research and mission analysis, with frontend work planned next. Duet is a solo full-stack build. UIU CGPA Calculator and UIU Cover Page Generator appear as smaller utilities. The four new projects intentionally have no thumbnail or live URL until the owner provides them; source links and case-study pages are available. Current Priorities now names PolarWindow, and the hero counts 13 Projects Showcased rather than treating ongoing work as shipped.
 
-The project update uses localhost port 3002 behind the existing Nginx domain. The stopped `tanzamul-portfolio-before-projects` container retains the preceding version on port 3001 with automatic restart disabled. To roll back, start that container, restore the domain proxy to port 3001, test Nginx configuration, and reload Nginx before stopping the new container.
+The project showcase update was initially deployed on localhost port 3002 behind the existing Nginx domain. The stopped `tanzamul-portfolio-before-projects` container retains the preceding version on port 3001 with automatic restart disabled. To roll back, start that container, restore the domain proxy to port 3001, test Nginx configuration, and reload Nginx before stopping the new container.
+
+The section heading and shared navigation label are now ExtraCurricular; the existing #activities anchor is retained. Below 1024px the header uses the mobile menu so the longer label fits cleanly. Event records are still awaiting the owner's list; no participations or outcomes have been invented. This version uses localhost port 3003. The stopped `tanzamul-portfolio-before-extracurricular` container preserves the project-showcase version on port 3002 with automatic restart disabled; restore the domain proxy to port 3002 to roll back after starting that container.

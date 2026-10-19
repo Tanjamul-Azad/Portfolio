@@ -28,7 +28,7 @@ export function Activities() {
     <section id="activities" aria-labelledby="activities-heading" className="scroll-section section-y">
       <div className="shell">
         <SectionHeading id="activities-heading" eyebrow="Beyond the coursework"
-          title="Activities & hackathons"
+          title="ExtraCurricular"
           description="Selected builds, collaborations, and community experiences — the work, the people, and what I learned." />
         {!activities.length && (
           <div className="surface flex flex-col gap-5 rounded-2xl border border-line p-6 sm:flex-row sm:items-center sm:gap-6 sm:p-8">

@@ -1,4 +1,4 @@
-# Activities & hackathons
+# ExtraCurricular
 
 The section is implemented in `src/components/sections/activities.tsx`, after Achievements on the homepage, with a navigation link. Until real event records are supplied in `src/content/activities.json`, it shows a compact editorial introduction without fictional events, awards, or counts.
 
@@ -16,4 +16,4 @@ Each record needs:
 
 Use an explicit outcome such as Participant, Finalist, or the exact prize only when accurate. Use real event photographs or certificates, not generated participation evidence. A date, event/project link, role, and tangible result are more useful than a long list of attendance badges.
 
-Current Priorities (`src/content/now.json`) now lists Dawat, the NASA-focused CLPS project, and a personalized AI habit tracker; research lists MCP security and ongoing FYDP. Looking For is unchanged.
+Current Priorities (`src/content/now.json`) now lists Dawat, PolarWindow, the independent CLPS lunar mission browser, and a personalized AI habit tracker; research lists MCP security and ongoing FYDP. Looking For is unchanged.
