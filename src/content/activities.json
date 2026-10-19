@@ -1,1 +1,67 @@
-[]
+[
+  {
+    "id": "nasa-space-apps-2026",
+    "name": "NASA International Space Apps Challenge",
+    "date": "2026",
+    "dateLabel": "2026 · Ongoing",
+    "category": "Hackathon",
+    "role": "Research & Mission Analysis Contributor",
+    "outcome": "Locally selected",
+    "project": "PolarWindow · CLPS Lunar Mission Browser",
+    "projectUrl": "/projects/polarwindow",
+    "summary": "Selected at the local stage with PolarWindow and now progressing to the global stage. My contribution focuses on mission-analysis research and data inputs for the CLPS lunar mission browser.",
+    "tags": [
+      "Space science",
+      "Mission analysis",
+      "NASA open data"
+    ],
+    "url": "https://www.spaceappschallenge.org/"
+  },
+  {
+    "id": "ibm-bob-2026",
+    "name": "IBM Bob 2.0 Hackathon",
+    "date": "2026-09-25",
+    "endDate": "2026-09-27",
+    "category": "Hackathon",
+    "role": "Participant",
+    "outcome": "Participation",
+    "summary": "Participated in the online hackathon focused on AI-assisted software development with IBM Bob.",
+    "tags": [
+      "AI-assisted development",
+      "Online hackathon"
+    ],
+    "url": "https://developer.ibm.com/events/ibm-bob-20-hackathon/"
+  },
+  {
+    "id": "infinity-ai-buildfest-2026",
+    "name": "The Infinity AI BuildFest",
+    "date": "2026-06-12",
+    "category": "Hackathon",
+    "role": "Participant",
+    "outcome": "Participation",
+    "summary": "Participated in CloudCamp Bangladesh’s Infinity AI BuildFest, a gathering of builders exploring practical AI-powered products and solutions.",
+    "tags": [
+      "AI product building",
+      "CloudCamp Bangladesh"
+    ],
+    "url": "https://cloudcampbd.com/the-infinity-ai-buildfest"
+  },
+  {
+    "id": "harvard-hsil-2026",
+    "name": "Harvard HSIL Hackathon",
+    "date": "2026-04-10",
+    "endDate": "2026-04-11",
+    "category": "Hackathon",
+    "role": "Team participant · Full-Stack Developer",
+    "outcome": "National selection",
+    "project": "RadFlow",
+    "projectUrl": "/projects/radflow",
+    "summary": "Selected for participation at the Bangladesh national / Dhaka hub of the Harvard Health Systems Innovation Lab Hackathon. Worked with the team on RadFlow, an offline-first AI radiology triage prototype for district hospitals.",
+    "tags": [
+      "Healthcare AI",
+      "Team collaboration",
+      "Dhaka hub"
+    ],
+    "url": "https://iriic.uiu.ac.bd/harvard-hsil-hackthon-2026/"
+  }
+]
