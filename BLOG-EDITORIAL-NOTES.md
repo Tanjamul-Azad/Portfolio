@@ -23,3 +23,7 @@ Unsubstantiated blog claims of 70% ingredient-recognition improvement, 60 FPS ro
 ## Reading experience
 
 Homepage and blog index share `BlogCollection`: below 1024px a snap carousel, a position counter and progress line match the Projects interaction. Keyboard left/right navigation and reduced-motion preferences are supported. Desktop retains three/four compact columns. Article pages add a collapsible section index with heading anchors, one page title and an updated date.
+
+## Additional public-concept article
+
+A sixth article on checking actions in MCP-based systems was added on October 20, 2026: 1,767 words, 12 sections, approximately nine minutes. Its standalone Python example passed. References are public protocol and security guidance. No unpublished research names, repository links, methods, or experimental results are included. Existing research venues and research cards were left unchanged.
