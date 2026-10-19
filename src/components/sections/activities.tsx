@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import { ArrowUpRight, Code2, Users } from "lucide-react";
 import { SectionHeading } from "@/components/common";
 import activityData from "@/content/activities.json";
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export interface Activity {
   id: string;
@@ -17,7 +17,6 @@ export interface Activity {
   role: string;
   outcome?: string;
   project?: string;
-  projectUrl?: string;
   summary: string;
   learning?: string;
   tags?: string[];
@@ -26,6 +25,8 @@ export interface Activity {
   imageAlt?: string;
   secondaryImage?: string;
   secondaryImageAlt?: string;
+  imageLabel?: string;
+  imageSource?: string;
 }
 
 function ActivityDate({ activity }: { activity: Activity }) {
@@ -40,9 +41,9 @@ function ActivityVisual({ activity }: { activity: Activity }) {
     return (
       <div className="relative aspect-video shrink-0 overflow-hidden bg-surface-2 [perspective:1200px]">
         {activity.secondaryImage ? <div className="relative size-full transition-transform duration-700 ease-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
-          <div className="absolute inset-0 [backface-visibility:hidden]"><Image src={activity.image} alt={activity.imageAlt || activity.name} fill sizes="(max-width: 639px) 84vw, (max-width: 1023px) 46vw, (max-width: 1279px) 33vw, 260px" className="object-cover" /></div>
+          <div className="absolute inset-0 [backface-visibility:hidden]"><Image src={activity.image} alt={activity.imageAlt || activity.name} fill sizes="(max-width: 639px) 84vw, (max-width: 1023px) 46vw, (max-width: 1279px) 33vw, 260px" className="object-contain" /></div>
           <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)]"><Image src={activity.secondaryImage} alt={activity.secondaryImageAlt || "Team photograph"} fill sizes="(max-width: 639px) 84vw, (max-width: 1023px) 46vw, (max-width: 1279px) 33vw, 260px" className="object-cover" /></div>
-        </div> : <Image src={activity.image} alt={activity.imageAlt || activity.name} fill sizes="(max-width: 639px) 84vw, (max-width: 1023px) 46vw, (max-width: 1279px) 33vw, 260px" className="object-cover transition-transform duration-500 group-hover:scale-[1.03]" />}
+        </div> : <Image src={activity.image} alt={activity.imageAlt || activity.name} fill sizes="(max-width: 639px) 84vw, (max-width: 1023px) 46vw, (max-width: 1279px) 33vw, 260px" className="object-contain" />}
         {activity.secondaryImage && <span className="pointer-events-none absolute bottom-2.5 right-2.5 hidden rounded-full bg-black/60 px-2 py-1 text-[9px] font-medium text-white/90 backdrop-blur-sm sm:block">Hover for team photo</span>}
       </div>
     );
@@ -57,16 +58,28 @@ function ActivityVisual({ activity }: { activity: Activity }) {
 function ActivityCard({ activity }: { activity: Activity }) {
   return <article className="group surface flex h-full flex-col overflow-hidden transition-[border-color,transform] duration-300 hover:-translate-y-1 hover:border-line-strong">
     <ActivityVisual activity={activity} />
-    <div className="flex flex-1 flex-col p-4">
-      <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[10px] text-muted-foreground"><span>{activity.category}</span><span aria-hidden="true">·</span><ActivityDate activity={activity} /></div>
-      {activity.outcome && <span className="mb-2 inline-flex self-start rounded-full border border-line-strong bg-foreground/5 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">{activity.outcome}</span>}
-      <h3 className="line-clamp-2 text-base font-semibold leading-snug tracking-tight text-foreground">{activity.name}</h3>
-      <p className="mt-1.5 line-clamp-2 text-xs font-medium leading-relaxed text-muted-foreground">{activity.role}{activity.project ? ` · ${activity.project}` : ""}</p>
-      <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-muted-foreground">{activity.summary}</p>
-      {activity.tags?.length ? <ul className="mt-3 flex flex-wrap gap-1.5" aria-label="Topics">{activity.tags.slice(0, 2).map(tag => <li key={tag} className="rounded-md bg-foreground/5 px-1.5 py-0.5 text-[10px] text-muted-foreground">{tag}</li>)}</ul> : null}
-      <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-0.5 pt-3 text-xs font-medium">
-        {activity.projectUrl && <Link href={activity.projectUrl} className="inline-flex min-h-9 items-center gap-1.5 text-foreground hover:text-accent">Case study<ArrowUpRight className="size-3.5" /><span className="sr-only"> — {activity.project}</span></Link>}
-        {activity.url && <a href={activity.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-9 items-center gap-1.5 text-muted-foreground hover:text-foreground">Event details<ArrowUpRight className="size-3.5" /><span className="sr-only"> — {activity.name}</span></a>}
+    <div className="flex flex-1 flex-col p-3.5">
+      <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-muted-foreground"><span>{activity.dateLabel || activity.date.slice(0, 4)}</span>{activity.outcome && <><span aria-hidden="true">·</span><span>{activity.outcome}</span></>}</div>
+      <h3 className="line-clamp-2 text-sm font-semibold leading-snug tracking-tight text-foreground">{activity.name}</h3>
+      <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{activity.summary}</p>
+      <div className="mt-auto pt-2 text-xs font-medium">
+        <Dialog>
+          <DialogTrigger asChild><button type="button" className="inline-flex min-h-11 w-full items-center justify-between gap-2 text-left text-foreground hover:text-accent">Details<ArrowUpRight className="size-4" /><span className="sr-only"> — {activity.name}</span></button></DialogTrigger>
+          <DialogContent className="max-h-[90dvh] overflow-y-auto overscroll-contain p-4 sm:max-w-3xl sm:p-6">
+            <div className="pr-8">
+              <p className="mb-2 font-mono text-[11px] text-muted-foreground"><ActivityDate activity={activity} />{activity.outcome && ` · ${activity.outcome}`}</p>
+              <DialogTitle className="text-xl leading-snug">{activity.name}</DialogTitle>
+              <DialogDescription className="mt-2 leading-relaxed">{activity.role}{activity.project ? ` · ${activity.project}` : ""}</DialogDescription>
+            </div>
+            <p className="text-sm leading-relaxed text-muted-foreground">{activity.summary}</p>
+            {activity.image && <figure className="min-w-0"><a href={activity.image} target="_blank" rel="noopener noreferrer" className="block rounded-lg bg-neutral-950 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"><Image src={activity.image} alt={activity.imageAlt || activity.name} width={1500} height={1500} sizes="(max-width: 640px) 90vw, 720px" className="h-auto max-h-[65dvh] w-full rounded-lg object-contain" /></a><figcaption className="mt-2 flex flex-wrap justify-between gap-2 text-xs text-muted-foreground"><span>{activity.imageLabel || "Official event poster"}</span><a href={activity.image} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Open full image<span className="sr-only"> — {activity.imageLabel || activity.name}</span></a></figcaption></figure>}
+            {activity.secondaryImage && <figure className="min-w-0"><a href={activity.secondaryImage} target="_blank" rel="noopener noreferrer" className="block rounded-lg bg-neutral-950 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"><Image src={activity.secondaryImage} alt={activity.secondaryImageAlt || "Team photograph"} width={720} height={540} sizes="(max-width: 640px) 90vw, 720px" className="h-auto max-h-[65dvh] w-full rounded-lg object-contain" /></a><figcaption className="mt-2 flex flex-wrap justify-between gap-2 text-xs text-muted-foreground"><span>Team photograph · HSIL Dhaka Hub</span><a href={activity.secondaryImage} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Open full image<span className="sr-only"> — team photograph</span></a></figcaption></figure>}
+            <div className="flex flex-wrap gap-x-5 gap-y-2 border-t border-line pt-3 text-xs font-medium">
+              {activity.url && <a href={activity.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1.5 hover:text-accent">Official event website<ArrowUpRight className="size-3.5" /></a>}
+              {activity.imageSource && <a href={activity.imageSource} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1.5 text-muted-foreground hover:text-foreground">Poster source<ArrowUpRight className="size-3.5" /></a>}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   </article>;

@@ -8,14 +8,17 @@
     "role": "Research & Mission Analysis Contributor",
     "outcome": "Locally selected",
     "project": "PolarWindow · CLPS Lunar Mission Browser",
-    "projectUrl": "/projects/polarwindow",
     "summary": "Contributing mission-analysis research and data inputs to PolarWindow, a CLPS lunar mission browser. The team progressed from the local stage to the ongoing global stage.",
     "tags": [
       "Space science",
       "Mission analysis",
       "NASA open data"
     ],
-    "url": "https://www.spaceappschallenge.org/"
+    "url": "https://www.spaceappschallenge.org/",
+    "image": "/images/activities/nasa-space-apps-2026.png",
+    "imageAlt": "NASA Space Apps Challenge 2026 official The Next Frontier artwork",
+    "imageLabel": "Official 2026 event artwork · The Next Frontier",
+    "imageSource": "https://www.spaceappschallenge.org/blog/explore-the-next-frontier-at-the-2026-nasa-space-apps-challenge/"
   },
   {
     "id": "ibm-bob-2026",
@@ -30,7 +33,11 @@
       "AI-assisted development",
       "Online hackathon"
     ],
-    "url": "https://developer.ibm.com/events/ibm-bob-20-hackathon/"
+    "url": "https://developer.ibm.com/events/ibm-bob-20-hackathon/",
+    "image": "/images/activities/ibm-bob-2026.jpg",
+    "imageAlt": "Official IBM Bob 2.0 Hackathon event banner",
+    "imageLabel": "Official IBM Bob 2.0 Hackathon poster",
+    "imageSource": "https://lablab.ai/ai-hackathons/ibm-bob-2-hackathon/"
   },
   {
     "id": "infinity-ai-buildfest-2026",
@@ -44,7 +51,11 @@
       "AI product building",
       "CloudCamp Bangladesh"
     ],
-    "url": "https://cloudcampbd.com/the-infinity-ai-buildfest"
+    "url": "https://cloudcampbd.com/the-infinity-ai-buildfest",
+    "image": "/images/activities/infinity-ai-buildfest-2026.jpg",
+    "imageAlt": "Official Infinity AI BuildFest poster from CloudCamp Bangladesh",
+    "imageLabel": "Official Infinity AI BuildFest poster",
+    "imageSource": "https://cloudcampbd.com/the-infinity-ai-buildfest"
   },
   {
     "id": "harvard-hsil-2026",
@@ -55,7 +66,6 @@
     "role": "Team member · Full-Stack Developer",
     "outcome": "National selection",
     "project": "RadFlow",
-    "projectUrl": "/projects/radflow",
     "summary": "Officially selected for the Dhaka, Bangladesh Hub of the 7th Harvard HSIL Hackathon. Contributed to RadFlow, an offline-first AI-supported radiology triage prototype for resource-constrained district hospitals.",
     "tags": [
       "Healthcare AI",
@@ -65,6 +75,7 @@
     "url": "https://iriic.uiu.ac.bd/harvard-hsil-hackthon-2026/",
     "image": "/images/activities/hsil-selection-2026.png",
     "imageAlt": "Official HSIL Hackathon 2026 Dhaka Hub selection confirmation",
+    "imageLabel": "Official selection confirmation · Dhaka, Bangladesh Hub",
     "secondaryImage": "/images/activities/hsil-team-2026.png",
     "secondaryImageAlt": "RadFlow team at the HSIL Hackathon 2026 Dhaka Hub"
   }
