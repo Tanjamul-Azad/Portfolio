@@ -3,6 +3,8 @@
     "id": "10",
     "slug": "polarwindow",
     "title": "PolarWindow",
+    "image": "/images/projects/polarwindow.png",
+    "videoUrl": "https://www.youtube.com/watch?v=SOhBWT_rAFY",
     "description": "A CLPS lunar mission browser for exploring landing sites, sunlight windows, and Earth contact using public NASA terrain and mission data.",
     "role": "Research & Mission Analysis Contributor",
     "impact": "Contributing research and data preparation for mission constraints, with frontend work planned next.",
@@ -293,9 +295,50 @@
     ]
   },
   {
+    "id": "14",
+    "slug": "dawat",
+    "title": "Dawat",
+    "description": "A Bangla-first wedding invitation platform in development: publish a Jamdani-inspired card, give each household a personal link, and track replies for the events they are actually invited to.",
+    "role": "Full-Stack Developer",
+    "impact": "Built the invitation-to-response workflow around named households, versioned publishing, private photos, and separate seller and couple workspaces; launch qualification is ongoing.",
+    "image": "/images/projects/dawat.png",
+    "color": "#7a2633",
+    "tags": ["Next.js", "React", "TypeScript", "Supabase", "PostgreSQL", "Sharp", "Vitest"],
+    "sourceUrl": "https://github.com/Tanjamul-Azad/Dawat",
+    "status": "building",
+    "featured": true,
+    "pinned": true,
+    "overview": "Dawat turns a Bengali wedding invitation into a managed guest workflow. A couple edits a Bangla-first, Jamdani-inspired invitation, publishes a version, and shares personal household links. Guests see the events selected for their household and can reply or leave a wish without creating an account. A general invitation link remains view-only. The repository contains working seller, couple, and guest flows, but the project is still in development: physical-phone performance, operational recovery, and commercial handoff remain open work.",
+    "problem": "A beautiful digital card does not solve the host's planning problem. One family may be invited to the wedding only, another to both ceremonies; a reply from a household must carry a headcount rather than merely a name. Meanwhile, invitation details and photos change during preparation. Sharing an editable draft risks exposing unfinished content, while collecting replies through a general public form makes it difficult to know which household answered and which events they were allowed to attend.",
+    "solution": "Separate editing, publication, and guest access. The couple saves a private draft and explicitly publishes a version before sharing. Each named household receives an event allowance and a personal link; guests do not type an arbitrary identity into a public RSVP form. The host dashboard collects attendance, headcounts, and wishes, supports attributed corrections, and exports a private CSV for planning. Seller confirmation and customer activation are separate steps, so placing an order alone does not grant a management workspace.",
+    "architecture": "Next.js App Router serves the Bangla/English workspaces, invitation pages, and server API routes. Supabase Auth supplies verified customer sessions, while PostgreSQL row-level policies and narrow transaction functions enforce wedding membership and permitted mutations. Draft revisions detect stale saves; publishing creates an immutable version rather than exposing the live editor. Guest access uses random link tokens with stored digests and wedding/household-bound AES-GCM encryption for recoverable host copying. Photos pass through a bounded Sharp processor into a private Storage bucket; application routes recheck publication or guest access before serving a referenced variant.",
+    "architectureDiagram": {
+      "caption": "Private preparation becomes a published invitation; named household access controls replies and photo delivery.",
+      "layers": [
+        {"title": "People and surfaces", "nodes": [{"label": "Seller workspace", "detail": "Confirm order and activate customer"}, {"label": "Couple workspace", "detail": "Edit, publish, manage households"}, {"label": "Guest invitation", "detail": "View, RSVP and leave wishes"}], "edgeLabel": "Session or scoped household link"},
+        {"title": "Next.js application", "nodes": [{"label": "Authenticated API routes", "detail": "Validation and access checks"}, {"label": "Photo processing", "detail": "Sharp → bounded WebP variants"}], "edgeLabel": "Transactional commands and protected media reads"},
+        {"title": "Data and identity", "nodes": [{"label": "Supabase Auth", "detail": "Customer sessions and seller MFA gate"}, {"label": "PostgreSQL", "detail": "Wedding isolation, revisions, publications, replies"}, {"label": "Private Storage", "detail": "No public photo object links"}]}
+      ]
+    },
+    "features": [
+      {"title": "Invite a family to the right ceremonies", "description": "Create a named household, assign one or both events, and share its personal link. Attendance and headcount stay attached to that household and event scope. A general invitation can be forwarded for viewing without opening an anonymous RSVP form."},
+      {"title": "Edit privately, then publish deliberately", "description": "Change names, venue details, or photos in a draft without immediately changing the guest-facing invitation. Revision checks reject stale saves, and explicit publication creates a retained version. The workspace distinguishes unsaved, saved, and published state instead of treating a successful keystroke as a public update."},
+      {"title": "Turn replies into a working guest list", "description": "Review attendance and wishes in the couple workspace, make an attributed correction when a family updates its plans, and export a private CSV. This supports the concrete task of reconciling household responses for event planning rather than presenting only a decorative response counter."},
+      {"title": "Keep couple photos behind the invitation gate", "description": "Accept up to five active photos, decode and validate the uploaded image, strip embedded location metadata, and create 480/960/1600 WebP variants without upscaling. Drafts stay private; guest photo reads recheck current access. Revoking a household link blocks future scoped reads, though previously downloaded copies cannot be recalled."},
+      {"title": "Hand the correct workspace to the customer", "description": "The seller confirms an order and separately activates the intended verified customer. Database transactions check the wedding, current grant, and entitlement, while seller actions require a staff identity and MFA. This addresses accidental access to another couple's preparation workspace at the data boundary as well as in navigation."}
+    ],
+    "challenges": [
+      {"challenge": "A guest link is an access credential, not just a share URL", "learned": "The code separates token digests used for lookup from encrypted copies used by the host's copy action, binds encryption to the wedding and household, and provides rotation and revocation. The practical tradeoff is that access can be stopped for future requests, but content already saved by a guest cannot be withdrawn."},
+      {"challenge": "Invitation edits must not silently change a household's event scope", "learned": "A dedicated migration preserves household event assignments rather than expanding them when invitation configuration changes. Publication state, event selection, and named-link permissions must agree; a newly enabled ceremony is not automatically permission to invite every existing household."},
+      {"challenge": "Retries and stale tabs can corrupt otherwise simple forms", "learned": "Draft revisions surface concurrent edits, while command replay and row locks protect transactional mutations. Photo reservation and upload are separate, bounded steps so retrying a slow upload does not silently allocate another slot. Recovery state is part of the workflow, not just an error toast."},
+      {"challenge": "Implementation evidence is not launch evidence", "learned": "The repository includes integration tests for database isolation, guest delivery, media processing, and workspace behavior. Its release notes still leave phone performance, recovery operations, and commercial delivery open; the portfolio therefore presents Dawat as ongoing and makes no adoption, revenue, or production-readiness claim."}
+    ]
+  },
+  {
     "id": "11",
     "slug": "duet",
     "title": "Duet",
+    "image": "/images/projects/duet.png",
     "description": "A couples app in development, bringing one-to-one messaging, shared memories, date planning, and daily connection rituals into one personal space.",
     "role": "Solo Full-Stack Developer",
     "impact": "A couples app in development, bringing one-to-one messaging, shared memories, date planning, and daily connection rituals into one personal space.",
@@ -1529,6 +1572,8 @@
     "id": "12",
     "slug": "uiu-cgpa-calculator",
     "title": "UIU CGPA Calculator",
+    "image": "/images/projects/uiu-cgpa-calculator.png",
+    "liveUrl": "https://tanjamul-azad.github.io/uiu-cgpa-calculator/",
     "description": "A lightweight student utility for credit-weighted GPA and CGPA calculations, retake scenarios, and assessment tracking.",
     "role": "Frontend Developer",
     "impact": "A lightweight student utility for credit-weighted GPA and CGPA calculations, retake scenarios, and assessment tracking.",
@@ -1562,6 +1607,8 @@
     "id": "13",
     "slug": "uiu-coverpage-generator",
     "title": "UIU Cover Page Generator",
+    "image": "/images/projects/uiu-cover-maker.png",
+    "liveUrl": "https://uiu-cover-maker.vercel.app/",
     "description": "A browser-based utility for creating assignment cover pages, exporting A4 PDFs, and merging a cover with an existing assignment.",
     "role": "Frontend Developer",
     "impact": "A browser-based utility for creating assignment cover pages, exporting A4 PDFs, and merging a cover with an existing assignment.",

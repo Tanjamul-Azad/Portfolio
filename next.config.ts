@@ -55,7 +55,12 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "raw.githubusercontent.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
     ],
-    formats: ["image/avif", "image/webp"],
+    // Prepared local assets bypass this encoder; future uploads use the lighter fallback.
+    formats: ["image/webp"],
+    minimumCacheTTL: 2678400,
+    maximumDiskCacheSize: 128_000_000,
+    maximumResponseBody: 10_000_000,
+    qualities: [75, 90],
   },
   async headers() {
     return [

@@ -7,6 +7,7 @@ import {
 } from "framer-motion";
 import { SectionHeading } from "@/components/common";
 import { cn } from "@/lib/utils";
+import cachedIcons from "@/generated/tech-icons.json";
 
 type Tech = {
   name: string;
@@ -85,24 +86,13 @@ const categories: Record<Category, Tech[]> = {
   ],
 };
 
-function getIconUrl(slug: string, hex: string) {
-  if (slug === "java") return "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg";
-  if (slug === "jwt") return `https://cdn.simpleicons.org/jsonwebtokens/${hex.replace("#", "")}`;
-  if (slug === "mobilenetssd") return `https://cdn.simpleicons.org/tensorflow/${hex.replace("#", "")}`;
-  if (slug === "dht11") return `https://cdn.simpleicons.org/arduino/${hex.replace("#", "")}`;
-  if (slug === "mq2") return `https://cdn.simpleicons.org/arduino/${hex.replace("#", "")}`;
-  if (slug === "pulsesensor") return `https://cdn.simpleicons.org/raspberrypi/${hex.replace("#", "")}`;
-  if (slug === "flamesensor") return `https://cdn.simpleicons.org/raspberrypi/${hex.replace("#", "")}`;
-  return `https://cdn.simpleicons.org/${slug}/${hex.replace("#", "")}`;
+function getIconUrl(slug: string) {
+  return (cachedIcons as Record<string, string>)[slug];
 }
 
 /**
- * Remote brand icon with a monogram fallback.
- *
- * The icons come from a third-party CDN whose slugs get renamed and removed
- * (simple-icons dropped the Adobe marks and renamed css3 → css, both of which
- * were rendering as broken images here). Rather than trust the slug list to stay
- * correct forever, a failed load degrades to the tech's initial on a tinted chip.
+ * Locally cached, unchanged SVG brand icon with a monogram fallback.
+ * Missing upstream marks never require a third-party request in the browser.
  */
 function TechIcon({
   tech,
@@ -114,8 +104,9 @@ function TechIcon({
   className?: string;
 }) {
   const [failed, setFailed] = useState(false);
+  const iconUrl = getIconUrl(tech.slug);
 
-  if (failed) {
+  if (failed || !iconUrl) {
     return (
       <span
         aria-hidden="true"
@@ -132,7 +123,7 @@ function TechIcon({
 
   return (
     <img
-      src={getIconUrl(tech.slug, tech.color)}
+      src={iconUrl}
       // Decorative: the tech's name is always printed right beside its logo.
       alt=""
       width={size}

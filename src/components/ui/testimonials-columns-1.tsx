@@ -2,6 +2,7 @@
 
 import React, { Fragment } from "react";
 import { motion } from "motion/react";
+import Image from "@/components/common/site-image";
 
 export type TestimonialItem = {
   text: string;
@@ -51,11 +52,11 @@ export function TestimonialsColumn(props: {
                 <div>{text}</div>
                 <div className="flex items-center gap-2 mt-5">
                   {image ? (
-                    // Arbitrary remote avatar, deliberately outside the optimizer.
-                    <img
+                    <Image
                       width={40}
                       height={40}
                       src={image}
+                      unoptimized={!image.startsWith("/")}
                       alt=""
                       loading="lazy"
                       decoding="async"

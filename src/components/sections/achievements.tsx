@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, ExternalLink, Award, Trophy, Star, ChevronDown, RotateCw, X as XIcon } from "lucide-react";
-import Image from "next/image";
+import Image from "@/components/common/site-image";
 import { achievements } from "@/data";
 import { SectionHeading } from "@/components/common";
 import { cn } from "@/lib/utils";

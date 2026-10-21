@@ -8,12 +8,13 @@ import { ArrowRight, ArrowUpRight, ExternalLink, Github, Lock, Play } from "luci
 import { siteConfig } from "@/config/site";
 import { getPinnedProjects, projects as allProjects } from "@/data/projects";
 import type { Project } from "@/types";
-import Image from "next/image";
+import Image from "@/components/common/site-image";
 import Link from "next/link";
 import { SectionHeading } from "@/components/common";
 import { trackEvent } from "@/lib/telemetry";
 import { MOTION_TOKENS } from "@/lib";
 import { cn } from "@/lib/utils";
+import { getImageUrl } from "@/lib/image-assets";
 import { useRouteTransitioning } from "@/components/providers/page-transition";
 
 /** A direct, inline-playable video file (vs. an external link like YouTube). */
@@ -41,14 +42,13 @@ function ProjectMedia({
   allowVideo?: boolean;
   className?: string;
 }) {
-  const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
 
   if (allowVideo && isVideoFile(project.videoUrl)) {
     return (
       <video
         src={encodeURI(project.videoUrl!)}
-        poster={project.image ? encodeURI(project.image) : undefined}
+        poster={project.image ? getImageUrl(project.image, 960) : undefined}
         aria-hidden="true"
         tabIndex={-1}
         autoPlay
@@ -78,18 +78,15 @@ function ProjectMedia({
 
   return (
     <>
-      {!loaded && <div className="absolute inset-0 animate-pulse bg-surface-2" />}
       <Image
         src={project.image}
         alt={project.title}
         fill
         sizes={sizes}
         priority={priority}
-        onLoad={() => setLoaded(true)}
         onError={() => setFailed(true)}
         className={cn(
-          "object-cover transition-[opacity,transform] duration-700 ease-out",
-          loaded ? "opacity-100" : "opacity-0",
+          "object-cover transition-transform duration-300 ease-out",
           className
         )}
       />

@@ -6,7 +6,7 @@ import {
   MotionConfig,
   useReducedMotion,
 } from "framer-motion";
-import Image from "next/image";
+import Image from "@/components/common/site-image";
 import { ArrowRight, ArrowUpRight, MapPin, Pause, Play } from "lucide-react";
 import { siteConfig } from "@/config";
 import { heroContent } from "@/data/site-content";
@@ -115,7 +115,7 @@ function TypewriterText({
  * Hero portrait.
  *
  * The still is always rendered first, through next/image with priority, so it
- * is what the browser paints as the largest element: an optimised AVIF/WebP of
+ * is what the browser paints as the largest element: a prepared responsive WebP of
  * a few dozen KB rather than a 3 MB video. The looping video is an
  * enhancement layered on top, and only where it is cheap: a wide screen, no
  * reduced-motion or data-saver preference, and only once the page has loaded

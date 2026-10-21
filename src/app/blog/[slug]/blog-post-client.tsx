@@ -8,7 +8,7 @@ import { getPostBySlug, blogPosts } from "@/data";
 import { siteConfig } from "@/config";
 import { Navbar, Footer } from "@/components/layout";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/common/site-image";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";

@@ -4,14 +4,14 @@ import { ProjectStatus } from "@/components/common/project-status";
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowUpRight, Github, ExternalLink, Layers, Lightbulb, Lock, Target, Trophy, Zap } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Github, ExternalLink, Layers, Lightbulb, Lock, Play, Target, Trophy, Zap } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getProjectBySlug, projects } from "@/data/projects";
 import { Navbar, Footer } from "@/components/layout";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/common/site-image";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { ArchitectureDiagram } from "@/components/ui/architecture-diagram";
 
@@ -114,6 +114,13 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
                     </a>
                   </Button>
                 )}
+                {project.videoUrl && project.videoUrl !== "#" && (
+                  <Button asChild size="default" variant="outline" className="rounded-full bg-white/50 dark:bg-black/50 backdrop-blur-sm border-neutral-200 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900">
+                    <a href={project.videoUrl} target="_blank" rel="noopener noreferrer">
+                      Watch Demo <Play className="w-4 h-4 ml-2" />
+                    </a>
+                  </Button>
+                )}
                 {project.sourcePrivate ? (
                   <Button asChild size="default" variant="outline" className="rounded-full bg-white/50 dark:bg-black/50 backdrop-blur-sm border-neutral-200 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900">
                     <a href={`mailto:${siteConfig.contact.email}?subject=${encodeURIComponent(`Source code request — ${project.title}`)}`}>
@@ -150,15 +157,16 @@ export default function ProjectCaseStudy({ slug }: { slug: string }) {
       {project.image && imageVisible && (
         <section className="relative h-[42vh] sm:h-[55vh] md:h-[80vh] w-full overflow-hidden">
           <motion.div 
-            initial={{ scale: 1.1, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
+            initial={{ scale: 1.03 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
             className="absolute inset-0"
           >
             <Image
               src={project.image}
               alt={project.title}
               fill
+              sizes="100vw"
               priority
               className="object-cover"
               onError={() => setImageVisible(false)}

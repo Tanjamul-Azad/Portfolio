@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
+import Image from "@/components/common/site-image";
 import { usePathname } from "next/navigation";
 import { Sparkles, X } from "lucide-react";
 import { siteConfig } from "@/config";

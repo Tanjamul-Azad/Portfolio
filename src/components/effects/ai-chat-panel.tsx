@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import Image from "next/image";
+import Image from "@/components/common/site-image";
 import Link from "next/link";
 import Markdown, { type Components } from "react-markdown";
 import {

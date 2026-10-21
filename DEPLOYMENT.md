@@ -1,19 +1,23 @@
 # Google Cloud deployment
 
+October 21, 2026 Dawat/Duet update: deployed `tanzamul-portfolio:dawat-duet-20261021` on loopback port 3009. Dawat is third with a repository-grounded case study and supplied thumbnail; Duet is fourth and received only its thumbnail. Both remain in development, with no new live/video links. Project count is 14. Production build/TypeScript, 35 generated pages, 24 source images/148 variants, both public project pages and thumbnails, and the sitemap passed verification. Public delivery checks passed for 137 responsive image URLs. Immediate rollback: `tanzamul-portfolio-before-20261021121950`, Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261021121950`. See DAWAT-CASE-STUDY-NOTES.md for source evidence.
+
+October 21, 2026 project media update: deployed `tanzamul-portfolio:project-media-20261021` on loopback port 3008. PolarWindow now has the supplied thumbnail and YouTube demo; UIU Cover Page Generator and UIU CGPA Calculator have supplied thumbnails and clean live links. Case studies include a Watch Demo action when a video URL exists. Production build, TypeScript, image validation, all three public project routes and sitemap passed. Public image-delivery checks passed for 125 responsive image URLs. Immediate rollback: `tanzamul-portfolio-before-20261021113422`, Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261021113422`.
+
 Production: https://tanzamul.dev
 
 - Project: `virtual-machine-512107`
 - VM: `deployments`, zone `us-central1-f`
 - Reserved address: `deployments-ip`, `35.232.136.37`
 - Source folder on VM: `/home/User/tanzamul-portfolio`
-- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3007`
+- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3008`
 - Nginx site: `/etc/nginx/sites-available/tanzamul.dev`
 - TLS: Certbot with automatic renewal (`certbot.timer`)
 - Runtime secrets: `/home/User/tanzamul-runtime.env`, mode 600. Never commit this file.
 
 Build on Linux with `sudo docker build -t tanzamul-portfolio:latest .`.
 The image uses Next.js standalone output; local Windows node_modules are not uploaded.
-Run with `sudo docker run -d --name tanzamul-portfolio --restart unless-stopped --memory=768m --memory-swap=1g --cpus=1 --env-file /home/User/tanzamul-runtime.env -p 127.0.0.1:3007:3000 tanzamul-portfolio:latest`. The current deployed image is `tanzamul-portfolio:activities-fast`. Include the Search Console verification file from `public/` in the image and keep it accessible after updates.
+Run with `sudo docker run -d --name tanzamul-portfolio --restart unless-stopped --memory=768m --memory-swap=1g --cpus=1 --env-file /home/User/tanzamul-runtime.env --mount type=volume,source=tanzamul-next-image-cache,target=/app/.next/cache/images -p 127.0.0.1:3008:3000 tanzamul-portfolio:latest`. The current deployed image is `tanzamul-portfolio:site-images`. Prefer the validated deployment script in `scripts/deploy-portfolio.sh`, which also syncs the shared static assets and checks the candidate. Include the Search Console verification file from `public/` in the image and keep it accessible after updates.
 For later updates, build before replacing the running container, retain the previous image for rollback, and check the homepage and `/sitemap.xml` afterward.
 
 The existing ahbab.dev containers use different ports and Nginx server names.
@@ -51,4 +55,8 @@ The activities-media version used localhost port 3005. The stopped `tanzamul-por
 
 The activities-minimal version used localhost port 3006. Cards contain an official poster, year/status, event name, two-line summary, and Details button. Roles, full dates, full description, original posters and the supplied HSIL selection/team images are available in a scrollable dialog with full-image links. The blog's desktop grid and mobile swipe dimensions are retained. Case-study actions are removed from ExtraCurricular. Poster provenance is recorded in ACTIVITIES.md and linked in each dialog. The stopped `tanzamul-portfolio-before-activities-minimal` container retains the earlier version on port 3005 with restart disabled.
 
-The current activities-fast version uses localhost port 3007. HSIL is second with the original official event poster as its cover; selection confirmation and team photo appear only in Details. All activity cards use small pre-generated WebP thumbnails and direct static delivery to avoid on-demand AVIF conversion on the VM. The four thumbnails total about 110 KB and load eagerly with low fetch priority. Details uses WebP previews with links to the original files. The stopped `tanzamul-portfolio-before-activities-fast` container preserves the preceding version on port 3006 with restart disabled; start it and restore the Nginx proxy to port 3006 for rollback.
+The activities-fast version used localhost port 3007. HSIL is second with the original official event poster as its cover; selection confirmation and team photo appear only in Details. All activity cards use small pre-generated WebP thumbnails and direct static delivery to avoid on-demand AVIF conversion on the VM. The four thumbnails total about 110 KB and load eagerly with low fetch priority. Details uses WebP previews with links to the original files. The stopped `tanzamul-portfolio-before-activities-fast` container preserves the earlier version on port 3006 with restart disabled.
+
+The current site-images version uses localhost port 3008. Projects, blog, hero, achievements and avatar images now share responsive WebP variants prepared before the production build. 51 technology SVG icons and the social preview image are local. Nginx serves hashed image/icon/Next-static files from `/var/www/tanzamul-assets` with one-year immutable caching and ETags; previous hashes are retained across deployments. HTML, admin and API cache behavior is unchanged. The fallback Next image cache persists in `tanzamul-next-image-cache`, capped at 128 MB. See IMAGE-DELIVERY.md for quality, tests, source assets, costs and release procedure. The deployment script prints the immediately preceding container name and Nginx backup path for rollback; that preceding version remains on port 3007.
+
+The current rollback container is `tanzamul-portfolio-before-20261019221430`; its Nginx backup is `/etc/nginx/sites-available/tanzamul.dev.before-20261019221430`. The preceding build's static chunks were seeded into the shared asset directory as part of the first cache migration. No new VM, cloud disk plan or CDN was provisioned for this update.

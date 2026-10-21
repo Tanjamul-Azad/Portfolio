@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "images:prepare": "node scripts/prepare-site-images.mjs",
+    "images:check": "npm run images:prepare && node scripts/check-site-images.mjs",
+    "predev": "npm run images:prepare",
+    "prebuild": "npm run images:prepare",
+    "pretypecheck": "npm run images:prepare",
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
@@ -29,6 +34,7 @@
     "react-hook-form": "^7.71.1",
     "react-markdown": "^10.1.0",
     "resend": "^6.9.2",
+    "sharp": "0.35.5",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "zod": "^4.3.6"
