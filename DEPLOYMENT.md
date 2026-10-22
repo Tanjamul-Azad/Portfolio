@@ -1,5 +1,7 @@
 # Google Cloud deployment
 
+October 22, 2026 narrative About: `tanzamul-portfolio:about-story-20261022` on loopback port 3009. Removed the repeated location/personality/focus panel and replaced the bio with a three-paragraph narrative connecting the existing 2016 junior Olympiad milestone, tutoring and the owner's approach to software/research. It does not restate hero identity, degree, grades, contact details or project lists. Existing source facts remain in the content model for chatbot use. Fresh build/TypeScript, lint, homepage checks and deployment SEO/image gates passed. Rollback: `tanzamul-portfolio-before-20261022101543`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022101543`.
+
 October 22, 2026 About contact cleanup: `tanzamul-portfolio:about-contact-20261022` on loopback port 3008. Removed the duplicate email fact/link from About and kept the Contact section email. Updated the facts grid for three entries. Fresh Linux build/TypeScript, focused lint and deployment SEO/image gates passed. Rollback: `tanzamul-portfolio-before-20261022100743`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022100743`.
 
 October 22, 2026 About refinement: `tanzamul-portfolio:about-refined-20261022` on loopback port 3009. Removed CGPA from the visible homepage, shortened About to three specific paragraphs, removed the old motivational quotation and conditionally renders quotes only when supplied. The chatbot mentions CGPA only when specifically asked about grades; CV still contains 3.85/4.00 and retains the caption-free QR. Fresh production build/TypeScript, focused lint, homepage checks and deployment SEO/image gates passed. Rollback: `tanzamul-portfolio-before-20261022100546`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022100546`.
@@ -32,7 +34,7 @@ Production: https://tanzamul.dev
 - VM: `deployments`, zone `us-central1-f`
 - Reserved address: `deployments-ip`, `35.232.136.37`
 - Source folder on VM: `/home/User/tanzamul-portfolio`
-- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3008`
+- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3009`
 - Nginx site: `/etc/nginx/sites-available/tanzamul.dev`
 - TLS: Certbot with automatic renewal (`certbot.timer`)
 - Runtime secrets: `/home/User/tanzamul-runtime.env`, mode 600. Never commit this file.

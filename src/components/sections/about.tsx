@@ -1,10 +1,8 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { Brain, Compass, MapPin } from "lucide-react";
 import Markdown, { type Components } from "react-markdown";
 import { SectionHeading } from "@/components/common";
-import { siteConfig } from "@/config";
 import { aboutContent } from "@/data/site-content";
 
 // Render bio Markdown inline: keep the paragraph wrapper as the motion element
@@ -34,20 +32,6 @@ const item: Variants = {
 };
 
 export function About() {
-  const facts = [
-    { icon: MapPin, label: "Based in", value: siteConfig.author.location },
-    {
-      icon: Brain,
-      label: "Personality",
-      value: `${aboutContent.personality.type} · ${aboutContent.personality.label}`,
-    },
-    {
-      icon: Compass,
-      label: "Focus",
-      value: siteConfig.author.role,
-    },
-  ];
-
   return (
     <section id="about" className="scroll-section section-y relative">
       <div className="shell">
@@ -58,28 +42,8 @@ export function About() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.15 }}
-          className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-16"
+          className="max-w-3xl"
         >
-          {/* At-a-glance facts. A two-column grid on phones, a sticky column beside
-              the bio on desktop. */}
-          <motion.aside variants={item} className="lg:sticky lg:top-28 lg:self-start">
-            <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line shadow-[var(--surface-shadow)] lg:grid-cols-1">
-              {facts.map(({ icon: Icon, label, value }, i) => (
-                // The longer focus value gets the full row on a phone
-                // rather than being truncated to half a line.
-                <div key={label} className={`flex min-w-0 flex-col gap-2 bg-surface p-4 sm:p-5 ${i >= 2 ? "col-span-2 lg:col-span-1" : ""}`}>
-                  <dt className="flex items-center gap-2 eyebrow text-[10px]">
-                    <Icon className="h-3.5 w-3.5 text-accent" />
-                    {label}
-                  </dt>
-                  <dd className="break-words text-sm font-medium text-foreground">
-                    {value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </motion.aside>
-
           <div className="space-y-5 sm:space-y-6">
             {aboutContent.paragraphs.map((para, i) => (
               <motion.div
