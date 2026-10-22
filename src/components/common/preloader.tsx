@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { siteConfig } from "@/config";
 
 const ease = [0.22, 1, 0.36, 1] as const;
-export const INTRO_VISIT_KEY = "portfolio_opening_intro_signature_v5";
+export const INTRO_VISIT_KEY = "portfolio_opening_intro_signature_v6";
 
 interface PreloaderProps {
   onComplete: () => void;
@@ -95,16 +95,16 @@ export function Preloader({ onComplete }: PreloaderProps) {
     >
       {playPortrait && <motion.div
         aria-hidden="true"
-        className="absolute left-1/2 top-1/2 aspect-[4/5] h-[min(74svh,104vw,680px)] -translate-x-1/2 -translate-y-1/2"
+        className="absolute left-1/2 top-1/2 aspect-[4/5] h-[min(64svh,96vw,600px)] -translate-x-1/2 -translate-y-1/2"
         initial={{ opacity: 0, y: 14, scale: 1.015 }}
         animate={{ opacity: portraitReady ? 1 : 0, y: portraitReady ? 0 : 14, scale: 1 }}
         transition={{ duration: 0.8, ease }}
       >
         {/* Direct responsive WebP delivery avoids on-demand server encoding. */}
         <picture>
-          <source srcSet="/images/intro/tanzamul-editorial-v2-480.webp 480w, /images/intro/tanzamul-editorial-v2-800.webp 800w, /images/intro/tanzamul-editorial-v2-1200.webp 1122w" sizes="min(59.2svh, 83.2vw, 544px)" />
+          <source srcSet="/images/intro/tanzamul-refined-v4-480.webp 480w, /images/intro/tanzamul-refined-v4-800.webp 800w, /images/intro/tanzamul-refined-v4-1122.webp 1122w" sizes="min(51.2svh, 76.8vw, 480px)" />
           <Image
-            src="/images/intro/tanzamul-editorial-v2-800.webp"
+            src="/images/intro/tanzamul-refined-v4-800.webp"
             alt=""
             fill
             unoptimized
