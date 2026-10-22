@@ -29,8 +29,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   mainPages.push({ url: `${baseUrl}/blog/all`, changeFrequency: "weekly", priority: 0.7 });
 
   // Project pages
+  for (let page = 2; page <= Math.ceil(projects.length / 9); page++) {
+    mainPages.push({ url: `${baseUrl}/projects/page/${page}`, changeFrequency: "monthly", priority: 0.5 });
+  }
   const projectPages: MetadataRoute.Sitemap = projects.map((project) => ({
     url: `${baseUrl}/projects/${project.slug}`,
+    images: project.image ? [new URL(project.image, baseUrl).toString()] : undefined,
     changeFrequency: "monthly" as const,
     priority: 0.7,
   }));

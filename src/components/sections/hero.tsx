@@ -32,12 +32,8 @@ function SplitText({
           key={`${char}-${i}`}
           aria-hidden="true"
           className="inline-block"
-          // The same initial state on server and client, whatever the visitor's
-          // motion preference: branching on it here rendered different inline
-          // styles on each side and broke hydration. Reduced motion is handled
-          // by the MotionConfig around the hero, which drops the transform and
-          // keeps only the fade.
-          initial={{ y: "115%", rotateZ: 3, opacity: 0 }}
+          // The name is visible on first paint, including without JavaScript.
+          initial={false}
           animate={{ y: 0, rotateZ: 0, opacity: 1 }}
           transition={{
             duration: 0.65,
@@ -54,8 +50,6 @@ function SplitText({
 
 function TypewriterText({
   text,
-  startDelay = 1800,
-  charInterval = 38,
   reducedMotion = false,
 }: {
   text: string;
@@ -63,50 +57,16 @@ function TypewriterText({
   charInterval?: number;
   reducedMotion?: boolean;
 }) {
-  // Starts empty on both server and client; the effect fills it in at once
-  // under reduced motion. Seeding it from the preference broke hydration.
-  const [visibleCount, setVisibleCount] = useState(0);
-
-  // Types the line once, then rests on a blinking caret. It used to erase and
-  // retype forever, re-rendering every ~40ms for as long as the page was open
-  // — steady main-thread work competing with scrolling on phones.
-  useEffect(() => {
-    if (reducedMotion) {
-      setVisibleCount(text.length);
-      return;
-    }
-
-    let index = 0;
-    let timeoutId = window.setTimeout(function step() {
-      index += 1;
-      setVisibleCount(Math.min(index, text.length));
-      if (index < text.length) timeoutId = window.setTimeout(step, charInterval);
-    }, startDelay);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [charInterval, reducedMotion, startDelay, text]);
-
-  const visibleText = text.slice(0, visibleCount);
-  const isComplete = visibleCount >= text.length;
-
   return (
-    // The full string is exposed once, statically. The animated copy is hidden:
-    // the old version had an aria-live region that re-announced "typing" /
-    // "typing complete" on every loop of an infinite animation.
-    <span className="relative block" role="text" aria-label={text}>
-      {/* Reserve final multiline height so surrounding layout never shifts. */}
-      <span className="invisible" aria-hidden="true">
-        {text}_
-      </span>
-      <span className="absolute inset-0" aria-hidden="true">
-        {visibleText}
+    <span className="relative block">
+        {text}
         <motion.span
+          aria-hidden="true"
           className="ml-px inline-block h-[1.05em] w-[0.5ch] translate-y-[0.18em] bg-current align-baseline"
           initial={{ opacity: 1 }}
-          animate={isComplete ? { opacity: [1, 0, 1] } : { opacity: 1 }}
-          transition={isComplete ? { duration: 1.05, repeat: Infinity, ease: "linear" } : { duration: 0 }}
+          animate={reducedMotion ? { opacity: 1 } : { opacity: [1, 0, 1] }}
+          transition={reducedMotion ? { duration: 0 } : { duration: 1.05, repeat: Infinity, ease: "linear" }}
         />
-      </span>
     </span>
   );
 }
@@ -282,7 +242,7 @@ export function Hero() {
             out to its own right-hand column. */}
         <motion.div
           variants={HERO_SEQUENCE.container}
-          initial="hidden"
+          initial={false}
           animate="visible"
           className="grid grid-cols-1 hero-wide:grid-cols-[minmax(0,1fr)_auto] hero-wide:gap-x-14 xl:gap-x-20"
         >

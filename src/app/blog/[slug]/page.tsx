@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const canonicalUrl = `${siteConfig.url}/blog/${post.slug}`;
 
   return {
-    title: `${post.title} | ${siteConfig.name}`,
+    title: `${post.title} | Tanzamul Azad`,
     description: post.excerpt,
     keywords: [...post.tags, "Blog", siteConfig.name],
     alternates: { canonical: canonicalUrl },
@@ -40,6 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       publishedTime: post.date,
       modifiedTime: post.updatedAt || post.date,
       tags: post.tags,
+      authors: [siteConfig.url],
       images: [{ url: post.image ? new URL(post.image, siteConfig.url).toString() : siteConfig.ogImage, alt: post.imageAlt || post.title }],
     },
     twitter: {

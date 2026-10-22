@@ -45,6 +45,8 @@ docker run -d --name "$candidate" --restart unless-stopped --memory=768m --memor
 curl -fsS --retry 12 --retry-all-errors --retry-delay 2 "http://127.0.0.1:$port/" -o /tmp/tanzamul-candidate.html
 grep -q '/images/optimized/' /tmp/tanzamul-candidate.html
 python3 "$root/scripts/check-image-delivery.py" --base "http://127.0.0.1:$port"
+python3 "$root/scripts/check-seo.py" --base "http://127.0.0.1:$port" > /tmp/tanzamul-candidate-seo.json
+echo 'SEO gate passed: sitemap pages, static archive links, metadata, JSON-LD, and real 404s'
 
 mkdir -p /var/www/tanzamul-assets/optimized /var/www/tanzamul-assets/tech-icons /var/www/tanzamul-assets/next-static
 docker cp tanzamul-portfolio:/app/.next/static/. /var/www/tanzamul-assets/next-static/

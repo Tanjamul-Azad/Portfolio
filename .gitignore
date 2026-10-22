@@ -50,6 +50,7 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+__pycache__/
 next-env.d.ts
 
 # IDE / Editor

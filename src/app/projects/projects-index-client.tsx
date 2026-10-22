@@ -12,7 +12,6 @@ import Link from "next/link";
 import Image from "@/components/common/site-image";
 import { ArrowUpRight, ChevronLeft, ChevronRight, ExternalLink, Github, Lock, Search, Video, X } from "lucide-react";
 import { siteConfig } from "@/config/site";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import type { Project } from "@/types";
 
@@ -75,10 +74,9 @@ function getVisiblePageItems(totalPages: number, currentPage: number): PageItem[
   return items;
 }
 
-export default function ProjectsPageClient() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const searchParams = useSearchParams();
+export default function ProjectsPageClient({ initialPage = 1 }: { initialPage?: number }) {
+  // Render the actual archive in static HTML; URL filters enhance it after hydration.
+  const [urlReady, setUrlReady] = useState(false);
 
   const pinnedSlugs = useMemo(() => new Set(getPinnedProjects().map((project) => project.slug)), []);
 
@@ -87,15 +85,9 @@ export default function ProjectsPageClient() {
     []
   );
 
-  const querySearchTerm = searchParams.get("q") ?? "";
-  const queryTagParam = searchParams.get("tag") ?? "All";
-  const queryPageRaw = Number.parseInt(searchParams.get("page") ?? "1", 10);
-  const queryPage = Number.isFinite(queryPageRaw) && queryPageRaw > 0 ? queryPageRaw : 1;
-  const queryTag = allTags.includes(queryTagParam) ? queryTagParam : "All";
-
-  const [searchTerm, setSearchTerm] = useState(querySearchTerm);
-  const [activeTag, setActiveTag] = useState(queryTag);
-  const [currentPage, setCurrentPage] = useState(queryPage);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeTag, setActiveTag] = useState("All");
+  const [currentPage, setCurrentPage] = useState(initialPage);
 
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
@@ -115,22 +107,32 @@ export default function ProjectsPageClient() {
   const hasActiveFilters = activeTag !== "All" || searchTerm.trim().length > 0;
 
   useEffect(() => {
-    const nextSearchTerm = searchParams.get("q") ?? "";
-    const nextTagParam = searchParams.get("tag") ?? "All";
-    const nextTag = allTags.includes(nextTagParam) ? nextTagParam : "All";
-    const nextPageRaw = Number.parseInt(searchParams.get("page") ?? "1", 10);
-    const nextPage = Number.isFinite(nextPageRaw) && nextPageRaw > 0 ? nextPageRaw : 1;
+    const readUrl = () => {
+      const searchParams = new URLSearchParams(window.location.search);
+      const nextSearchTerm = searchParams.get("q") ?? "";
+      const nextTagParam = searchParams.get("tag") ?? "All";
+      const nextTag = allTags.includes(nextTagParam) ? nextTagParam : "All";
+      const pathPage = window.location.pathname.match(/^\/projects\/page\/(\d+)\/?$/)?.[1];
+      const nextPageRaw = Number.parseInt(searchParams.get("page") ?? pathPage ?? "1", 10);
+      const nextPage = Number.isFinite(nextPageRaw) && nextPageRaw > 0 ? nextPageRaw : 1;
 
-    setSearchTerm((previous) => (previous === nextSearchTerm ? previous : nextSearchTerm));
-    setActiveTag((previous) => (previous === nextTag ? previous : nextTag));
-    setCurrentPage((previous) => (previous === nextPage ? previous : nextPage));
-  }, [allTags, searchParams]);
+      setSearchTerm(nextSearchTerm);
+      setActiveTag(nextTag);
+      setCurrentPage(nextPage);
+      setUrlReady(true);
+    };
+    readUrl();
+    window.addEventListener("popstate", readUrl);
+    return () => window.removeEventListener("popstate", readUrl);
+  }, [allTags]);
 
   useEffect(() => {
     setCurrentPage((previous) => Math.min(previous, totalPages));
   }, [totalPages]);
 
   useEffect(() => {
+    if (!urlReady) return;
+    const searchParams = new URLSearchParams(window.location.search);
     const params = new URLSearchParams(searchParams.toString());
 
     if (searchTerm.trim().length > 0) {
@@ -145,20 +147,17 @@ export default function ProjectsPageClient() {
       params.delete("tag");
     }
 
-    if (currentPage > 1) {
-      params.set("page", String(currentPage));
-    } else {
-      params.delete("page");
-    }
+    params.delete("page");
 
     const nextQuery = params.toString();
     const currentQuery = searchParams.toString();
 
-    if (nextQuery !== currentQuery) {
+    const pathname = currentPage > 1 ? `/projects/page/${currentPage}` : "/projects";
+    if (nextQuery !== currentQuery || window.location.pathname !== pathname) {
       const nextUrl = nextQuery.length > 0 ? `${pathname}?${nextQuery}` : pathname;
-      router.replace(nextUrl, { scroll: false });
+      window.history.replaceState(null, "", nextUrl + window.location.hash);
     }
-  }, [activeTag, currentPage, pathname, router, searchParams, searchTerm]);
+  }, [activeTag, currentPage, searchTerm, urlReady]);
 
   const paginatedProjects = useMemo(() => {
     const start = (currentPage - 1) * PROJECTS_PER_PAGE;
@@ -176,6 +175,14 @@ export default function ProjectsPageClient() {
     setCurrentPage(1);
   };
 
+  const pageHref = (page: number) => {
+    const params = new URLSearchParams();
+    if (searchTerm.trim()) params.set("q", searchTerm.trim());
+    if (activeTag !== "All") params.set("tag", activeTag);
+    const path = page > 1 ? `/projects/page/${page}` : "/projects";
+    return params.size ? `${path}?${params}` : path;
+  };
+
   return (
     <main className="min-h-svh bg-background">
       <Navbar />
@@ -186,7 +193,7 @@ export default function ProjectsPageClient() {
         <div className="container relative mx-auto px-4 sm:px-6">
           <motion.div
             variants={staggerContainer}
-            initial="hidden"
+            initial={false}
             animate="visible"
             className="max-w-4xl"
           >
@@ -289,7 +296,7 @@ export default function ProjectsPageClient() {
               {paginatedProjects.map((project, index) => (
               <motion.article
                 key={project.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, delay: index * 0.05 }}
                 className="group relative overflow-hidden rounded-xl max-[360px]:rounded-lg sm:rounded-2xl border border-neutral-200/80 bg-white/95 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/40 hover:shadow-xl hover:shadow-neutral-900/10 dark:border-neutral-800/90 dark:bg-neutral-950/90 dark:hover:shadow-black/40"
@@ -421,11 +428,11 @@ export default function ProjectsPageClient() {
                     size="icon-sm"
                     variant={isActive ? "default" : "outline"}
                     className={isActive ? "rounded-full bg-neutral-900 text-white dark:bg-white dark:text-neutral-900" : "rounded-full"}
-                    onClick={() => setCurrentPage(item)}
+                    asChild
                     aria-label={`Page ${item}`}
                     aria-current={isActive ? "page" : undefined}
                   >
-                    {item}
+                    <a href={pageHref(item)}>{item}</a>
                   </Button>
                 );
               })}

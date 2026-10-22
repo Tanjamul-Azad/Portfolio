@@ -61,7 +61,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
       <article className="pt-24 sm:pt-28 md:pt-32 pb-14 sm:pb-20">
         <div className="container px-4 sm:px-6 mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="max-w-3xl mx-auto"
@@ -76,7 +76,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
 
             <motion.div
               variants={staggerContainer}
-              initial="hidden"
+              initial={false}
               animate="visible"
             >
               <motion.div variants={fadeInUp} className="flex flex-wrap gap-2 mb-6">
@@ -103,15 +103,16 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                 className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-8 border-b border-neutral-200 dark:border-neutral-800"
               >
                 <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-neutral-500">
+                  <Link href="/" rel="author" className="font-medium text-foreground hover:underline">{siteConfig.author.name}</Link>
                   <span className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
-                    {new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                    <time dateTime={post.date}>{new Date(`${post.date}T12:00:00Z`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</time>
                   </span>
                   <span className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
                     {post.readTime}
                   </span>
-                  {post.updatedAt && <span>Updated {new Date(`${post.updatedAt}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })}</span>}
+                  {post.updatedAt && <span>Updated <time dateTime={post.updatedAt}>{new Date(`${post.updatedAt}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })}</time></span>}
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -147,7 +148,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
                   <div className="overflow-hidden rounded-2xl border border-line bg-muted">
                     <Image src={post.image} alt={post.imageAlt || post.title}
                       width={1672} height={941} sizes="(max-width: 800px) 100vw, 768px"
-                      className="h-auto w-full" />
+                      priority className="h-auto w-full" />
                   </div>
                   {post.imageCaption && <figcaption className="mt-3 text-sm leading-relaxed text-muted-foreground">{post.imageCaption}</figcaption>}
                 </figure>
@@ -194,6 +195,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
             <div className="grid md:grid-cols-2 gap-4">
               {blogPosts
                 .filter(p => p.slug !== post.slug)
+                .sort((a, b) => b.tags.filter(tag => post.tags.includes(tag)).length - a.tags.filter(tag => post.tags.includes(tag)).length)
                 .slice(0, 2)
                 .map((relatedPost) => (
                   <Link

@@ -37,22 +37,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: siteConfig.title,
   description: siteConfig.description,
-  keywords: [
-    // Name variants first — a personal portfolio's highest-value queries are
-    // people searching the name, and this one is spelled several ways.
-    ...(siteConfig.author.alternateNames ?? []),
-    siteConfig.author.name,
-    `${siteConfig.author.name} portfolio`,
-    `${siteConfig.author.name} developer`,
-    "Generative AI Researcher Bangladesh",
-    "NLP Researcher Dhaka",
-    "Generative AI Researcher",
-    "United International University CSE",
-    "React Developer",
-    "Next.js",
-    "TypeScript",
-    "Portfolio",
-  ],
   authors: [{ name: siteConfig.author.name, url: siteConfig.url }],
   creator: siteConfig.name,
   robots: {
@@ -72,7 +56,7 @@ export const metadata: Metadata = {
     url: siteConfig.url,
     title: siteConfig.title,
     description: siteConfig.description,
-    siteName: siteConfig.author.name,
+    siteName: siteConfig.name,
     images: [
       {
         url: siteConfig.ogImage,
@@ -148,10 +132,11 @@ export default function RootLayout({
                   "@type": "WebSite",
                   "@id": `${siteConfig.url}/#website`,
                   url: siteConfig.url,
-                  name: siteConfig.author.name,
+                  name: siteConfig.name,
                   alternateName: [
                     "Tanzamul Azad",
                     "Tanzamul Azad Portfolio",
+                    "tanzamul.dev",
                   ],
                   inLanguage: "en",
                   publisher: { "@id": `${siteConfig.url}/#person` },

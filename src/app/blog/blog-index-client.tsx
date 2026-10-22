@@ -15,7 +15,7 @@ export default function BlogPageClient({ showAll = false }: { showAll?: boolean 
       <Navbar />
       <section className="relative overflow-hidden pb-8 pt-24 sm:pb-10 sm:pt-28">
         <div className="shell relative">
-          <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="max-w-3xl">
+          <motion.div variants={staggerContainer} initial={false} animate="visible" className="max-w-3xl">
             <motion.p variants={fadeInUp} className="eyebrow mb-4">Blog & Notes</motion.p>
             <motion.h1 variants={fadeInUp} className="mb-5 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl">
               Research, systems & things I learn.

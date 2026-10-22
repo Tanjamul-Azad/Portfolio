@@ -24,8 +24,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const title = `${project.title} Case Study | ${siteConfig.name}`;
-  const description = project.overview || project.description;
+  const title = `${project.title} Case Study | Tanzamul Azad`;
+  const description = project.description;
   const canonicalUrl = `${siteConfig.url}/projects/${project.slug}`;
   const imageUrl = project.image
     ? new URL(project.image, siteConfig.url).toString()
@@ -47,8 +47,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       images: [
         {
           url: imageUrl,
-          width: 1200,
-          height: 630,
           alt: `${project.title} case study preview`,
         },
       ],
@@ -80,6 +78,8 @@ export default async function ProjectCaseStudyPage({ params }: PageProps) {
           "@type": "CreativeWork", "@id": `${url}#project`, url,
           name: project.title, description: project.overview || project.description,
           author: { "@id": `${siteConfig.url}/#person` },
+          creator: { "@id": `${siteConfig.url}/#person` },
+          ...(project.image ? { image: new URL(project.image, siteConfig.url).toString() } : {}),
           keywords: project.tags.join(", "), inLanguage: "en",
           ...(project.status === "building" ? { creativeWorkStatus: "In development" } : {}),
           mainEntityOfPage: { "@type": "WebPage", "@id": url },

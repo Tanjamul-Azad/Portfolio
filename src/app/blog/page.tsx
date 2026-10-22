@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/config";
 import BlogPageClient from "./blog-index-client";
+import { blogPosts } from "@/data";
+import { CollectionSchema } from "@/components/common/collection-schema";
 
 // The list page previously had no metadata of its own, so search results and
 // link previews for /blog showed the homepage title and description.
 export const metadata: Metadata = {
-  title: `Blog | ${siteConfig.name}`,
+  title: "AI Research & Engineering Articles | Tanzamul Azad",
   description:
     "Notes on web development, machine learning, and lessons from building production systems.",
   alternates: { canonical: `${siteConfig.url}/blog` },
@@ -29,5 +31,5 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
-  return <BlogPageClient />;
+  return <><CollectionSchema path="/blog" name="Latest articles by Tanzamul Azad" items={blogPosts.slice(0, 4)} /><BlogPageClient /></>;
 }
