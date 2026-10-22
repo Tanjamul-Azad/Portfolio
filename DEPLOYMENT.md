@@ -1,5 +1,7 @@
 # Google Cloud deployment
 
+October 22, 2026 analytics/performance release: `tanzamul-portfolio:analytics-20261022` on loopback port 3009. Owner-provided GA4 stream `G-Z5RCKZXZLX` is integrated with explicit opt-in, revocation controls, privacy information, clean page URLs, selected interaction events and consented Web Vitals. Removed unused Vercel Analytics. Static text assets now have precompressed gzip siblings and the domain uses HTTP/2; no new cloud service was provisioned. Linux build/TypeScript generated 38 routes; telemetry privacy checks, 25 public-page SEO checks and 143 image URL checks passed before switching traffic. Rollback: `tanzamul-portfolio-before-20261022074600`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022074600` (the deployment also preserves the included asset snippet). GA4 Realtime receipt, account Enhanced measurement setting, and Search Console linking still require account-side confirmation. See ANALYTICS.md.
+
 October 22, 2026 technical SEO release: `tanzamul-portfolio:seo-20261022` on loopback port 3008. Static project archives now include crawlable cards and `/projects/page/2`; collection schema, page titles, authorship, image sitemap and true-size social preview were improved. First-visit preloader and delayed primary identity text were removed. Fresh Linux build/TypeScript, 25 live public-page SEO checks and 143 image URL checks passed. SEO validation is now a deployment gate. Previous container: `tanzamul-portfolio-before-20261022064902`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022064902`. See SEO-AUDIT-2026-10-22.md for evidence and external Search Console work. The owner's screenshot confirms the homepage is indexed and Google selected its own canonical; rankings and latest recrawl are not established by these checks.
 
 October 22, 2026 identity consistency: deployed `tanzamul-portfolio:name-20261022` on loopback port 3009. SEO title now leads with Tanzamul Azad; removed Tanjamul identity aliases from description, footer, and structured data while preserving actual account URLs/email. Build, TypeScript, 35 generated pages and 143 responsive-image checks passed. Rollback container: `tanzamul-portfolio-before-20261022062819`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022062819`. This change does not establish Google indexing or ranking; Search Console inspection and migration follow-up remain necessary.
@@ -16,7 +18,7 @@ Production: https://tanzamul.dev
 - VM: `deployments`, zone `us-central1-f`
 - Reserved address: `deployments-ip`, `35.232.136.37`
 - Source folder on VM: `/home/User/tanzamul-portfolio`
-- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3008`
+- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3009`
 - Nginx site: `/etc/nginx/sites-available/tanzamul.dev`
 - TLS: Certbot with automatic renewal (`certbot.timer`)
 - Runtime secrets: `/home/User/tanzamul-runtime.env`, mode 600. Never commit this file.
@@ -31,7 +33,7 @@ Production admin credentials and GitHub write tokens are deliberately excluded f
 
 Billing: a $15 monthly gross-cost budget emails billing administrators/users at 50%, 80%, and 100%. It is an alert, not a spending cap. A weekly Codex credit monitor warns at $30 remaining or unused credit expiry within 30 days.
 
-SEO: canonical URL, sitemap, robots and structured data use tanzamul.dev. Both Tanzamul and Tanjamul are represented in alternate names. Search ranking and indexing are controlled by search engines; submit the sitemap in Google Search Console after verifying ownership.
+SEO: canonical URL, sitemap, robots and structured data use tanzamul.dev. Identity metadata uses Tanzamul and Tanzamul Azad; existing account handles and email addresses remain accurate. Search ranking and indexing are controlled by search engines. The owner's October 22 screenshot confirms successful sitemap processing, with 24 pages discovered at that time.
 
 Google Search Console ownership was verified on October 19, 2026; the sitemap was successfully processed with 17 discovered pages. Vercel project `portfolio` was deleted at the user's request. Its old URL now returns 404. HTTP and www URLs permanently redirect to the HTTPS root domain, retaining paths. The stopped `tanzamul-portfolio-pre-seo` container is retained for rollback and has automatic restart disabled.
 

@@ -16,6 +16,7 @@ import {
   StickyEmail,
 } from "@/components/effects";
 import { themeScript } from "@/lib/theme-script";
+import { Analytics } from "@/components/providers/analytics";
 
 // Use Geist consistently for headings, body text, and small labels.
 const geist = Geist({
@@ -194,6 +195,7 @@ export default function RootLayout({
         />
         <a href="#main-content" className="skip-link">Skip to main content</a>
         <ThemeProvider>
+          <Analytics />
 
           <CursorDot />
           <RouteTransitionProvider>

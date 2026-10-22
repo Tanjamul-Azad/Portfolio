@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { trackEvent } from "@/lib/telemetry";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,7 @@ export function ContactForm() {
       }
 
       toast.success("Message sent successfully! I'll get back to you soon.");
+      trackEvent("generate_lead", { source: "contact_form" });
       form.reset();
     } catch (error) {
       toast.error(

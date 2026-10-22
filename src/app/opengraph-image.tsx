@@ -19,7 +19,6 @@ export default async function OpenGraphImage() {
         <div style={{ display: "flex", fontSize: 28, color: "#a1a1aa", marginTop: 8 }}>NLP &amp; Generative AI Researcher</div>
         <div style={{ display: "flex", fontSize: 25, marginTop: 48, color: "#5eead4" }}>{new URL(siteConfig.url).hostname}</div>
       </div>
-      {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse renders an image document, not an HTML page. */}
       <img src={`data:image/jpeg;base64,${portrait.toString("base64")}`} alt="" width={250} height={300} style={{ objectFit: "cover", borderRadius: 28 }} />
     </div>, size,
   );

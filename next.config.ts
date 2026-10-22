@@ -8,7 +8,7 @@ const scriptSrc = [
   "'self'",
   "'unsafe-inline'",
   isDev ? "'unsafe-eval'" : "",
-  "https://va.vercel-scripts.com",
+  "https://www.googletagmanager.com",
 ]
   .filter(Boolean)
   .join(" ");
@@ -20,7 +20,7 @@ const ContentSecurityPolicy = `
   font-src 'self' https://fonts.gstatic.com;
   img-src 'self' data: blob: https:;
   media-src 'self';
-  connect-src 'self' https://vitals.vercel-insights.com;
+  connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com;
   frame-ancestors 'none';
   frame-src 'none';
   object-src 'none';

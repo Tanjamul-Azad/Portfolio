@@ -17,11 +17,15 @@ candidate=tanzamul-portfolio-candidate-$stamp
 previous=tanzamul-portfolio-before-$stamp
 backup=$site.before-$stamp
 cp "$site" "$backup"
+snippet=/etc/nginx/snippets/tanzamul-image-delivery.conf
+snippet_backup=$snippet.before-$stamp
+[[ ! -e "$snippet" ]] || cp "$snippet" "$snippet_backup"
 
 rollback() {
   set +e
   echo "Deployment failed; restoring $backup"
   cp "$backup" "$site"
+  if [[ -e "$snippet_backup" ]]; then cp "$snippet_backup" "$snippet"; fi
   if nginx -t; then systemctl reload nginx; fi
   # The old container is kept until the new route has passed validation.
   if docker inspect "$previous" >/dev/null 2>&1; then
@@ -57,7 +61,11 @@ docker cp "$candidate":/app/public/images/optimized/. /var/www/tanzamul-assets/o
 docker cp "$candidate":/app/public/images/tech-icons/. /var/www/tanzamul-assets/tech-icons/
 docker cp "$candidate":/app/.next/static/. /var/www/tanzamul-assets/next-static/
 chmod -R a+rX /var/www/tanzamul-assets
+python3 "$root/scripts/prepare-static-compression.py" /var/www/tanzamul-assets
 cp "$root/ops/tanzamul-image-delivery.conf" /etc/nginx/snippets/tanzamul-image-delivery.conf
+if ! grep -q 'http2 on;' "$site"; then
+  sed -i '/listen 443 ssl;/a\    http2 on;' "$site"
+fi
 if ! grep -q 'include /etc/nginx/snippets/tanzamul-image-delivery.conf;' "$site"; then
   sed -i '\|    location / {|i\    include /etc/nginx/snippets/tanzamul-image-delivery.conf;' "$site"
 fi

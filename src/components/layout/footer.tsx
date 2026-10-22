@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUp, ArrowUpRight } from "lucide-react";
 import { siteConfig, footerLinks, navLinks } from "@/config";
+import { AnalyticsPreferencesButton } from "@/components/providers/analytics";
 
 export function Footer() {
   const elsewhere = [
@@ -20,6 +21,10 @@ export function Footer() {
             {siteConfig.author.name}. {siteConfig.author.role}, based in{" "}
             {siteConfig.author.location}.
           </p>
+          <div className="mt-2 flex flex-wrap gap-x-4">
+            <Link href="/privacy" className="inline-flex min-h-11 items-center text-sm text-muted-foreground hover:text-foreground">Privacy &amp; analytics</Link>
+            <AnalyticsPreferencesButton />
+          </div>
           <a
             href={`mailto:${siteConfig.contact.email}`}
             className="mt-2 inline-flex min-h-11 items-center gap-1 text-sm font-medium text-foreground hover:text-accent"
