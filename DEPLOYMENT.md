@@ -1,5 +1,7 @@
 # Google Cloud deployment
 
+October 22, 2026 approved current-face Hero: `tanzamul-portfolio:hero-current-20261022` on loopback port 3008. Hero content now references `public/images/hero-portrait-current-v2.png`, a byte-identical copy of the owner's approved preview v3. The native PNG is retained at 1031x1525; existing quality-90 responsive WebP preparation, blur placeholder, priority loading and immutable caching are reused, without additional facial editing or upscaling. Existing portrait layout, signature and preloader are unchanged. Fresh Linux build/TypeScript, 25-page SEO and 141-image deployment gates passed. Live checks confirmed the original PNG exactly matches the approved file and the homepage serves the new responsive hash with cached assets. Browser visual verification was unavailable because local browser use was disabled. Details/provenance: HERO-PORTRAIT-CURRENT.md. Rollback: `tanzamul-portfolio-before-20261022145104`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022145104`.
+
 October 22, 2026 aligned portrait/chin refinement: `tanzamul-portfolio:intro-refined-20261022` on loopback port 3009. Replaced the portrait with the owner's selected natural-color version, aligning the torso and head leftward and applying a localized chin/jaw likeness edit against the real photograph. Softer yellow is retained in the poster. Stage height is min(64svh,96vw,600px), smaller than the preceding 74svh/680px stage. Existing signature animation, edge blending and delivery remain. PNGs for Canva are under output/canva; selected asset/prompt provenance is PRELOADER-ART-V4.md. Fresh Linux build/TypeScript, focused lint, local HTTP/cache/server-content checks, and 25-page SEO/143-image production gates passed. Browser visual verification was unavailable because local browser use was disabled. Deployment initially stopped on the disk-space gate; pruning 228.3 MB of rebuildable Docker build cache older than two hours restored enough free space. Runtime data and rollback containers were retained. Rollback: `tanzamul-portfolio-before-20261022141005`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022141005`.
 
 October 22, 2026 balanced intro layout: `tanzamul-portfolio:intro-balanced-20261022` on loopback port 3008. Reduced the portrait stage from 94svh to min(74svh, 104vw, 680px), with matching responsive image sizes. Removed the brighter radial backdrop and added intersecting four-edge portrait masks to blend the image plate into the uniform #09090b canvas. The amber inset, face, script signature and its timing remain. Fresh Linux build/TypeScript, focused lint, local/live visual proof, and 25-page SEO/143-image deployment gates passed. Rollback: `tanzamul-portfolio-before-20261022131605`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022131605`.
@@ -44,7 +46,7 @@ Production: https://tanzamul.dev
 - VM: `deployments`, zone `us-central1-f`
 - Reserved address: `deployments-ip`, `35.232.136.37`
 - Source folder on VM: `/home/User/tanzamul-portfolio`
-- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3009`
+- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3008`
 - Nginx site: `/etc/nginx/sites-available/tanzamul.dev`
 - TLS: Certbot with automatic renewal (`certbot.timer`)
 - Runtime secrets: `/home/User/tanzamul-runtime.env`, mode 600. Never commit this file.
