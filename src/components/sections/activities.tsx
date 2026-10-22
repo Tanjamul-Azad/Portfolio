@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import { ArrowUpRight, Code2, Users } from "lucide-react";
 import { SectionHeading } from "@/components/common";
@@ -17,6 +18,8 @@ export interface Activity {
   role: string;
   outcome?: string;
   project?: string;
+  projectSlug?: string;
+  proofLinks?: { label: string; url: string }[];
   summary: string;
   learning?: string;
   tags?: string[];
@@ -27,7 +30,7 @@ export interface Activity {
   preview?: string;
   imageWidth?: number;
   imageHeight?: number;
-  gallery?: { src: string; preview?: string; alt: string; label: string; width: number; height: number }[];
+  gallery?: { src: string; preview?: string; alt: string; label: string; width: number; height: number; download?: boolean }[];
   imageLabel?: string;
   imageSource?: string;
 }
@@ -56,13 +59,13 @@ function ActivityVisual({ activity }: { activity: Activity }) {
 
 function ActivityCard({ activity }: { activity: Activity }) {
   const media = [
-    ...(activity.image ? [{ src: activity.image, preview: activity.preview, alt: activity.imageAlt || activity.name, label: activity.imageLabel || "Official event poster", width: activity.imageWidth || 1200, height: activity.imageHeight || 675 }] : []),
+    ...(activity.image ? [{ src: activity.image, preview: activity.preview, alt: activity.imageAlt || activity.name, label: activity.imageLabel || "Official event poster", width: activity.imageWidth || 1200, height: activity.imageHeight || 675, download: false }] : []),
     ...(activity.gallery || []),
   ];
   return <article className="group surface flex h-full flex-col overflow-hidden transition-[border-color,transform] duration-300 hover:-translate-y-1 hover:border-line-strong">
     <ActivityVisual activity={activity} />
     <div className="flex flex-1 flex-col p-3.5">
-      <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-muted-foreground"><span>{activity.dateLabel || activity.date.slice(0, 4)}</span>{activity.outcome && <><span aria-hidden="true">·</span><span>{activity.outcome}</span></>}</div>
+      <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-muted-foreground"><span>{activity.dateLabel || activity.date.slice(0, 4)}</span>{activity.outcome && <><span aria-hidden="true">·</span>{activity.proofLinks?.[0] ? <a href={activity.proofLinks[0].url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-8 items-center gap-1 underline decoration-line underline-offset-4 hover:text-foreground" aria-label={`${activity.outcome} — ${activity.proofLinks[0].label}, ${activity.name}`}>{activity.outcome}<ArrowUpRight className="size-3" aria-hidden="true" /></a> : <span className="inline-flex min-h-8 items-center">{activity.outcome}</span>}</>}</div>
       <h3 className="line-clamp-2 text-sm font-semibold leading-snug tracking-tight text-foreground">{activity.name}</h3>
       <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{activity.summary}</p>
       <div className="mt-auto pt-2 text-xs font-medium">
@@ -75,8 +78,10 @@ function ActivityCard({ activity }: { activity: Activity }) {
               <DialogDescription className="mt-2 leading-relaxed">{activity.role}{activity.project ? ` · ${activity.project}` : ""}</DialogDescription>
             </div>
             <p className="text-sm leading-relaxed text-muted-foreground">{activity.summary}</p>
-            {media.map(item => <figure key={item.src} className="min-w-0"><a href={item.src} target="_blank" rel="noopener noreferrer" className="block rounded-lg bg-neutral-950 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"><Image src={item.preview || item.src} alt={item.alt} width={item.width} height={item.height} unoptimized loading="eager" className="h-auto max-h-[65dvh] w-full rounded-lg object-contain" /></a><figcaption className="mt-2 flex flex-wrap justify-between gap-2 text-xs text-muted-foreground"><span>{item.label}</span><a href={item.src} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Open full image<span className="sr-only"> — {item.label}</span></a></figcaption></figure>)}
+            {!!activity.proofLinks?.length && <div className="flex flex-wrap gap-2" aria-label="Participation evidence">{activity.proofLinks.map(proof => <a key={proof.url} href={proof.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-line px-3 text-xs font-medium hover:border-line-strong hover:text-accent">{proof.label}<ArrowUpRight className="size-3.5" aria-hidden="true" /></a>)}</div>}
+            {media.map(item => <figure key={item.src} className="min-w-0"><a href={item.src} target="_blank" rel="noopener noreferrer" className="block rounded-lg bg-neutral-950 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"><Image src={item.preview || item.src} alt={item.alt} width={item.width} height={item.height} unoptimized loading="eager" className="h-auto max-h-[65dvh] w-full rounded-lg object-contain" /></a><figcaption className="mt-2 flex flex-wrap justify-between gap-2 text-xs text-muted-foreground"><span>{item.label}</span><a href={item.src} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Open full image<span className="sr-only"> — {item.label}</span></a>{item.download && <a href={item.src} download className="underline underline-offset-4">Download certificate<span className="sr-only"> — {item.label}</span></a>}</figcaption></figure>)}
             <div className="flex flex-wrap gap-x-5 gap-y-2 border-t border-line pt-3 text-xs font-medium">
+              {activity.projectSlug && <Link href={`/projects/${activity.projectSlug}`} className="inline-flex min-h-11 items-center gap-1.5 hover:text-accent">Related project<ArrowUpRight className="size-3.5" aria-hidden="true" /></Link>}
               {activity.url && <a href={activity.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1.5 hover:text-accent">Official event website<ArrowUpRight className="size-3.5" /></a>}
               {activity.imageSource && <a href={activity.imageSource} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1.5 text-muted-foreground hover:text-foreground">Poster source<ArrowUpRight className="size-3.5" /></a>}
             </div>

@@ -33,6 +33,8 @@
     "role": "Team member · Full-Stack Developer",
     "outcome": "National selection",
     "project": "RadFlow",
+    "projectSlug": "radflow",
+    "proofLinks": [{ "label": "Event photo · RadFlow", "url": "https://www.facebook.com/photo/?fbid=122258276252179644&set=pcb.122258278160179644" }],
     "summary": "Officially selected for the Dhaka, Bangladesh Hub of the 7th Harvard HSIL Hackathon. Contributed to RadFlow, an offline-first AI-supported radiology triage prototype for resource-constrained district hospitals.",
     "tags": ["Healthcare AI", "Team collaboration", "Dhaka hub"],
     "url": "https://iriic.uiu.ac.bd/harvard-hsil-hackthon-2026/",
@@ -57,7 +59,10 @@
     "category": "Hackathon",
     "role": "Participant",
     "outcome": "Participation",
-    "summary": "Participated in an online build sprint exploring AI-assisted software-development workflows and rapid prototyping with IBM Bob.",
+    "project": "AI Orchestrator (OrchestratorCLI)",
+    "projectSlug": "orchestrator-cli",
+    "proofLinks": [{ "label": "Project submission & demo", "url": "https://lablab.ai/ai-hackathons/ibm-bob-hackathon/team-dip/orchestrator-unified-ai-cli-development-platform" }],
+    "summary": "Participated with Team DIP on AI Orchestrator, a unified desktop platform for coordinating AI coding tools. The team's project submission includes a demonstration of the development workflow.",
     "tags": [
       "AI-assisted development",
       "Online hackathon"
@@ -79,7 +84,10 @@
     "category": "Hackathon",
     "role": "Participant",
     "outcome": "Participation",
-    "summary": "Participated in CloudCamp Bangladesh’s builder community event, exploring practical AI product development and solution design.",
+    "project": "RadFlow Bangladesh",
+    "projectSlug": "radflow",
+    "proofLinks": [{ "label": "Verify participation certificate", "url": "https://cloudcampbd.com/verify/b6a3f3ed94ca510a0971848b" }],
+    "summary": "Participated in the preliminary round of The Infinity AI BuildFest 2026 with RadFlow Bangladesh, an AI-supported radiology triage project. The participation certificate is available below with an organiser-hosted verification link.",
     "tags": [
       "AI product building",
       "CloudCamp Bangladesh"
@@ -92,6 +100,9 @@
     "imageHeight": 630,
     "imageAlt": "Official Infinity AI BuildFest poster from CloudCamp Bangladesh",
     "imageLabel": "Official Infinity AI BuildFest poster",
-    "imageSource": "https://cloudcampbd.com/the-infinity-ai-buildfest"
+    "imageSource": "https://cloudcampbd.com/the-infinity-ai-buildfest",
+    "gallery": [
+      { "src": "/images/activities/infinity-participation-2026-v1.png", "preview": "/images/activities/infinity-participation-2026-v1-preview-v1.webp", "alt": "Participation certificate issued to Md. Tanzamul Azad for the preliminary round of The Infinity AI BuildFest 2026", "label": "Certificate of participation · Preliminary round", "width": 2000, "height": 1414, "download": true }
+    ]
   }
 ]

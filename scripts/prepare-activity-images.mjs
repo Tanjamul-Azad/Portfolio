@@ -9,7 +9,7 @@ for (const file of posters) {
   const result = await sharp(join(root, file)).resize({ width: 640, withoutEnlargement: true }).webp({ quality: 82 }).toFile(join(root, `${stem}-card-v1.webp`));
   console.log(`${stem}: ${result.size} bytes (card)`);
 }
-for (const file of [...posters, "hsil-selection-2026.png", "hsil-team-2026.png"]) {
+for (const file of [...posters, "hsil-selection-2026.png", "hsil-team-2026.png", "infinity-participation-2026-v1.png"]) {
   const stem = file.replace(/\.[^.]+$/, "");
   const result = await sharp(join(root, file)).resize({ width: 1280, withoutEnlargement: true }).webp({ quality: 88 }).toFile(join(root, `${stem}-preview-v1.webp`));
   console.log(`${stem}: ${result.size} bytes (gallery)`);

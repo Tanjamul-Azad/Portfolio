@@ -1,5 +1,7 @@
 # Google Cloud deployment
 
+October 22, 2026 hackathon evidence release: `tanzamul-portfolio:activity-proof-20261022` on loopback port 3008. HSIL, IBM Bob and Infinity outcome badges now open owner-provided proof links, with labelled evidence actions and related projects in Details. Infinity includes the original preliminary-round participation certificate, a 1280px WebP preview, full-image link and download; AI Orchestrator also links to its lablab submission/demo. Existing card order, posters and compact grid/swipe layout are retained. Linux production build/TypeScript, 25 public SEO routes and 143 responsive-image URLs passed; the actual VM candidate repeated both deployment gates. Rollback: `tanzamul-portfolio-before-20261022082319`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022082319`. See ACTIVITIES.md for proof provenance and source-access limits.
+
 October 22, 2026 legacy URL migration: at the owner's explicit request, `tanjamul-azad.vercel.app` now returns 308 Permanent Redirects to the corresponding `https://tanzamul.dev` path, preserving query strings. This is a separate redirect-only Vercel project (`tanzamul-legacy-redirect`), not a restored portfolio deployment. Four anonymous old-URL checks passed with 308 and destination 200. See `ops/vercel-legacy-redirect/README.md` for reproduction and the verified deployment. Google Cloud remains the portfolio host; search-result updates depend on recrawling.
 
 October 22, 2026 analytics/performance release: `tanzamul-portfolio:analytics-20261022` on loopback port 3009. Owner-provided GA4 stream `G-Z5RCKZXZLX` is integrated with explicit opt-in, revocation controls, privacy information, clean page URLs, selected interaction events and consented Web Vitals. Removed unused Vercel Analytics. Static text assets now have precompressed gzip siblings and the domain uses HTTP/2; no new cloud service was provisioned. Linux build/TypeScript generated 38 routes; telemetry privacy checks, 25 public-page SEO checks and 143 image URL checks passed before switching traffic. Rollback: `tanzamul-portfolio-before-20261022074600`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022074600` (the deployment also preserves the included asset snippet). GA4 Realtime receipt, account Enhanced measurement setting, and Search Console linking still require account-side confirmation. See ANALYTICS.md.
@@ -20,7 +22,7 @@ Production: https://tanzamul.dev
 - VM: `deployments`, zone `us-central1-f`
 - Reserved address: `deployments-ip`, `35.232.136.37`
 - Source folder on VM: `/home/User/tanzamul-portfolio`
-- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3009`
+- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3008`
 - Nginx site: `/etc/nginx/sites-available/tanzamul.dev`
 - TLS: Certbot with automatic renewal (`certbot.timer`)
 - Runtime secrets: `/home/User/tanzamul-runtime.env`, mode 600. Never commit this file.

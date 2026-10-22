@@ -1,5 +1,15 @@
 # ExtraCurricular
 
+## Owner-supplied evidence — October 22, 2026
+
+HSIL, IBM Bob and Infinity's compact outcome badges now link directly to the supplied evidence. The Details dialog repeats clearly labelled proof links, preserves existing posters/photos and adds an optional related-project link. Card order and the compact desktop/mobile layout are retained.
+
+- HSIL: owner-provided event photo for RadFlow: https://www.facebook.com/photo/?fbid=122258276252179644&set=pcb.122258278160179644. Existing selection confirmation and team photo remain in the gallery.
+- IBM Bob: owner associates Team DIP's AI Orchestrator submission/demo with this entry: https://lablab.ai/ai-hackathons/ibm-bob-hackathon/team-dip/orchestrator-unified-ai-cli-development-platform. This is also the AI Orchestrator project's demo link. The supplied URL names the IBM Bob event without `2`; the existing event edition/date was not independently re-established from that submission. Do not infer new prizes or selection claims.
+- Infinity AI BuildFest: owner associates RadFlow Bangladesh with the preliminary round. The uploaded certificate explicitly states **participation in the preliminary round**. Verification: https://cloudcampbd.com/verify/b6a3f3ed94ca510a0971848b. The original 2000×1414 PNG is retained; the modal uses a 1280px WebP preview (103,774 bytes), with full-image and certificate-download actions. No certificate is fetched by the collapsed card.
+
+The original certificate is `public/images/activities/infinity-participation-2026-v1.png`. Regenerate the preview using `node scripts/prepare-activity-images.mjs`. These are real owner-supplied materials; nothing was generated or altered beyond image compression/resizing. The external pages were not readable through the web tool (Facebook throttled; lablab timed out; certificate verification inaccessible), so they are presented as owner-provided evidence links rather than independently verified claims.
+
 The section is implemented in `src/components/sections/activities.tsx`, after Achievements on the homepage, with a navigation link. Four owner-supplied event records are stored in `src/content/activities.json`. The cards emphasize participation and contribution, without prizes or rankings.
 
 Select roughly 3–6 substantial experiences. Include a non-winning participation when it demonstrates a meaningful prototype, technical contribution, collaboration, finalist selection, or useful learning. Keep formal awards in Achievements; describe the process and contribution here without repeating the same award card.
