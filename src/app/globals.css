@@ -521,3 +521,40 @@
     linear-gradient(to right, transparent 0%, #000 9%, #000 91%, transparent 100%);
   mask-composite: intersect;
 }
+
+/* Keep the dark Hero uniformly blended. On a light page, the black artwork
+   becomes a bounded portrait panel while the section follows the page theme. */
+.hero-art {
+  width: min(82vw, 32svh, 352px);
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background: #09090b;
+}
+.dark .hero-art {
+  overflow: visible;
+  border-radius: 0;
+  background: transparent;
+}
+.hero-art[data-signature-state="static"] .hero-signature-nojs {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-signature-nojs { opacity: 1; }
+}
+@media (min-width: 1024px) {
+  .hero-art { width: min(42vw, 62.4svh, 576px); }
+}
+@media (min-width: 600px) and (max-height: 560px) {
+  .hero-art { width: 50svh; }
+  .hero-shell { padding-top: 4.5rem; padding-bottom: 1rem; }
+  .hero-name { font-size: clamp(2rem, 9svh, 3rem); margin-bottom: 0.75rem; }
+  .hero-tagline { font-size: 15px; }
+  .hero-role { margin-top: 0.5rem; font-size: 11px; }
+  .hero-actions, .hero-socials { margin-top: 0.75rem; }
+  .hero-location { display: none; }
+}
+@media (max-width: 599px) and (max-height: 740px) {
+  .hero-art { width: min(76vw, 28svh); }
+  .hero-copy { margin-top: 0.625rem; }
+  .hero-location { display: none; }
+}

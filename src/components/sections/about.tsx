@@ -3,7 +3,10 @@
 import { motion, type Variants } from "framer-motion";
 import Markdown, { type Components } from "react-markdown";
 import { SectionHeading } from "@/components/common";
+import Image from "@/components/common/site-image";
 import { aboutContent } from "@/data/site-content";
+import portraits from "@/content/portraits.json";
+import { siteConfig } from "@/config";
 
 // Render bio Markdown inline: keep the paragraph wrapper as the motion element
 // and map **bold** to the highlighted-word styling the design uses.
@@ -37,6 +40,19 @@ export function About() {
       <div className="shell">
         <SectionHeading index="01" eyebrow={aboutContent.eyebrow} title={aboutContent.heading} />
 
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:gap-14 xl:gap-20">
+        <figure className="mx-auto w-full max-w-[19rem] lg:sticky lg:top-28 lg:max-w-none">
+          <div className="relative aspect-[1031/1525] overflow-hidden rounded-2xl border border-line bg-[#09090b]">
+            <Image
+              src={portraits.about}
+              alt={`Portrait of ${siteConfig.author.name}`}
+              fill
+              sizes="(min-width: 1280px) 380px, (min-width: 1024px) 30vw, 304px"
+              quality={90}
+              className="object-cover object-top"
+            />
+          </div>
+        </figure>
         <motion.div
           variants={container}
           initial="hidden"
@@ -69,6 +85,7 @@ export function About() {
             </motion.figure>}
           </div>
         </motion.div>
+        </div>
       </div>
     </section>
   );

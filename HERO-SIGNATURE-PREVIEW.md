@@ -1,0 +1,13 @@
+# Signature Hero preview — October 23, 2026
+
+The owner reviewed this revision locally at http://127.0.0.1:3121/ and authorised publication. It was deployed to https://tanzamul.dev/ on October 23, 2026 as `tanzamul-portfolio:signature-hero-20261023`; see DEPLOYMENT.md for rollback details.
+
+- The owner's approved refined v4 intro portrait and separate signature now form the Hero artwork. Assets and face are unchanged; existing responsive WebP sizes are reused.
+- Signature strokes play once per Hero mount, after both images decode, the Hero enters view, and the opening overlay is removed. There is no interval or loop. The final signature stays visible. Reduced-motion, Save Data and 2G use the static signature. No-JavaScript markup also shows the full signature.
+- The original uppercase TANZAMUL wordmark preloader is restored from commit a73e71a, retaining once-per-tab handling and skip behavior. It no longer loads portrait artwork.
+- The former Hero professional portrait is in About: a bounded portrait above the text on phones and a left-hand column on desktop. Its embedded gold name was removed at the owner's request; provenance and prompt are in ABOUT-PORTRAIT-CLEAN.md. The owner-authored about.json bytes, identity, section order and all other content are unchanged.
+- Hero follows the selected theme: uniform #09090b black with an unframed blended portrait in dark mode; a light section with a bounded dark portrait panel in light mode. Grid and warm glow are removed. The phone composition reserves room for the role and action buttons; short screens hide stats and the location row.
+- In the stacked mobile layout the artwork is raised 8px to leave more breathing room above the name without changing the first-screen height; the desktop/landscape position is unchanged.
+- The oversized outlined footer wordmark is removed. Navbar active indication uses section boundaries at a viewport reading line, so tall sections such as Projects highlight reliably; Projects and Blog routes also retain their respective active indicators.
+
+Validation: production build and TypeScript; focused ESLint; 25-page SEO check; exact owner About paragraph/quote check; visual dark/light Hero and desktop About checks; phone 320x568 and 390x844 plus landscape 740x360 with both action buttons in the first screen and no horizontal overflow; first-visit intro-to-signature transition, cached-image reload, reduced-motion and no-JavaScript fallbacks. Browser previews and live proof are in output/hero-preview. Public deployment checks passed for 142 responsive image URLs and verified the live mobile layout, About asset, light theme and Projects active indicator.

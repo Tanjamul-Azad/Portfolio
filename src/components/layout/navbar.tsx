@@ -36,47 +36,50 @@ export function Navbar() {
   const isHome = pathname === "/";
 
   useEffect(() => {
-    const handleScroll = () => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
       setScrolled(window.scrollY > 24);
-      // Back over the hero no nav section is in view; without this the last
-      // section observed (often Contact) stayed highlighted at the top.
-      if (window.scrollY < window.innerHeight * 0.5) setActiveSection("");
-    };
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+      if (!isHome) {
+        setActiveSection("");
+        return;
+      }
 
-  useEffect(() => {
-    const sectionIds = navLinks
-      .map((link) => link.href.replace("#", ""))
-      .filter(Boolean);
-
-    const sections = sectionIds
-      .map((id) => document.getElementById(id))
-      .filter((section): section is HTMLElement => section !== null);
-
-    if (sections.length === 0) {
-      setActiveSection("");
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntries = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-
-        if (visibleEntries.length > 0) {
-          setActiveSection(visibleEntries[0].target.id);
+      // Track section boundaries at a reading line, rather than intersection
+      // ratios: a tall Projects section can never fit the old 20% viewport band.
+      const readingLine = Math.max(96, window.innerHeight * 0.35);
+      let current = "";
+      for (const link of navLinks) {
+        const section = document.getElementById(link.href.slice(1));
+        if (section && section.getBoundingClientRect().top <= readingLine) {
+          current = section.id;
         }
-      },
-      { rootMargin: "-35% 0px -45% 0px", threshold: [0.2, 0.5, 0.8] }
-    );
+      }
+      setActiveSection(current);
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    const resizeObserver = new ResizeObserver(schedule);
+    const main = document.querySelector("main");
+    if (main) resizeObserver.observe(main);
+    return () => {
+      cancelAnimationFrame(frame);
+      resizeObserver.disconnect();
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [isHome, pathname]);
 
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, [pathname]);
+  const isActiveLink = (href: string) => {
+    const sectionId = href.replace("#", "");
+    if (isHome) return activeSection === sectionId;
+    return (sectionId === "projects" && pathname.startsWith("/projects")) ||
+      (sectionId === "blog" && pathname.startsWith("/blog"));
+  };
 
   const hrefFor = (href: string) =>
     href.startsWith("#") ? (isHome ? href : `/${href}`) : href;
@@ -108,9 +111,7 @@ export function Navbar() {
         {/* Desktop: centred link pill with a sliding active marker. */}
         <ul className="relative hidden items-center gap-0.5 rounded-full border border-line bg-surface/50 p-1 lg:flex">
           {navLinks.map((link) => {
-            const isAnchorLink = link.href.startsWith("#");
-            const sectionId = link.href.replace("#", "");
-            const isActive = isHome && isAnchorLink && activeSection === sectionId;
+            const isActive = isActiveLink(link.href);
 
             return (
               <li key={link.name} className="relative">
@@ -203,8 +204,7 @@ export function Navbar() {
                 <nav aria-label="Mobile" className="flex-1 overflow-y-auto px-4 pb-2">
                   <ul className="grid grid-cols-2 gap-2">
                     {navLinks.map((link, i) => {
-                      const sectionId = link.href.replace("#", "");
-                      const isActive = isHome && activeSection === sectionId;
+                      const isActive = isActiveLink(link.href);
                       return (
                         <motion.li
                           key={link.name}

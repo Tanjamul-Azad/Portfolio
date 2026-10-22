@@ -93,12 +93,6 @@ export function Footer() {
         </a>
       </div>
 
-      {/* Oversized wordmark bleeding off the bottom edge — a quiet sign-off. */}
-      <div aria-hidden="true" className="pointer-events-none select-none overflow-hidden">
-        <p className="display -mb-[0.22em] text-center text-[21vw] leading-none text-transparent [-webkit-text-stroke:1px_var(--line-strong)] lg:text-[16rem]">
-          {siteConfig.name}
-        </p>
-      </div>
     </footer>
   );
 }

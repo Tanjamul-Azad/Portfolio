@@ -27,7 +27,11 @@ export function OpeningIntro() {
     catch { /* Keep the in-memory visit flag if storage is unavailable. */ }
   };
 
-  return <><noscript><style>{"#portfolio-opening-intro { display: none !important; }"}</style></noscript><AnimatePresence initial={false}>
+  return <><noscript><style>{"#portfolio-opening-intro { display: none !important; }"}</style></noscript><AnimatePresence initial={false} onExitComplete={() => {
+    // Presence finishes before React removes the overlay's DOM node. Hand off
+    // on the following frame so Hero can see that the intro is actually gone.
+    requestAnimationFrame(() => window.dispatchEvent(new Event("portfolio:intro-complete")));
+  }}>
     {visible && <motion.div
       key="opening-intro"
       id="portfolio-opening-intro"

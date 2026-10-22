@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
-import Image from "next/image";
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { siteConfig } from "@/config";
 
-const ease = [0.22, 1, 0.36, 1] as const;
-export const INTRO_VISIT_KEY = "portfolio_opening_intro_signature_v6";
+export const INTRO_VISIT_KEY = "portfolio_opening_wordmark_v7";
 
 interface PreloaderProps {
   onComplete: () => void;
@@ -14,65 +12,108 @@ interface PreloaderProps {
 
 export function Preloader({ onComplete }: PreloaderProps) {
   const [count, setCount] = useState(0);
-  const [playPortrait, setPlayPortrait] = useState(false);
-  const [portraitReady, setPortraitReady] = useState(false);
-  const [signatureReady, setSignatureReady] = useState(false);
-  const mediaReady = useRef({ portrait: false, signature: false });
-  const signatureMask = useId().replace(/:/g, "");
-  const [phase, setPhase] = useState<"counting" | "reveal" | "hold" | "exit">("counting");
-  const onCompleteRef = useRef(onComplete);
-
-  useEffect(() => { onCompleteRef.current = onComplete; }, [onComplete]);
+  const [isVisible, setIsVisible] = useState(true);
+  const [phase, setPhase] = useState<"counting" | "reveal" | "exit">("counting");
+  const measureNameRef = useRef<HTMLDivElement>(null);
+  const [nameWidth, setNameWidth] = useState<number | null>(null);
 
   useEffect(() => {
-    const connection = (navigator as Navigator & {
-      connection?: { saveData?: boolean; effectiveType?: string };
-    }).connection;
-    let alreadyShown = false;
-    try { alreadyShown = sessionStorage.getItem(INTRO_VISIT_KEY) === "true"; } catch { /* Optional storage. */ }
-    const skip = alreadyShown || document.hidden ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
-      connection?.saveData === true || /2g/.test(connection?.effectiveType ?? "");
+    if (!measureNameRef.current) return;
 
-    if (skip) {
-      const dismiss = setTimeout(() => onCompleteRef.current(), 0);
-      return () => clearTimeout(dismiss);
-    }
-
-    // Media gets a bounded load window; a failed/slow request skips the intro.
-    // Repeat visits do not request the art.
-    setPlayPortrait(true);
-    const requestedAt = performance.now();
-    let sequenceStartedAt: number | null = null;
-    let frame: number;
-    const tick = (now: number) => {
-      // Give uncached art a bounded load window, then run the whole signature
-      // sequence. Starting its exit clock before the SVG image loads cuts off
-      // the last pen strokes on a visitor's first uncached request.
-      if (sequenceStartedAt === null) {
-        if (mediaReady.current.portrait && mediaReady.current.signature) sequenceStartedAt = now;
-        else if (now - requestedAt >= 1500) { onCompleteRef.current(); return; }
-        else { frame = requestAnimationFrame(tick); return; }
-      }
-      const elapsed = now - sequenceStartedAt;
-      const progress = Math.min(elapsed / 2380, 1);
-      setCount(Math.round((1 - Math.pow(1 - progress, 3)) * 100));
-      if (elapsed >= 2700) setPhase("exit");
-      else if (elapsed >= 2380) setPhase("hold");
-      else if (elapsed >= 450) setPhase("reveal");
-      if (elapsed >= 3350) onCompleteRef.current();
-      else frame = requestAnimationFrame(tick);
+    const updateWidth = () => {
+      if (!measureNameRef.current) return;
+      const rect = measureNameRef.current.getBoundingClientRect();
+      setNameWidth(Math.ceil(rect.width));
     };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
+
+    updateWidth();
+
+    const observer = new ResizeObserver(() => updateWidth());
+    observer.observe(measureNameRef.current);
+
+    window.addEventListener("resize", updateWidth);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateWidth);
+    };
   }, []);
 
+  const onCompleteRef = useRef(onComplete);
   useEffect(() => {
-    const dismiss = () => onCompleteRef.current();
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
+  useEffect(() => {
+    const timeouts: NodeJS.Timeout[] = [];
+
+    // Anyone who asks for reduced motion (or who is on a slow connection, where
+    // an intro animation is the last thing they need) skips straight through.
+    const connection = (
+      navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }
+    ).connection;
+    const skip =
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      connection?.saveData === true ||
+      (connection?.effectiveType ? /2g/.test(connection.effectiveType) : false) ||
+      // Opened into a background tab: timers there are throttled to ~1s, which
+      // would stretch the intro to nearly a minute. Nobody is watching it anyway.
+      document.hidden;
+
+    if (skip) {
+      setCount(100);
+      setIsVisible(false);
+      timeouts.push(setTimeout(() => onCompleteRef.current(), 0));
+      return () => timeouts.forEach(clearTimeout);
+    }
+
+    let frame = 0;
+    const total = 40;
+
+    // ~1.9s end to end (40 * 24ms count + 380 + 420 + 320) rather than the ~4.1s
+    // the original timings added up to. A portfolio's first impression should not
+    // cost four seconds of staring at a progress line.
+    const timer = setInterval(() => {
+      frame++;
+      const progress = frame / total;
+      const eased = progress < 0.5
+        ? 2 * progress * progress
+        : -1 + (4 - 2 * progress) * progress;
+      setCount(Math.round(eased * 100));
+
+      if (frame >= total) {
+        clearInterval(timer);
+        setCount(100);
+        setPhase("reveal");
+
+        timeouts.push(setTimeout(() => {
+          setPhase("exit");
+          timeouts.push(setTimeout(() => {
+            setIsVisible(false);
+            timeouts.push(setTimeout(() => onCompleteRef.current(), 320));
+          }, 420));
+        }, 380));
+      }
+    }, 24);
+
+    return () => {
+      clearInterval(timer);
+      timeouts.forEach(clearTimeout);
+    };
+  }, []);
+
+  // Let people bail out immediately — Escape, Enter, click, or tap — and never
+  // leave the overlay up for a tab the visitor has navigated away from.
+  useEffect(() => {
+    const dismiss = () => {
+      setIsVisible(false);
+      onCompleteRef.current();
+    };
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape" || event.key === "Enter") dismiss();
     };
-    const onVisibility = () => { if (document.hidden) dismiss(); };
+    const onVisibility = () => {
+      if (document.hidden) dismiss();
+    };
     window.addEventListener("keydown", onKey);
     document.addEventListener("visibilitychange", onVisibility);
     return () => {
@@ -81,94 +122,98 @@ export function Preloader({ onComplete }: PreloaderProps) {
     };
   }, []);
 
-  const writing = phase !== "counting" && portraitReady && signatureReady;
+  const name = siteConfig.name.toUpperCase();
   return (
-    <motion.div
-      role="status"
-      aria-label="Loading portfolio"
-      aria-live="off"
-      data-phase={phase}
-      onClick={() => onCompleteRef.current()}
-      className="fixed inset-0 z-100 cursor-pointer overflow-hidden bg-[#09090b] text-white"
-      animate={{ clipPath: phase === "exit" ? "inset(0 0 100% 0)" : "inset(0 0 0% 0)" }}
-      transition={{ duration: 0.68, ease: [0.76, 0, 0.24, 1] }}
-    >
-      {playPortrait && <motion.div
-        aria-hidden="true"
-        className="absolute left-1/2 top-1/2 aspect-[4/5] h-[min(64svh,96vw,600px)] -translate-x-1/2 -translate-y-1/2"
-        initial={{ opacity: 0, y: 14, scale: 1.015 }}
-        animate={{ opacity: portraitReady ? 1 : 0, y: portraitReady ? 0 : 14, scale: 1 }}
-        transition={{ duration: 0.8, ease }}
-      >
-        {/* Direct responsive WebP delivery avoids on-demand server encoding. */}
-        <picture>
-          <source srcSet="/images/intro/tanzamul-refined-v4-480.webp 480w, /images/intro/tanzamul-refined-v4-800.webp 800w, /images/intro/tanzamul-refined-v4-1122.webp 1122w" sizes="min(51.2svh, 76.8vw, 480px)" />
-          <Image
-            src="/images/intro/tanzamul-refined-v4-800.webp"
-            alt=""
-            fill
-            unoptimized
-            loading="eager"
-            fetchPriority="high"
-            className="intro-portrait-blend object-contain"
-            onLoad={() => { mediaReady.current.portrait = true; setPortraitReady(true); }}
-          />
-        </picture>
-        <div className="absolute inset-x-0 bottom-0 h-[32%] bg-linear-to-t from-[#09090b]/65 to-transparent" />
-        <motion.span
-          className="absolute top-[74%] left-[44%] flex items-center gap-3 text-[clamp(8px,1.2svh,12px)] font-medium tracking-[0.38em] text-white/90"
-          initial={{ opacity: 0 }} animate={{ opacity: writing ? 1 : 0 }}
-          transition={{ duration: 0.35 }}
-        >
-          WELCOME <span className="h-px w-6 bg-white/60" />
-        </motion.span>
-        {/* The image retains the reference's brush texture. Animated SVG masks
-            follow the pen strokes instead of revealing a block-letter label. */}
-        <svg viewBox="0 0 2000 800" className="absolute top-[69%] left-[6%] w-[91%] overflow-visible" aria-hidden="true">
-          <defs>
-            <mask id={signatureMask} maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="800" style={{ maskType: "luminance" }}>
-              <motion.path d="M65 405 Q355 260 705 210" fill="none" stroke="white" strokeWidth="100" strokeLinecap="butt"
-                initial={{ pathLength: 0 }} animate={{ pathLength: writing ? 1 : 0 }} transition={{ duration: 0.28, ease: "easeOut" }} />
-              <motion.path d="M510 235 Q355 430 180 715" fill="none" stroke="white" strokeWidth="100" strokeLinecap="butt"
-                initial={{ pathLength: 0 }} animate={{ pathLength: writing ? 1 : 0 }} transition={{ duration: 0.28, delay: 0.2, ease: "easeOut" }} />
-              <motion.path d="M415 605 Q425 540 520 495 Q565 475 530 560 Q510 625 590 550 L690 475 L650 575 L755 475 Q775 465 760 530 Q750 580 820 510 L925 425 Q1015 385 885 505 Q1020 465 925 555 L705 720" fill="none" stroke="white" strokeWidth="125" strokeLinecap="butt" strokeLinejoin="round"
-                initial={{ pathLength: 0 }} animate={{ pathLength: writing ? 1 : 0 }} transition={{ duration: 0.58, delay: 0.38, ease: "linear" }} />
-              <motion.path d="M1000 515 Q1020 455 1115 415 Q1160 395 1100 480 Q1060 540 1155 460 L1235 395 L1190 500 L1320 390 Q1375 350 1325 460 L1410 385 Q1440 365 1420 445 Q1410 490 1475 445 L1525 380 L1485 455 Q1475 500 1550 440 L1590 375 Q1620 335 1580 425 Q1560 490 1645 400" fill="none" stroke="white" strokeWidth="140" strokeLinecap="butt" strokeLinejoin="round"
-                initial={{ pathLength: 0 }} animate={{ pathLength: writing ? 1 : 0 }} transition={{ duration: 0.52, delay: 0.85, ease: "linear" }} />
-              <motion.path d="M1640 420 Q1740 220 1840 140 Q1860 120 1805 200 Q1670 345 1640 470 Q1615 545 1720 485 Q1870 390 1955 375" fill="none" stroke="white" strokeWidth="100" strokeLinecap="butt" strokeLinejoin="round"
-                initial={{ pathLength: 0 }} animate={{ pathLength: writing ? 1 : 0 }} transition={{ duration: 0.32, delay: 1.25, ease: "easeOut" }} />
-              <motion.path d="M495 725 Q1130 555 1875 550" fill="none" stroke="white" strokeWidth="68" strokeLinecap="butt"
-                initial={{ pathLength: 0 }} animate={{ pathLength: writing ? 1 : 0 }} transition={{ duration: 0.32, delay: 1.52, ease: "easeOut" }} />
-              <motion.rect width="2000" height="800" fill="white" initial={{ opacity: 0 }} animate={{ opacity: writing ? 1 : 0 }} transition={{ duration: 0.08, delay: 1.84 }} />
-            </mask>
-          </defs>
-          <image href="/images/intro/tanzamul-signature-v2.webp" width="2000" height="800" mask={`url(#${signatureMask})`} onLoad={() => { mediaReady.current.signature = true; setSignatureReady(true); }} />
-        </svg>
-      </motion.div>}
-
-      {!portraitReady && (
+    <AnimatePresence>
+      {isVisible && (
         <motion.div
-          aria-hidden="true"
-          initial={{ opacity: 0 }} animate={{ opacity: phase === "counting" ? 0 : 1 }}
-          className="absolute inset-0 flex items-center justify-center font-heading text-[clamp(2.8rem,12vw,8.5rem)] font-bold tracking-[-0.045em]"
+          role="status"
+          aria-label="Loading portfolio"
+          title="Click to skip"
+          onClick={() => {
+            setIsVisible(false);
+            onCompleteRef.current();
+          }}
+          className="fixed inset-0 z-100 flex cursor-pointer flex-col items-center justify-center overflow-hidden bg-black dark:bg-neutral-950"
+          exit={{ clipPath: "inset(0 0 100% 0)" }}
+          transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
         >
-          {siteConfig.name.toUpperCase()}
+          <div className="absolute inset-0 bg-linear-to-b from-white/3 via-transparent to-black/10" />
+
+          {/* Measurement only — a <div>, not an <h1>: the page's single real
+              heading belongs to the hero. */}
+          <div
+            ref={measureNameRef}
+            aria-hidden="true"
+            className="invisible absolute select-none text-[clamp(3rem,12vw,10rem)] font-bold font-heading tracking-[-0.02em] leading-none"
+          >
+            {name}
+          </div>
+
+          <div
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-16 md:translate-y-20"
+            style={{ width: nameWidth ? `${nameWidth}px` : "min(86vw, 1100px)" }}
+          >
+            <div className="h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
+            <div
+              className="absolute top-0 left-0 h-px bg-white transition-all duration-30 linear"
+              style={{ width: `${count}%` }}
+            />
+          </div>
+
+          <motion.div
+            className="absolute top-8 right-8 font-mono text-xs text-neutral-500 tabular-nums tracking-widest"
+            animate={{ opacity: phase === "reveal" ? 0 : 1 }}
+            transition={{ duration: 0.25 }}
+          >
+            {String(count).padStart(3, "0")}
+          </motion.div>
+
+          <AnimatePresence>
+            {phase === "counting" && (
+              <motion.div
+                key="sweep"
+                className="absolute w-full h-px bg-linear-to-r from-transparent via-neutral-700/50 to-transparent"
+                initial={{ y: "100vh" }}
+                animate={{ y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.6, ease: [0.76, 0, 0.24, 1] }}
+              />
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {phase !== "counting" && (
+              <motion.div
+                key="name"
+                initial={{ clipPath: "inset(0 100% 0 0)" }}
+                animate={{ clipPath: "inset(0 0% 0 0)" }}
+                exit={{ clipPath: "inset(0 0 0 100%)" }}
+                transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
+                className="relative z-10 select-none"
+              >
+                <div
+                  aria-hidden="true"
+                  className="text-[clamp(3rem,12vw,10rem)] font-bold font-heading text-white tracking-[-0.02em] leading-none"
+                >
+                  {name}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <motion.span
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[10px] font-medium uppercase tracking-[0.22em] text-neutral-600"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: phase === "counting" ? 1 : 0 }}
+            transition={{ delay: 0.6, duration: 0.4 }}
+          >
+            Click to skip
+          </motion.span>
+
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
         </motion.div>
       )}
-
-      <span aria-hidden="true" className="absolute top-7 right-7 font-mono text-[10px] tracking-widest text-white/50 tabular-nums sm:top-10 sm:right-10">
-        {String(count).padStart(3, "0")}
-      </span>
-      <div aria-hidden="true" className="absolute inset-x-7 bottom-5 mx-auto max-w-[700px] bg-white/10 sm:bottom-4">
-        <div className="h-px bg-[#ffbf00]" style={{ width: `${count}%` }} />
-      </div>
-      <button
-        type="button"
-        onClick={(event) => { event.stopPropagation(); onCompleteRef.current(); }}
-        className="absolute bottom-6 right-4 px-4 py-3 text-[9px] uppercase tracking-[0.24em] text-white/50 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ffbf00]"
-      >
-        Skip intro
-      </button>
-    </motion.div>
+    </AnimatePresence>
   );
 }
