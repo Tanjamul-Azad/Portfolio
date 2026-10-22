@@ -6,9 +6,9 @@
     "label": "The Logician"
   },
   "paragraphs": [
-    "Most of my current study is around LLM reasoning and the security of AI agents. I'm interested in how a model arrives at an answer, what it treats as trustworthy, and what happens when it interacts with tools or external data. These are the questions that keep me returning to the papers and the code.",
-    "I'm still learning how to investigate these problems carefully. I spend time working through the assumptions behind a method, thinking about failure cases, and trying ideas in small implementations. My research is ongoing, and I'm building the skills to evaluate results and explain the limitations of the work clearly.",
-    "Alongside that study, I contribute to software projects and hackathon teams. Building interfaces and application workflows gives me practical questions to bring back to my reading. I also tutor students in Classes 10–12 and admission preparation; finding a clear explanation for someone else often helps me see what I still need to understand."
+    "Most of my research centers on LLM reasoning, the security of AI agents, and intelligent edge systems. I'm fascinated by how a model arrives at an answer, what it treats as trustworthy, and what happens when it interacts with tools or external data. These are the questions that keep me returning to the code and the papers.",
+    "I focus on investigating these problems with analytical rigor—working through the assumptions behind a method, testing failure cases, and validating ideas through small-scale implementations. My research is ongoing, and I'm constantly building better ways to evaluate results and communicate technical limitations clearly.",
+    "Alongside research, I actively build full-stack web products and collaborate on software projects. Building production-ready interfaces and workflows gives me practical engineering problems to ground my theoretical work. I've also spent significant time tutoring, where explaining complex concepts to others helps sharpen my own understanding."
   ],
-  "quote": ""
+  "quote": "Exploring how models reason, where systems fail, and how to build software that lasts."
 }
