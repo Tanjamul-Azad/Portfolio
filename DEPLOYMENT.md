@@ -1,5 +1,7 @@
 # Google Cloud deployment
 
+October 22, 2026 restored opening design: `tanzamul-portfolio:opening-intro-20261022` on loopback port 3008. Restored the original, unchanged Preloader component (black board, counter, TANZAMUL reveal and exit motion) through an isolated client overlay on the server-rendered homepage. It plays once per tab session, supports the original click/Escape/reduced-motion exits and retains full page content in initial HTML. A no-JavaScript fallback hides the overlay. A versioned session key allows the restored intro to play once even for visitors with the older preloader flag. Fresh Linux build/TypeScript, focused lint, full-content initial HTML, 25 SEO pages and 143 image URL gates passed. Browser checks observed initial counter and automatic dismissal, and repeat-visit dismissal. Rollback: `tanzamul-portfolio-before-20261022122207`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022122207`.
+
 October 22, 2026 narrative About: `tanzamul-portfolio:about-story-20261022` on loopback port 3009. Removed the repeated location/personality/focus panel and replaced the bio with a three-paragraph narrative connecting the existing 2016 junior Olympiad milestone, tutoring and the owner's approach to software/research. It does not restate hero identity, degree, grades, contact details or project lists. Existing source facts remain in the content model for chatbot use. Fresh build/TypeScript, lint, homepage checks and deployment SEO/image gates passed. Rollback: `tanzamul-portfolio-before-20261022101543`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022101543`.
 
 October 22, 2026 About contact cleanup: `tanzamul-portfolio:about-contact-20261022` on loopback port 3008. Removed the duplicate email fact/link from About and kept the Contact section email. Updated the facts grid for three entries. Fresh Linux build/TypeScript, focused lint and deployment SEO/image gates passed. Rollback: `tanzamul-portfolio-before-20261022100743`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022100743`.
@@ -34,7 +36,7 @@ Production: https://tanzamul.dev
 - VM: `deployments`, zone `us-central1-f`
 - Reserved address: `deployments-ip`, `35.232.136.37`
 - Source folder on VM: `/home/User/tanzamul-portfolio`
-- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3009`
+- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3008`
 - Nginx site: `/etc/nginx/sites-available/tanzamul.dev`
 - TLS: Certbot with automatic renewal (`certbot.timer`)
 - Runtime secrets: `/home/User/tanzamul-runtime.env`, mode 600. Never commit this file.

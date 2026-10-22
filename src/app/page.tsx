@@ -16,6 +16,7 @@ import {
   Contact,
 } from "@/components/sections";
 import { siteConfig } from "@/config";
+import { OpeningIntro } from "@/components/common/opening-intro";
 
 export default function Home() {
   return (
@@ -29,6 +30,7 @@ export default function Home() {
         isPartOf: { "@id": `${siteConfig.url}/#website` },
         mainEntity: { "@id": `${siteConfig.url}/#person` },
       }).replace(/</g, "\\u003c") }} />
+      <OpeningIntro />
       {/* Plain wrapper: it used to fade the whole page in from opacity 0, which
           kept everything — the hero included — unpainted until hydration. */}
       <div className="relative z-10">
