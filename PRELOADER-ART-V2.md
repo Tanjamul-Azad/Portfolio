@@ -8,6 +8,8 @@ The prior upper-body/block-letter composition is replaced. The portrait is a tig
 
 The 3.35-second animation clock starts after both media layers load, avoiding clipped final strokes on a first uncached visit. Media has a 1.5-second maximum load window; if it is not ready, the intro is dismissed. SVG mask strokes use butt caps so zero-length pending paths do not expose stray ink dots. Browser checks captured a partial T with all later strokes still hidden, the complete signature, automatic dismissal and repeat-visit skipping. Production art uses the existing cache policy.
 
+Layout refinement: the portrait stage is capped at min(74svh, 104vw, 680px), with matching responsive image sizes. The outer canvas is uniform #09090b; the previous radial glow is removed. Intersecting horizontal/vertical CSS masks feather the portrait plate into the canvas on all four edges, keeping the amber panel's inset area opaque and the separately animated signature crisp. The original portrait pixels and signature timing are unchanged.
+
 ## Editorial poster
 
 Use case: identity-preserve / style-transfer.

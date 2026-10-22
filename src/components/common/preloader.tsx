@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { siteConfig } from "@/config";
 
 const ease = [0.22, 1, 0.36, 1] as const;
-export const INTRO_VISIT_KEY = "portfolio_opening_intro_signature_v4";
+export const INTRO_VISIT_KEY = "portfolio_opening_intro_signature_v5";
 
 interface PreloaderProps {
   onComplete: () => void;
@@ -93,17 +93,16 @@ export function Preloader({ onComplete }: PreloaderProps) {
       animate={{ clipPath: phase === "exit" ? "inset(0 0 100% 0)" : "inset(0 0 0% 0)" }}
       transition={{ duration: 0.68, ease: [0.76, 0, 0.24, 1] }}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_45%,#17181d_0%,transparent_65%)]" />
       {playPortrait && <motion.div
         aria-hidden="true"
-        className="absolute left-1/2 top-1/2 aspect-[4/5] h-[min(94svh,125vw)] -translate-x-1/2 -translate-y-1/2"
+        className="absolute left-1/2 top-1/2 aspect-[4/5] h-[min(74svh,104vw,680px)] -translate-x-1/2 -translate-y-1/2"
         initial={{ opacity: 0, y: 14, scale: 1.015 }}
         animate={{ opacity: portraitReady ? 1 : 0, y: portraitReady ? 0 : 14, scale: 1 }}
         transition={{ duration: 0.8, ease }}
       >
         {/* Direct responsive WebP delivery avoids on-demand server encoding. */}
         <picture>
-          <source srcSet="/images/intro/tanzamul-editorial-v2-480.webp 480w, /images/intro/tanzamul-editorial-v2-800.webp 800w, /images/intro/tanzamul-editorial-v2-1200.webp 1122w" sizes="(max-aspect-ratio: 4/5) 100vw, 76vh" />
+          <source srcSet="/images/intro/tanzamul-editorial-v2-480.webp 480w, /images/intro/tanzamul-editorial-v2-800.webp 800w, /images/intro/tanzamul-editorial-v2-1200.webp 1122w" sizes="min(59.2svh, 83.2vw, 544px)" />
           <Image
             src="/images/intro/tanzamul-editorial-v2-800.webp"
             alt=""
@@ -111,7 +110,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
             unoptimized
             loading="eager"
             fetchPriority="high"
-            className="object-contain [mask-image:linear-gradient(to_bottom,black_95%,transparent_100%)]"
+            className="intro-portrait-blend object-contain"
             onLoad={() => { mediaReady.current.portrait = true; setPortraitReady(true); }}
           />
         </picture>

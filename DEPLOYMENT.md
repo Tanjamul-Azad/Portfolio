@@ -1,5 +1,7 @@
 # Google Cloud deployment
 
+October 22, 2026 balanced intro layout: `tanzamul-portfolio:intro-balanced-20261022` on loopback port 3008. Reduced the portrait stage from 94svh to min(74svh, 104vw, 680px), with matching responsive image sizes. Removed the brighter radial backdrop and added intersecting four-edge portrait masks to blend the image plate into the uniform #09090b canvas. The amber inset, face, script signature and its timing remain. Fresh Linux build/TypeScript, focused lint, local/live visual proof, and 25-page SEO/143-image deployment gates passed. Rollback: `tanzamul-portfolio-before-20261022131605`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022131605`.
+
 October 22, 2026 editorial signature intro: `tanzamul-portfolio:signature-intro-ready-20261022` on loopback port 3009. Replaced the upper-body/block-letter intro with the owner's requested upward-looking close-up and handwritten Tanzamul composition. Built-in imagegen created the reference-based clean portrait plate and separate transparent signature. Animated SVG masks draw the T, connected lettering, final l and underline. A bounded 1.5-second media-ready window precedes the 3.35-second sequence; failed/slow media skips the intro, preventing either an indefinite wait or cut-off final strokes. Reduced motion, slow-connection skips, once-per-tab playback, click/button/keyboard exits, server HTML and no-JavaScript fallback remain. Fresh Linux build/TypeScript, focused lint, partial-stroke/full-signature browser checks, repeat-visit handling, 25 SEO pages and 143 image URL production gates passed. Provenance and full prompts: PRELOADER-ART-V2.md. Rollback: `tanzamul-portfolio-before-20261022130355`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022130355`.
 
 October 22, 2026 portrait intro: `tanzamul-portfolio:portrait-intro-20261022` on loopback port 3009. Added an owner-reference imagegen portrait with preserved alpha, delivered as static 480/800/1200px WebP variants (28/59/125 KB). Black board, counter and uppercase TANZAMUL remain; yellow panel, portrait reveal, name wipe and curtain exit run in about 2.6 seconds. Plays once per tab session, with click/button/Escape/Enter exits and reduced-motion/Save Data/2G/background-tab skips. Image delivery never gates completion; server-rendered content and no-JavaScript fallback remain. Fresh Linux build/TypeScript, focused lint, visual browser proof, automatic completion/repeat-visit/button skip checks, and production 25-page SEO/143-image gates passed. Prompt and asset provenance: PRELOADER-ART.md. Rollback: `tanzamul-portfolio-before-20261022123930`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022123930`.
@@ -40,7 +42,7 @@ Production: https://tanzamul.dev
 - VM: `deployments`, zone `us-central1-f`
 - Reserved address: `deployments-ip`, `35.232.136.37`
 - Source folder on VM: `/home/User/tanzamul-portfolio`
-- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3009`
+- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3008`
 - Nginx site: `/etc/nginx/sites-available/tanzamul.dev`
 - TLS: Certbot with automatic renewal (`certbot.timer`)
 - Runtime secrets: `/home/User/tanzamul-runtime.env`, mode 600. Never commit this file.

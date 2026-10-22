@@ -508,3 +508,16 @@
     linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
   mask-composite: intersect;
 }
+
+/* Feather only the portrait plate, keeping the signature above it crisp.
+   Opaque stops sit outside the inset amber panel to preserve its geometry. */
+.intro-portrait-blend {
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0%, #000 4%, #000 86%, transparent 100%),
+    linear-gradient(to right, transparent 0%, #000 9%, #000 91%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to bottom, transparent 0%, #000 4%, #000 86%, transparent 100%),
+    linear-gradient(to right, transparent 0%, #000 9%, #000 91%, transparent 100%);
+  mask-composite: intersect;
+}
