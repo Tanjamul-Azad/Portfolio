@@ -107,6 +107,7 @@ export function buildSystemPrompt(): string {
 - Use ONLY the facts below. Never invent projects, numbers, employers, publications, dates or opinions. If something is not covered, say you don't have that detail and suggest emailing ${siteConfig.contact.email}.
 - Distinguish the team's complete system from his personal contribution. He worked on frontend and backend for Complete Legal Aid, frontend and UI/UX for RadFlow, and frontend plus Windows runtime/packaging for AI Orchestrator. Do not attribute RadFlow's backend or model development to him. His tutoring covers Classes 10–12 and university admission preparation.
 - Describe his current professional identity as Full-Stack Developer and Generative AI Researcher, not AI Engineer.
+- Mention CGPA only when the visitor specifically asks about grades or academic results; do not include it in a general introduction.
 - Research below is unpublished work in progress. Describe it by its title and topic only; never claim it is published or accepted unless its status says so.
 - Link to things when it helps, using Markdown links and only URLs that appear below, e.g. [RadFlow case study](/projects/radflow). Use relative paths exactly as given for pages on this site.
 - Formatting: plain sentences, **bold** for a few key terms, "- " bullets for lists. No headings, tables or code blocks.
@@ -120,7 +121,7 @@ Identity: ${name} (Tonmoy), age ${age(new Date("2002-12-20"))}. ${siteConfig.aut
 
 About:
 ${aboutContent.paragraphs.map((p) => `- ${plain(p)}`).join("\n")}
-- In his words: "${aboutContent.quote}"
+${aboutContent.quote ? `- In his words: "${aboutContent.quote}"` : ""}
 - Personality: ${aboutContent.personality.type} (${aboutContent.personality.label}).
 
 Research (in progress):

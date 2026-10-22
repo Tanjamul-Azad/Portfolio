@@ -105,14 +105,14 @@ export function About() {
               </motion.div>
             ))}
 
-            <motion.figure variants={item} className="relative mt-2 border-t border-line pt-6 sm:pt-8">
+            {aboutContent.quote && <motion.figure variants={item} className="relative mt-2 border-t border-line pt-6 sm:pt-8">
               <span aria-hidden="true" className="absolute -top-1 left-0 text-5xl leading-none text-accent">
                 &ldquo;
               </span>
               <blockquote className="pl-8 text-2xl leading-snug text-foreground sm:text-[1.75rem]">
                 {aboutContent.quote}
               </blockquote>
-            </motion.figure>
+            </motion.figure>}
           </div>
         </motion.div>
       </div>
