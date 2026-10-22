@@ -1,5 +1,7 @@
 # Google Cloud deployment
 
+October 22, 2026 contribution/QR release: `tanzamul-portfolio:contributions-qr-20261022` on loopback port 3009. Corrected personal roles throughout project records, activities, experience, CV and chatbot: Complete Legal Aid frontend/backend; RadFlow frontend/UI/UX; AI Orchestrator frontend plus Windows runtime/packaging. Chatbot now receives explicit personal-contribution context instead of treating the whole team's system as individual work. Tutoring is Classes 10–12 and university admission preparation. About was rewritten in a personal, sequential voice; CV skills now prioritise frontend/UI, backend/data, AI/research and tools. The CV remains one page with six project repository links and a clickable portfolio QR in the upper-right header. Original QR PNG and the QR decoded from the rendered CV both scan to `https://tanzamul.dev/`. Rebuild QR with `scripts/prepare-portfolio-qr.py` (qrcode and Pillow). Fresh Linux build/TypeScript, CV visual/link/QR checks, 25 SEO pages and 143 image URLs passed. Rollback: `tanzamul-portfolio-before-20261022095730`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022095730`.
+
 October 22, 2026 profile/CV release: `tanzamul-portfolio:fullstack-profile-20261022` on loopback port 3008. Owner-requested identity is Full-Stack Developer and Generative AI Researcher across hero, About, footer/shared site config, SEO/social metadata, social image, chatbot context and CV. About, chatbot and CV now use owner-provided CGPA 3.85/4.00. The one-page CV selects PolarWindow, Complete Legal Aid, Dawat, SkillEx, RadFlow and AI Orchestrator, each with a validated clickable GitHub annotation; Duet remains on the portfolio but is excluded from the CV. Both PDF copies and the plain-text resume were updated. Existing research topics/venues remain unchanged. The CV was rendered and visually inspected; fresh Linux build/TypeScript, 25 SEO pages and 143 image URL checks passed before routing traffic. Rollback: `tanzamul-portfolio-before-20261022094439`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022094439`.
 
 October 22, 2026 certificate card actions: `tanzamul-portfolio:certificate-links-20261022` on loopback port 3009. HSIL and Infinity now expose Certificate beside Details, linking directly to their full selection/participation documents without adding another footer row. Linux production build/TypeScript, focused lint, direct-anchor checks and the deployment's SEO/image gates passed. Rollback: `tanzamul-portfolio-before-20261022083239`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022083239`.
@@ -26,7 +28,7 @@ Production: https://tanzamul.dev
 - VM: `deployments`, zone `us-central1-f`
 - Reserved address: `deployments-ip`, `35.232.136.37`
 - Source folder on VM: `/home/User/tanzamul-portfolio`
-- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3008`
+- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3009`
 - Nginx site: `/etc/nginx/sites-available/tanzamul.dev`
 - TLS: Certbot with automatic renewal (`certbot.timer`)
 - Runtime secrets: `/home/User/tanzamul-runtime.env`, mode 600. Never commit this file.

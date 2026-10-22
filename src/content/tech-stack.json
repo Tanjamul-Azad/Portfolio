@@ -3,7 +3,7 @@
     "name": "Python",
     "icon": "🐍",
     "category": "language",
-    "description": "Primary language for AI/ML and backend scripting"
+    "description": "Backend services, scripting, and AI research experiments"
   },
   {
     "name": "TypeScript",
@@ -39,7 +39,7 @@
     "name": "React",
     "icon": "⚛️",
     "category": "frontend",
-    "description": "Component-driven UI development"
+    "description": "Interactive interfaces and reusable frontend components"
   },
   {
     "name": "Next.js",
@@ -51,7 +51,7 @@
     "name": "Vite",
     "icon": "🚀",
     "category": "frontend",
-    "description": "Blazing-fast frontend build tooling"
+    "description": "Frontend development and production build tooling"
   },
   {
     "name": "Tailwind CSS",

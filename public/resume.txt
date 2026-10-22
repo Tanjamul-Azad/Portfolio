@@ -29,3 +29,17 @@ RadFlow
 https://github.com/Tanjamul-Azad/RadFlow
 AI Orchestrator (OrchestratorCLI)
 https://github.com/Tanjamul-Azad/OrchestratorCLI
+
+Personal Contributions
+Complete Legal Aid: Frontend and backend development.
+RadFlow: Frontend development and UI/UX design.
+AI Orchestrator: Frontend, Windows runtime and packaging.
+
+Teaching
+Academic tutor for Classes 10-12 and university admission preparation.
+
+Technical Skills
+Frontend/UI: React, Next.js, TypeScript, JavaScript, Tailwind CSS, Electron, Figma.
+Backend/Data: Django, FastAPI, Flask, Spring Boot, REST APIs, WebSocket, PostgreSQL, MySQL, Redis.
+AI/Research: LLM APIs, RAG, PyTorch, scikit-learn, spaCy, OpenCV.
+Tools: Git/GitHub, Docker, Google Cloud, Linux, Postman.
