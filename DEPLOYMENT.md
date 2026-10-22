@@ -1,5 +1,7 @@
 # Google Cloud deployment
 
+October 22, 2026 About contact cleanup: `tanzamul-portfolio:about-contact-20261022` on loopback port 3008. Removed the duplicate email fact/link from About and kept the Contact section email. Updated the facts grid for three entries. Fresh Linux build/TypeScript, focused lint and deployment SEO/image gates passed. Rollback: `tanzamul-portfolio-before-20261022100743`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022100743`.
+
 October 22, 2026 About refinement: `tanzamul-portfolio:about-refined-20261022` on loopback port 3009. Removed CGPA from the visible homepage, shortened About to three specific paragraphs, removed the old motivational quotation and conditionally renders quotes only when supplied. The chatbot mentions CGPA only when specifically asked about grades; CV still contains 3.85/4.00 and retains the caption-free QR. Fresh production build/TypeScript, focused lint, homepage checks and deployment SEO/image gates passed. Rollback: `tanzamul-portfolio-before-20261022100546`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022100546`.
 
 October 22, 2026 contribution/QR release: `tanzamul-portfolio:contributions-qr-20261022` on loopback port 3009. Corrected personal roles throughout project records, activities, experience, CV and chatbot: Complete Legal Aid frontend/backend; RadFlow frontend/UI/UX; AI Orchestrator frontend plus Windows runtime/packaging. Chatbot now receives explicit personal-contribution context instead of treating the whole team's system as individual work. Tutoring is Classes 10–12 and university admission preparation. About was rewritten in a personal, sequential voice; CV skills now prioritise frontend/UI, backend/data, AI/research and tools. The CV remains one page with six project repository links and a clickable portfolio QR in the upper-right header. Original QR PNG and the QR decoded from the rendered CV both scan to `https://tanzamul.dev/`. Rebuild QR with `scripts/prepare-portfolio-qr.py` (qrcode and Pillow). Fresh Linux build/TypeScript, CV visual/link/QR checks, 25 SEO pages and 143 image URLs passed. Rollback: `tanzamul-portfolio-before-20261022095730`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022095730`.
@@ -30,7 +32,7 @@ Production: https://tanzamul.dev
 - VM: `deployments`, zone `us-central1-f`
 - Reserved address: `deployments-ip`, `35.232.136.37`
 - Source folder on VM: `/home/User/tanzamul-portfolio`
-- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3009`
+- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3008`
 - Nginx site: `/etc/nginx/sites-available/tanzamul.dev`
 - TLS: Certbot with automatic renewal (`certbot.timer`)
 - Runtime secrets: `/home/User/tanzamul-runtime.env`, mode 600. Never commit this file.

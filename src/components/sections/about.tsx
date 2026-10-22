@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { Brain, Compass, Mail, MapPin } from "lucide-react";
+import { Brain, Compass, MapPin } from "lucide-react";
 import Markdown, { type Components } from "react-markdown";
 import { SectionHeading } from "@/components/common";
 import { siteConfig } from "@/config";
@@ -46,12 +46,6 @@ export function About() {
       label: "Focus",
       value: siteConfig.author.role,
     },
-    {
-      icon: Mail,
-      label: "Email",
-      value: siteConfig.contact.email,
-      href: `mailto:${siteConfig.contact.email}`,
-    },
   ];
 
   return (
@@ -66,12 +60,12 @@ export function About() {
           viewport={{ once: true, amount: 0.15 }}
           className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-16"
         >
-          {/* At-a-glance facts. A 2×2 grid on phones, a sticky column beside
+          {/* At-a-glance facts. A two-column grid on phones, a sticky column beside
               the bio on desktop. */}
           <motion.aside variants={item} className="lg:sticky lg:top-28 lg:self-start">
             <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line shadow-[var(--surface-shadow)] lg:grid-cols-1">
-              {facts.map(({ icon: Icon, label, value, href }, i) => (
-                // The longer values (focus, email) get the full row on a phone
+              {facts.map(({ icon: Icon, label, value }, i) => (
+                // The longer focus value gets the full row on a phone
                 // rather than being truncated to half a line.
                 <div key={label} className={`flex min-w-0 flex-col gap-2 bg-surface p-4 sm:p-5 ${i >= 2 ? "col-span-2 lg:col-span-1" : ""}`}>
                   <dt className="flex items-center gap-2 eyebrow text-[10px]">
@@ -79,11 +73,7 @@ export function About() {
                     {label}
                   </dt>
                   <dd className="break-words text-sm font-medium text-foreground">
-                    {href ? (
-                      <a href={href} className="-my-3 inline-block py-3 hover:text-accent hover:underline">{value}</a>
-                    ) : (
-                      value
-                    )}
+                    {value}
                   </dd>
                 </div>
               ))}
