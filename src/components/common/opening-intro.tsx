@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Preloader } from "./preloader";
+import { Preloader, INTRO_VISIT_KEY } from "./preloader";
 import { MOTION_TOKENS } from "@/lib";
 
 // Preserve the original once-per-session intro without making the homepage
 // itself a Client Component or withholding its server-rendered content.
 let shown = false;
-const visitKey = "portfolio_opening_intro_v1";
+const visitKey = INTRO_VISIT_KEY;
 
 export function OpeningIntro() {
   const [visible, setVisible] = useState(true);
