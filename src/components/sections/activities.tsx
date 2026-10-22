@@ -19,6 +19,7 @@ export interface Activity {
   outcome?: string;
   project?: string;
   projectSlug?: string;
+  certificateUrl?: string;
   proofLinks?: { label: string; url: string }[];
   summary: string;
   learning?: string;
@@ -68,9 +69,9 @@ function ActivityCard({ activity }: { activity: Activity }) {
       <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-muted-foreground"><span>{activity.dateLabel || activity.date.slice(0, 4)}</span>{activity.outcome && <><span aria-hidden="true">·</span>{activity.proofLinks?.[0] ? <a href={activity.proofLinks[0].url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-8 items-center gap-1 underline decoration-line underline-offset-4 hover:text-foreground" aria-label={`${activity.outcome} — ${activity.proofLinks[0].label}, ${activity.name}`}>{activity.outcome}<ArrowUpRight className="size-3" aria-hidden="true" /></a> : <span className="inline-flex min-h-8 items-center">{activity.outcome}</span>}</>}</div>
       <h3 className="line-clamp-2 text-sm font-semibold leading-snug tracking-tight text-foreground">{activity.name}</h3>
       <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{activity.summary}</p>
-      <div className="mt-auto pt-2 text-xs font-medium">
+      <div className="mt-auto flex items-center gap-4 pt-2 text-xs font-medium">
         <Dialog>
-          <DialogTrigger asChild><button type="button" className="inline-flex min-h-11 w-full items-center justify-between gap-2 text-left text-foreground hover:text-accent">Details<ArrowUpRight className="size-4" /><span className="sr-only"> — {activity.name}</span></button></DialogTrigger>
+          <DialogTrigger asChild><button type="button" className="inline-flex min-h-11 flex-1 items-center justify-between gap-2 text-left text-foreground hover:text-accent">Details<ArrowUpRight className="size-4" /><span className="sr-only"> — {activity.name}</span></button></DialogTrigger>
           <DialogContent className="max-h-[90dvh] overflow-y-auto overscroll-contain p-4 sm:max-w-3xl sm:p-6">
             <div className="pr-8">
               <p className="mb-2 font-mono text-[11px] text-muted-foreground"><ActivityDate activity={activity} />{activity.outcome && ` · ${activity.outcome}`}</p>
@@ -87,6 +88,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
             </div>
           </DialogContent>
         </Dialog>
+        {activity.certificateUrl && <a href={activity.certificateUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 shrink-0 items-center gap-1.5 text-foreground hover:text-accent">Certificate<ArrowUpRight className="size-3.5" aria-hidden="true" /><span className="sr-only"> — {activity.name}</span></a>}
       </div>
     </div>
   </article>;

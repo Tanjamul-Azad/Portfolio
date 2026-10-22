@@ -1,5 +1,7 @@
 # ExtraCurricular
 
+The HSIL and Infinity cards also expose a compact **Certificate** action beside **Details**, opening the full owner-supplied document in a new tab. HSIL points to the existing selection confirmation; Infinity points to its participation certificate. Events without a supplied certificate do not show this action. The footer stays in one row with the same minimum height.
+
 ## Owner-supplied evidence — October 22, 2026
 
 HSIL, IBM Bob and Infinity's compact outcome badges now link directly to the supplied evidence. The Details dialog repeats clearly labelled proof links, preserves existing posters/photos and adds an optional related-project link. Card order and the compact desktop/mobile layout are retained.

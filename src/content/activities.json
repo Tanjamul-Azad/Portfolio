@@ -26,6 +26,7 @@
   },
   {
     "id": "harvard-hsil-2026",
+    "certificateUrl": "/images/activities/hsil-selection-2026.png",
     "name": "Harvard HSIL Hackathon",
     "date": "2026-04-10",
     "endDate": "2026-04-11",
@@ -79,6 +80,7 @@
   },
   {
     "id": "infinity-ai-buildfest-2026",
+    "certificateUrl": "/images/activities/infinity-participation-2026-v1.png",
     "name": "The Infinity AI BuildFest",
     "date": "2026-06-12",
     "category": "Hackathon",
