@@ -6,9 +6,9 @@
     "label": "The Logician"
   },
   "paragraphs": [
-    "My interest in problem-solving first took shape through mathematics and physics competitions. Placing third in a national junior-level Olympiad in 2016 was an early milestone. What has stayed with me is the satisfaction of working through a difficult problem and finally understanding why the answer makes sense.",
-    "Teaching has added another side to that experience. With students preparing for school exams and university admission, getting an answer is only part of the work. Finding an explanation that someone can follow takes patience, careful listening, and a willingness to try a different approach.",
-    "I bring that way of thinking to software and research. I enjoy tracing a problem through its details: the steps a person takes through an interface, the assumptions behind an implementation, or the reasoning behind a model's response. The part I find most rewarding is reaching an explanation I can put into practice and share with someone else."
+    "Most of my current study is around LLM reasoning and the security of AI agents. I'm interested in how a model arrives at an answer, what it treats as trustworthy, and what happens when it interacts with tools or external data. These are the questions that keep me returning to the papers and the code.",
+    "I'm still learning how to investigate these problems carefully. I spend time working through the assumptions behind a method, thinking about failure cases, and trying ideas in small implementations. My research is ongoing, and I'm building the skills to evaluate results and explain the limitations of the work clearly.",
+    "Alongside that study, I contribute to software projects and hackathon teams. Building interfaces and application workflows gives me practical questions to bring back to my reading. I also tutor students in Classes 10–12 and admission preparation; finding a clear explanation for someone else often helps me see what I still need to understand."
   ],
   "quote": ""
 }

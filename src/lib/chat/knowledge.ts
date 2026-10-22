@@ -7,6 +7,7 @@ import { researchWorks } from "@/data/research";
 import { blogPosts } from "@/data/blog";
 import { aboutContent } from "@/data/site-content";
 import { siteConfig } from "@/config";
+import activityContent from "@/content/activities.json";
 import type { ResearchStatus } from "@/types";
 import { FOLLOW_UP_MARKER } from "./constants";
 
@@ -98,6 +99,13 @@ export function buildSystemPrompt(): string {
     .join("\n");
 
   const skills = techStack.map((t) => t.name).join(", ");
+  const activities = activityContent.map((activity) => [
+    `- ${activity.name} (${activity.dateLabel || activity.date}) — ${activity.outcome}.`,
+    `  Role: ${activity.role}. Project: ${activity.project}.`,
+    `  ${activity.summary}`,
+    `  Event: ${activity.url}`,
+    ...(activity.proofLinks ?? []).map((proof) => `  ${proof.label}: ${proof.url}`),
+  ].join("\n")).join("\n");
 
   return `You are the AI assistant on the portfolio website of ${name} (also known as Tonmoy). Visitors are mostly recruiters, researchers, collaborators and clients.
 
@@ -106,7 +114,8 @@ export function buildSystemPrompt(): string {
 - Be warm, specific and brief: usually 2–5 sentences, or a short bulleted list when listing several things. Lead with the direct answer.
 - Use ONLY the facts below. Never invent projects, numbers, employers, publications, dates or opinions. If something is not covered, say you don't have that detail and suggest emailing ${siteConfig.contact.email}.
 - Distinguish the team's complete system from his personal contribution. He worked on frontend and backend for Complete Legal Aid, frontend and UI/UX for RadFlow, and frontend plus Windows runtime/packaging for AI Orchestrator. Do not attribute RadFlow's backend or model development to him. His tutoring covers Classes 10–12 and university admission preparation.
-- Describe his current professional identity as Full-Stack Developer and Generative AI Researcher, not AI Engineer.
+- Use his current professional identity exactly as "${siteConfig.author.role}".
+- In general introductions and About answers, lead with his current study and ongoing research in LLM reasoning and AI/agent security. Make his learning stage clear; do not imply established expertise, completed findings or publications. Mention software projects and hackathons briefly when relevant. Mention the childhood Olympiad only if the visitor asks about that award or early achievements.
 - Mention CGPA only when the visitor specifically asks about grades or academic results; do not include it in a general introduction.
 - Research below is unpublished work in progress. Describe it by its title and topic only; never claim it is published or accepted unless its status says so.
 - Link to things when it helps, using Markdown links and only URLs that appear below, e.g. [RadFlow case study](/projects/radflow). Use relative paths exactly as given for pages on this site.
@@ -133,6 +142,9 @@ ${experience}
 Projects:
 ${projectList}
 
+ExtraCurricular and hackathons:
+${activities}
+
 Recognition:
 ${awards}
 
@@ -150,6 +162,6 @@ Contact and links:
 - GitHub: ${siteConfig.links.github}
 - LinkedIn: ${siteConfig.links.linkedin}
 - Resume (PDF): ${siteConfig.links.resume}
-- Site sections: /#projects, /#research, /#experience, /#contact; all projects: /projects; blog: /blog
+- Site sections: /#projects, /#research, /#experience, /#activities, /#contact; all projects: /projects; blog: /blog
 `;
 }
