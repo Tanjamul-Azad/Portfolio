@@ -14,6 +14,8 @@ Owner-provided web stream: **Tanzamul Azad**, stream ID **16179602501**, measure
 
 ## Required account settings and verification
 
+Owner screenshots supplied October 22, 2026 subsequently confirm **LINK CREATED** for the `https://tanzamul.dev/` Search Console property and the matching web stream. Realtime shows 2 active users, 3 `page_view` events and 3 `web_vitals` events. This confirms data receipt and the Search Console link; it does not establish absence of duplicate events across every navigation or independently confirm Enhanced measurement settings.
+
 1. Keep **Enhanced measurement OFF** on this stream, since page views and interactions are sent by this application. The owner was instructed to disable it; the account setting still needs visual confirmation.
 2. Open the live site, choose **Allow analytics**, browse to one article/project, and check **Reports → Realtime** for received events. Check that an initial visit and client navigation each yield one page view. Browser blockers may prevent collection. A deployed tag alone does not prove that Google has received data.
 3. Link the matching Search Console property from **Admin → Product links → Search Console links** using an account with sufficient access. This is separate from installing GA4.
