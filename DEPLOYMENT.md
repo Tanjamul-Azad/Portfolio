@@ -1,5 +1,7 @@
 # Google Cloud deployment
 
+October 22, 2026 profile/CV release: `tanzamul-portfolio:fullstack-profile-20261022` on loopback port 3008. Owner-requested identity is Full-Stack Developer and Generative AI Researcher across hero, About, footer/shared site config, SEO/social metadata, social image, chatbot context and CV. About, chatbot and CV now use owner-provided CGPA 3.85/4.00. The one-page CV selects PolarWindow, Complete Legal Aid, Dawat, SkillEx, RadFlow and AI Orchestrator, each with a validated clickable GitHub annotation; Duet remains on the portfolio but is excluded from the CV. Both PDF copies and the plain-text resume were updated. Existing research topics/venues remain unchanged. The CV was rendered and visually inspected; fresh Linux build/TypeScript, 25 SEO pages and 143 image URL checks passed before routing traffic. Rollback: `tanzamul-portfolio-before-20261022094439`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022094439`.
+
 October 22, 2026 certificate card actions: `tanzamul-portfolio:certificate-links-20261022` on loopback port 3009. HSIL and Infinity now expose Certificate beside Details, linking directly to their full selection/participation documents without adding another footer row. Linux production build/TypeScript, focused lint, direct-anchor checks and the deployment's SEO/image gates passed. Rollback: `tanzamul-portfolio-before-20261022083239`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022083239`.
 
 October 22, 2026 hackathon evidence release: `tanzamul-portfolio:activity-proof-20261022` on loopback port 3008. HSIL, IBM Bob and Infinity outcome badges now open owner-provided proof links, with labelled evidence actions and related projects in Details. Infinity includes the original preliminary-round participation certificate, a 1280px WebP preview, full-image link and download; AI Orchestrator also links to its lablab submission/demo. Existing card order, posters and compact grid/swipe layout are retained. Linux production build/TypeScript, 25 public SEO routes and 143 responsive-image URLs passed; the actual VM candidate repeated both deployment gates. Rollback: `tanzamul-portfolio-before-20261022082319`; Nginx backup `/etc/nginx/sites-available/tanzamul.dev.before-20261022082319`. See ACTIVITIES.md for proof provenance and source-access limits.
@@ -24,7 +26,7 @@ Production: https://tanzamul.dev
 - VM: `deployments`, zone `us-central1-f`
 - Reserved address: `deployments-ip`, `35.232.136.37`
 - Source folder on VM: `/home/User/tanzamul-portfolio`
-- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3009`
+- Container: `tanzamul-portfolio`, bound to `127.0.0.1:3008`
 - Nginx site: `/etc/nginx/sites-available/tanzamul.dev`
 - TLS: Certbot with automatic renewal (`certbot.timer`)
 - Runtime secrets: `/home/User/tanzamul-runtime.env`, mode 600. Never commit this file.

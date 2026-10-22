@@ -1,7 +1,7 @@
 {
   "name": "Tanzamul",
-  "title": "Tanzamul Azad | AI Engineer & Generative AI Researcher",
-  "description": "Md. Tanzamul Azad is an AI Engineer and Generative AI researcher from Dhaka, Bangladesh, in final-year CSE (Data Science) at United International University — building LLM-powered systems and researching faithful, trustworthy AI.",
+  "title": "Tanzamul Azad | Full-Stack Developer & Generative AI Researcher",
+  "description": "Md. Tanzamul Azad is a Full-Stack Developer and Generative AI researcher from Dhaka, Bangladesh, in final-year CSE (Data Science) at United International University — building web and mobile products and studying trustworthy LLM systems.",
   "url": "https://tanzamul.dev",
   "ogImage": "https://tanzamul.dev/opengraph-image",
   "links": {
@@ -26,7 +26,7 @@
       "Tanzamul",
       "Tonmoy"
     ],
-    "role": "AI Engineer · NLP & Generative AI Researcher",
+    "role": "Full-Stack Developer · Generative AI Researcher",
     "location": "Dhaka, Bangladesh",
     "twitterHandle": "@tanjamul",
     "avatar": "/images/profile.jpg"

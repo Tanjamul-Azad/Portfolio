@@ -1,18 +1,31 @@
-Tanjamul Azad
-Full-Stack Developer | AI/ML Learner | NLP Researcher | CSE Undergrad
-Location: Bangladesh
+Md. Tanzamul Azad
+Full-Stack Developer | Generative AI Researcher
+Dhaka, Bangladesh
 Email: i.m.tanjamul@gmail.com
-LinkedIn: https://linkedin.com/in/tanjamul
+Portfolio: https://tanzamul.dev
 GitHub: https://github.com/Tanjamul-Azad
+LinkedIn: https://www.linkedin.com/in/tanzamul-azad-tonmoy/
+CV PDF: https://tanzamul.dev/Md.%20Tanzamul%20Azad%20-%20CV.pdf
 
-Professional Summary
-I build practical, user-focused web products with modern full-stack technologies and AI-assisted workflows.
+Education
+B.Sc. in Computer Science & Engineering, Data Science major
+United International University, 2022-present
+CGPA: 3.85/4.00 | 50% Merit Scholarship
 
-Core Areas
-- Full-stack web development
-- AI/ML learning and NLP exploration
-- Product-oriented engineering
+Summary
+Full-stack developer building web and mobile products and backend services,
+with research interests in Generative AI, trustworthy LLM systems and agent security.
 
-Note
-Replace this file with your final resume PDF when ready.
-Suggested path: public/resume.pdf
+Selected Projects
+PolarWindow (ongoing)
+https://github.com/MdAhbab/PolarWindow
+Complete Legal Aid
+https://github.com/Tanjamul-Azad/Complete-Legal-Aid
+Dawat (ongoing)
+https://github.com/Tanjamul-Azad/Dawat
+SkillEx
+https://github.com/Tanjamul-Azad/SkillEx
+RadFlow
+https://github.com/Tanjamul-Azad/RadFlow
+AI Orchestrator (OrchestratorCLI)
+https://github.com/Tanjamul-Azad/OrchestratorCLI
