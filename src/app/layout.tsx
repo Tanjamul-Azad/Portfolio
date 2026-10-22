@@ -151,7 +151,6 @@ export default function RootLayout({
                   name: siteConfig.author.name,
                   alternateName: [
                     "Tanzamul Azad",
-                    "Tanjamul Azad",
                     "Tanzamul Azad Portfolio",
                   ],
                   inLanguage: "en",
