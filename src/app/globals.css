@@ -494,8 +494,8 @@
     transform: translateX(calc(-100% - 1rem));
   }
 }
-/* Hero portrait, dark mode only: feathers all four edges so the photo's
-   black background dissolves into the hero's black with no visible frame.
+/* Portrait, dark mode only: feathers all four edges so the photo's
+   black background dissolves into the page with no visible frame.
    Two gradients, intersected, so the corners fade on both axes. Light mode
    shows the same photo as a framed card instead. */
 .dark .hero-portrait-fade {
@@ -507,6 +507,18 @@
     linear-gradient(to bottom, transparent 0%, #000 8%, #000 80%, transparent 100%),
     linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
   mask-composite: intersect;
+}
+
+/* Lighten maps only the portrait's darker black plate to the surrounding
+   page black. Facial detail and the original image asset stay untouched. */
+.dark .about-portrait-stage {
+  isolation: isolate;
+  border-color: transparent;
+  border-radius: 0;
+  background: var(--background);
+}
+.dark .about-portrait-image {
+  mix-blend-mode: lighten;
 }
 
 /* Feather only the portrait plate, keeping the signature above it crisp.

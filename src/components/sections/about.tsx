@@ -42,14 +42,14 @@ export function About() {
 
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:gap-14 xl:gap-20">
         <figure className="mx-auto w-full max-w-[19rem] lg:sticky lg:top-28 lg:max-w-none">
-          <div className="relative aspect-[1031/1525] overflow-hidden rounded-2xl border border-line bg-[#09090b]">
+          <div className="about-portrait-stage relative aspect-[1031/1525] overflow-hidden rounded-2xl border border-line bg-[#09090b]">
             <Image
               src={portraits.about}
               alt={`Portrait of ${siteConfig.author.name}`}
               fill
               sizes="(min-width: 1280px) 380px, (min-width: 1024px) 30vw, 304px"
               quality={90}
-              className="object-cover object-top"
+              className="about-portrait-image hero-portrait-fade object-cover object-top"
             />
           </div>
         </figure>
