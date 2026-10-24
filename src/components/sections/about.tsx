@@ -52,6 +52,12 @@ export function About() {
               className="about-portrait-image hero-portrait-fade object-cover object-top"
             />
           </div>
+          {aboutContent.personality.type && (
+            <figcaption className="mt-3 text-center text-xs font-medium tracking-[0.16em] text-muted-foreground">
+              <span className="sr-only">Self-described personality: </span>
+              {aboutContent.personality.type}
+            </figcaption>
+          )}
         </figure>
         <motion.div
           variants={container}

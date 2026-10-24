@@ -6,9 +6,11 @@
     "label": "The Logician"
   },
   "paragraphs": [
-    "Most of my research centers on LLM reasoning, the security of AI agents, and intelligent edge systems. I'm fascinated by how a model arrives at an answer, what it treats as trustworthy, and what happens when it interacts with tools or external data. These are the questions that keep me returning to the code and the papers.",
-    "I focus on investigating these problems with analytical rigor—working through the assumptions behind a method, testing failure cases, and validating ideas through small-scale implementations. My research is ongoing, and I'm constantly building better ways to evaluate results and communicate technical limitations clearly.",
-    "Alongside research, I actively build full-stack web products and collaborate on software projects. Building production-ready interfaces and workflows gives me practical engineering problems to ground my theoretical work. I've also spent significant time tutoring, where explaining complex concepts to others helps sharpen my own understanding."
+    "I'm Tanzamul, a final-year Computer Science and Engineering student at United International University, majoring in Data Science. These days, I spend my time studying AI systems and building useful software.",
+    "The more I relied on AI, the more I noticed where that trust broke down. It could correct a mistake once I questioned it, or report work that hadn't happened. I wanted to understand why.",
+    "That curiosity led me toward **AI reasoning and agent security**. I'm early in research, reading papers, collecting data, and learning to design experiments. I'm particularly interested in checking an agent's actions before trusting it with sensitive tasks. I'm learning to let results challenge my assumptions, rather than look for the outcome I expected.",
+    "Alongside research, I build software for problems I encounter in everyday life. Using these tools myself helps me see what needs improving, and sharing them gives the work a purpose beyond my own routine.",
+    "Hackathons and university project shows have taken that work into teams and tight deadlines. I enjoy turning an idea into a working prototype, then working with the team to understand what still needs improving."
   ],
   "quote": "Exploring how models reason, where systems fail, and how to build software that lasts."
 }
