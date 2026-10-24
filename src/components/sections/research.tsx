@@ -219,8 +219,8 @@ function ResearchRow({
 }
 
 export function Research() {
-  // The first entry starts open so it is obvious the rows expand.
-  const [openId, setOpenId] = useState<string | null>(researchWorks[0]?.id ?? null);
+  // Research details open only after a visitor selects an entry.
+  const [openId, setOpenId] = useState<string | null>(null);
 
   // Nothing to show is better handled by hiding the section.
   if (researchWorks.length === 0) return null;

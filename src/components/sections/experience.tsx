@@ -138,8 +138,8 @@ function ExperienceRow({
 
 export function Experience() {
   const { isRouteTransitioning } = useRouteTransitioning();
-  // The most recent role starts open, so it is obvious the rows expand.
-  const [openId, setOpenId] = useState<string | null>(experiences[0]?.id ?? null);
+  // Keep the overview compact until a visitor chooses a role to read.
+  const [openId, setOpenId] = useState<string | null>(null);
 
   const snapshotStats = useMemo(() => {
     const roleCount = experiences.length;
