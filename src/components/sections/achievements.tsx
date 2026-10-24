@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, ExternalLink, Award, Trophy, Star, ChevronDown, RotateCw, X as XIcon } from "lucide-react";
 import Image from "@/components/common/site-image";
 import { achievements } from "@/data";
 import { SectionHeading } from "@/components/common";
 import { cn } from "@/lib/utils";
 import type { Achievement } from "@/types";
+import styles from "./achievements.module.css";
 import {
   Dialog,
   DialogContent,
@@ -28,6 +29,8 @@ const TYPE_LABEL = {
   achievement: "Achievement",
 } as const;
 
+const THUMB_SIZES = "(min-width: 1280px) 260px, (min-width: 1024px) 30vw, (min-width: 640px) 46vw, 84vw";
+
 /**
  * Thumbnail image with a branded fallback when no picture is set.
  *
@@ -45,14 +48,14 @@ function AchievementThumb({ achievement }: { achievement: Achievement }) {
   if (achievement.image && achievement.momentImage) {
     return (
       <div className="absolute inset-0 [perspective:1200px]">
-        <div className="relative h-full w-full transition-transform duration-700 ease-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+        <div className="relative h-full w-full transition-transform duration-700 ease-out [transform-style:preserve-3d] motion-safe:group-hover:[transform:rotateY(180deg)] motion-reduce:transition-none">
           <div className="absolute inset-0 [backface-visibility:hidden]">
             <Image
               src={achievement.image}
               alt={achievement.title}
               fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover"
+              sizes={THUMB_SIZES}
+              className="object-contain"
             />
           </div>
           <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)]">
@@ -60,7 +63,7 @@ function AchievementThumb({ achievement }: { achievement: Achievement }) {
               src={achievement.momentImage}
               alt=""
               fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              sizes={THUMB_SIZES}
               className="object-cover"
             />
           </div>
@@ -83,24 +86,23 @@ function AchievementThumb({ achievement }: { achievement: Achievement }) {
         src={achievement.image}
         alt={achievement.title}
         fill
-        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        className="object-cover transition-transform duration-500 group-hover:scale-105"
+        sizes={THUMB_SIZES}
+        className="object-contain transition-transform duration-500 motion-safe:group-hover:scale-[1.025] motion-reduce:transition-none"
       />
     );
   }
 
   return (
-    <div
-      className="absolute inset-0 flex flex-col items-center justify-center gap-2"
-      style={{
-        background:
-          "radial-gradient(120% 120% at 30% 20%, rgba(245,158,11,0.20), transparent), #0a0a0a",
-      }}
-    >
-      <TypeIcon className="h-6 w-6 text-amber-400/80 sm:h-8 sm:w-8" />
-      <span className="select-none font-heading text-xl font-semibold text-white/85 sm:text-3xl">
-        {achievement.title.charAt(0)}
-      </span>
+    <div className={cn("absolute inset-0", styles.recognition)}>
+      <div className="relative flex h-full flex-col items-center justify-center">
+        <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
+          {achievement.title.includes("Scholarship") ? "Academic merit" : "Competition result"}
+        </span>
+        <span className={cn("my-1 select-none text-5xl tracking-[-0.06em]", styles.result)}>
+          {achievement.title.match(/^\d+(?:%|st|nd|rd|th)?/)?.[0] || <TypeIcon className="h-9 w-9" />}
+        </span>
+        <span className="h-px w-7 bg-accent/70" aria-hidden="true" />
+      </div>
     </div>
   );
 }
@@ -114,67 +116,75 @@ function AchievementCard({
   index: number;
   onOpen: () => void;
 }) {
-  const TypeIcon = TYPE_ICON[achievement.type];
+  const reducedMotion = useReducedMotion();
+  const tiltX = useMotionValue(0);
+  const tiltY = useMotionValue(0);
+  const rotateX = useSpring(tiltX, { stiffness: 210, damping: 24 });
+  const rotateY = useSpring(tiltY, { stiffness: 210, damping: 24 });
+
+  function resetTilt() {
+    tiltX.set(0);
+    tiltY.set(0);
+  }
 
   return (
     <motion.li
       layout
-      initial={{ opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: reducedMotion ? 0 : 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: Math.min(index, 6) * 0.06, ease: [0.22, 1, 0.36, 1] }}
-      className="group h-full"
+      className="group h-full w-[84%] max-w-[22rem] min-w-0 shrink-0 snap-start [perspective:1000px] sm:w-[46%] lg:w-auto lg:max-w-none"
     >
-      {/* A compact row on phones (thumbnail beside the text), a card with the
-          thumbnail on top from sm up. */}
-      <button
+      <motion.button
         type="button"
         onClick={onOpen}
-        className="surface flex h-full w-full items-stretch gap-0 overflow-hidden text-left transition-[border-color,transform] duration-300 hover:-translate-y-1 hover:border-line-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 sm:flex-col"
+        onPointerMove={(event) => {
+          if (reducedMotion || event.pointerType !== "mouse") return;
+          const rect = event.currentTarget.getBoundingClientRect();
+          tiltX.set(((event.clientY - rect.top) / rect.height - 0.5) * -4);
+          tiltY.set(((event.clientX - rect.left) / rect.width - 0.5) * 4);
+        }}
+        onPointerLeave={resetTilt}
+        onBlur={resetTilt}
+        style={{ rotateX, rotateY }}
+        aria-label={`Details: ${achievement.title}`}
+        aria-haspopup="dialog"
+        className={cn("surface flex h-full w-full flex-col overflow-hidden text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background", styles.card)}
       >
-        <div className="relative w-28 shrink-0 overflow-hidden bg-surface-2 sm:aspect-16/10 sm:w-full">
-          <AchievementThumb achievement={achievement} />
-          <div className="absolute inset-0 ring-1 ring-inset ring-black/5 dark:ring-white/10" />
+        <div className={cn("relative aspect-16/10 w-full shrink-0 overflow-hidden border-b border-line", styles.display)}>
+          <div className={cn("absolute inset-[9px]", achievement.image && styles.document)}>
+            <AchievementThumb achievement={achievement} />
+          </div>
+          <span className={styles.sheen} aria-hidden="true" />
           {achievement.credentialUrl && (
-            <span className="absolute right-2 top-2 rounded-full bg-amber-400 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-black sm:right-3 sm:top-3 sm:px-2">
+            <span className="absolute right-2 top-2 rounded-full bg-amber-400 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-black">
               Verified
             </span>
           )}
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-5">
-          <span className="eyebrow mb-1.5 inline-flex items-center gap-1.5 text-[10px]">
-            <TypeIcon className="h-3 w-3 text-accent" />
-            {TYPE_LABEL[achievement.type]}
-          </span>
-
-          <h3 className="line-clamp-2 text-[15px] font-semibold leading-snug tracking-[-0.01em] text-foreground sm:text-base">
+        <div className="flex min-w-0 flex-1 flex-col px-3.5 pt-3.5">
+          <div className="mb-2 flex items-center justify-between gap-3 text-muted-foreground">
+            <span className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.16em]"><span className="h-1 w-1 rounded-full bg-accent/80" aria-hidden="true" />{TYPE_LABEL[achievement.type]}</span>
+            <span className="font-mono text-[10px]">{achievement.date}</span>
+          </div>
+          <h3 className="line-clamp-3 min-h-10 text-sm font-semibold leading-5 tracking-[-0.01em] text-foreground">
             {achievement.title}
           </h3>
 
-          <p className="mt-1.5 truncate text-xs text-muted-foreground">
-            {achievement.issuer} · {achievement.date}
+          <p className="mt-1 truncate text-[11px] text-muted-foreground">
+            {achievement.issuer}
           </p>
 
-          <p className="mt-3 hidden line-clamp-2 text-sm leading-relaxed text-muted-foreground sm:block">
-            {achievement.description}
-          </p>
-
-          <div className="mt-auto hidden flex-wrap gap-1.5 pt-4 sm:flex">
-            {achievement.skills.slice(0, 3).map((skill) => (
-              <span key={skill} className="chip">{skill}</span>
-            ))}
-            {achievement.skills.length > 3 && (
-              <span className="chip text-accent">+{achievement.skills.length - 3}</span>
-            )}
+          <div className="mt-auto pt-3">
+            <span className="flex min-h-11 items-center justify-between gap-2 border-t border-line text-xs font-medium text-foreground">
+              Details
+              <span className={cn("flex h-6 w-6 items-center justify-center rounded-full border border-line text-muted-foreground", styles.arrow)}><ArrowUpRight className="h-3 w-3" aria-hidden="true" /></span>
+            </span>
           </div>
-
-          <span className="mt-auto inline-flex items-center gap-1 pt-2 text-xs font-medium text-foreground sm:hidden">
-            Details
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </span>
         </div>
-      </button>
+      </motion.button>
     </motion.li>
   );
 }
@@ -222,21 +232,20 @@ function AchievementDialog({
                   sizes="(max-width: 768px) 100vw, 42rem"
                   className="object-contain"
                 />
-              ) : (
-                <div
-                  className="absolute inset-0 flex flex-col items-center justify-center gap-3"
-                  style={{
-                    background:
-                      "radial-gradient(120% 120% at 30% 20%, rgba(245,158,11,0.20), transparent), #0a0a0a",
-                  }}
-                >
-                  <TypeIcon className="h-12 w-12 text-amber-400/80" />
-                  <span className="text-5xl font-bold text-white/85">
-                    {achievement.title.charAt(0)}
-                  </span>
-                </div>
-              )}
+              ) : <AchievementThumb achievement={achievement} />}
             </div>
+
+            {achievement.image && (
+              <a
+                href={achievement.image}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-h-11 items-center justify-between gap-3 border-b border-line px-6 text-xs font-medium text-foreground hover:text-accent"
+              >
+                Open full image
+                <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </a>
+            )}
 
             {/* The ceremony/moment photo, offered again here so touch visitors —
                 who have no hover — still get to see it, not just the certificate. */}
@@ -337,11 +346,7 @@ function AchievementDialog({
                   Verify Credential
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
-              ) : (
-                <span className="mt-6 inline-flex items-center rounded-full border border-neutral-300 px-4 py-2 text-xs uppercase tracking-[0.14em] text-neutral-500 dark:border-neutral-700 dark:text-neutral-400">
-                  Internal Recognition
-                </span>
-              )}
+              ) : null}
             </div>
           </>
         )}
@@ -405,6 +410,15 @@ export function Achievements() {
   const [filter, setFilter] = useState<"all" | Achievement["type"]>("all");
   const [selected, setSelected] = useState<Achievement | null>(null);
   const [showAll, setShowAll] = useState(false);
+  const carousel = useRef<HTMLUListElement>(null);
+  const [slide, setSlide] = useState(0);
+  const hintId = useId();
+
+  // Reset after the filtered cards have committed. Resetting in the click
+  // handler lets scroll-snap preserve an old card when new ones precede it.
+  useEffect(() => {
+    carousel.current?.scrollTo({ left: 0, behavior: "instant" });
+  }, [filter, showAll]);
 
   const filteredAchievements =
     filter === "all" ? achievements : achievements.filter((a) => a.type === filter);
@@ -441,7 +455,7 @@ export function Achievements() {
               Achievements &amp; awards
             </>
           }
-          description="Milestones from competitions, academics, and the projects I've shipped. Open any card for the certificate and full details."
+          description="Selected recognition from projects, competitions and academics."
         />
 
         {filters.length > 2 && (
@@ -457,6 +471,7 @@ export function Achievements() {
                     onClick={() => {
                       setFilter(f.value);
                       setShowAll(false);
+                      setSlide(0);
                     }}
                     className="relative flex h-11 items-center gap-2 rounded-lg px-3.5 sm:h-9 text-[13px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-amber-500/70"
                   >
@@ -480,7 +495,29 @@ export function Achievements() {
           </div>
         )}
 
-        <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+        <ul
+          ref={carousel}
+          tabIndex={0}
+          aria-label="Achievements and awards"
+          aria-describedby={hintId}
+          onScroll={(event) => {
+            const element = event.currentTarget;
+            const first = element.firstElementChild as HTMLElement | null;
+            if (first) setSlide(Math.max(0, Math.min(visibleAchievements.length - 1, Math.round(element.scrollLeft / (first.offsetWidth + 12)))));
+          }}
+          onKeyDown={(event) => {
+            if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+            const element = event.currentTarget;
+            if (element.scrollWidth <= element.clientWidth) return;
+            event.preventDefault();
+            const first = element.firstElementChild as HTMLElement | null;
+            element.scrollBy({
+              left: ((first?.offsetWidth || element.clientWidth) + 12) * (event.key === "ArrowRight" ? 1 : -1),
+              behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+            });
+          }}
+          className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-5 px-5 pb-1 outline-none focus-visible:rounded-2xl focus-visible:ring-1 focus-visible:ring-accent/40 [overflow-anchor:none] [scrollbar-width:none] sm:-mx-6 sm:scroll-px-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-4 lg:overflow-visible lg:p-0 xl:grid-cols-4 [&::-webkit-scrollbar]:hidden"
+        >
           <AnimatePresence mode="popLayout">
             {visibleAchievements.map((achievement, index) => (
               <AchievementCard
@@ -492,6 +529,17 @@ export function Achievements() {
             ))}
           </AnimatePresence>
         </ul>
+
+        <div id={hintId} className="mt-4 flex items-center gap-4 lg:hidden">
+          <span className="font-mono text-[11px] tabular-nums text-foreground" aria-live="polite">
+            {String(slide + 1).padStart(2, "0")}<span className="text-muted-foreground"> / {String(visibleAchievements.length).padStart(2, "0")}</span>
+          </span>
+          <span className="relative h-px flex-1 overflow-hidden bg-line" aria-hidden="true">
+            <span className="absolute inset-y-0 left-0 bg-foreground transition-[width] duration-300 motion-reduce:transition-none" style={{ width: `${((slide + 1) / Math.max(visibleAchievements.length, 1)) * 100}%` }} />
+          </span>
+          <span className="eyebrow text-[10px]">Swipe</span>
+          <span className="sr-only">Swipe horizontally or use the left and right arrow keys to browse achievements.</span>
+        </div>
 
         {/* Show more / less — keeps the section compact as the list grows */}
         {(hiddenCount > 0 || showAll) && filteredAchievements.length > VISIBLE_LIMIT && (

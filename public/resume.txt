@@ -2,6 +2,7 @@ Md. Tanzamul Azad
 Full Stack Developer | AI & Security Researcher
 Dhaka, Bangladesh
 Email: i.m.tanjamul@gmail.com
+Phone: 01606092143
 Portfolio: https://tanzamul.dev
 GitHub: https://github.com/Tanjamul-Azad
 LinkedIn: https://www.linkedin.com/in/tanzamul-azad-tonmoy/
@@ -20,7 +21,7 @@ Selected Projects
 PolarWindow (ongoing)
 https://github.com/MdAhbab/PolarWindow
 Complete Legal Aid
-https://github.com/Tanjamul-Azad/Complete-Legal-Aid
+Source code available on request: mailto:i.m.tanjamul@gmail.com?subject=Source%20code%20request%3A%20Complete%20Legal%20Aid
 Dawat (ongoing)
 https://github.com/Tanjamul-Azad/Dawat
 SkillEx
