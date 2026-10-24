@@ -152,8 +152,15 @@ export function Navbar() {
         </div>
 
         {/* Mobile */}
-        <div className="relative flex items-center gap-1.5 lg:hidden">
-          <AdminEditIcon />
+        <div className="relative flex shrink-0 items-center gap-1 sm:gap-1.5 lg:hidden">
+          <a
+            href={siteConfig.links.resume}
+            download="Md. Tanzamul Azad - CV.pdf"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-full bg-foreground px-3 text-xs font-semibold text-background outline-none transition-colors hover:bg-foreground/90 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:h-9 sm:px-4 sm:text-[13px]"
+          >
+            Resume
+            <Download className="hidden h-3.5 w-3.5 min-[360px]:block" aria-hidden="true" />
+          </a>
           <ThemeToggle />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
@@ -191,12 +198,15 @@ export function Navbar() {
                       <span className="text-accent">.</span>
                     </Link>
                   </SheetTitle>
-                  <SheetClose asChild>
-                    <Button variant="ghost" size="icon" className="-mr-1 rounded-full text-muted-foreground hover:text-foreground">
-                      <X className="h-5 w-5" />
-                      <span className="sr-only">Close menu</span>
-                    </Button>
-                  </SheetClose>
+                  <div className="flex items-center gap-1">
+                    <AdminEditIcon />
+                    <SheetClose asChild>
+                      <Button variant="ghost" size="icon" className="-mr-1 rounded-full text-muted-foreground hover:text-foreground">
+                        <X className="h-5 w-5" />
+                        <span className="sr-only">Close menu</span>
+                      </Button>
+                    </SheetClose>
+                  </div>
                 </div>
 
                 {/* Links as a numbered two-column grid: six destinations fit
