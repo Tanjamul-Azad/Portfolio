@@ -63,7 +63,7 @@ export function AiChatLauncher() {
         onFocus={() => void loadPanel()}
         aria-expanded={open}
         aria-haspopup="dialog"
-        aria-label={open ? "Close AI assistant" : "Ask AI about my work"}
+        aria-label={open ? "Close AI assistant" : "Ask AI about me"}
         className={cn(
           "group fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-50 flex h-13 items-center gap-2.5 rounded-full border border-line bg-background/85 p-1 shadow-[0_10px_30px_-10px_rgb(0_0_0/0.35)] backdrop-blur-xl transition-[transform,opacity] duration-300 animate-in fade-in slide-in-from-bottom-2 fill-mode-both [animation-delay:800ms] hover:-translate-y-0.5 sm:pr-4",
           // On a phone the sheet covers the bottom of the screen; the button steps aside.

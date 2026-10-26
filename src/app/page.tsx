@@ -6,7 +6,6 @@ import {
   TechStack,
   Projects,
   Research,
-  Experience,
   Achievements,
   Activities,
   Now,
@@ -54,9 +53,6 @@ export default function Home() {
         </Suspense>
         <Suspense>
           <Research />
-        </Suspense>
-        <Suspense>
-          <Experience />
         </Suspense>
         <Suspense>
           <Achievements />

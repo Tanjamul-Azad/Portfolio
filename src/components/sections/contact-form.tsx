@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { trackEvent } from "@/lib/telemetry";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -37,7 +37,7 @@ export function ContactForm() {
     },
   });
 
-  const messageLength = form.watch("message")?.length ?? 0;
+  const messageLength = useWatch({ control: form.control, name: "message", defaultValue: "" }).length;
 
   async function onSubmit(values: ContactFormValues) {
     // Honeypot spam protection - if filled, it's a bot

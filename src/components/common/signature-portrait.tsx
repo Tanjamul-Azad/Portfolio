@@ -72,7 +72,7 @@ export function SignaturePortrait() {
     <div ref={container} className="hero-art relative mx-auto aspect-[4/5] -translate-y-2 hero-wide:translate-y-0" data-signature-state={playback} data-art-ready={portraitReady && signatureReady}>
       <noscript><style>{".hero-signature-nojs { opacity: 1 !important; }"}</style></noscript>
       <picture className="absolute inset-0">
-        <source srcSet="/images/intro/tanzamul-refined-v4-480.webp 480w, /images/intro/tanzamul-refined-v4-800.webp 800w, /images/intro/tanzamul-refined-v4-1122.webp 1122w" sizes="(min-width: 1024px) min(42vw, 62.4svh, 576px), (min-width: 600px) and (max-height: 560px) 50svh, (max-height: 740px) min(76vw, 28svh), min(82vw, 32svh, 352px)" />
+        <source srcSet="/images/intro/tanzamul-refined-v4-480.webp 480w, /images/intro/tanzamul-refined-v4-800.webp 800w, /images/intro/tanzamul-refined-v4-1122.webp 1122w" sizes="(min-width: 1024px) min(36.5vw, 54.2svh, 500px), (min-width: 600px) and (max-height: 560px) 50svh, (max-height: 740px) min(76vw, 28svh), min(82vw, 32svh, 352px)" />
         <Image ref={portraitImage} src="/images/intro/tanzamul-refined-v4-800.webp" alt="Tanzamul Azad in a dark suit, looking upward against a golden backdrop"
           fill unoptimized loading="eager" fetchPriority="high" className="intro-portrait-blend object-contain"
           onLoad={() => setPortraitReady(true)} />

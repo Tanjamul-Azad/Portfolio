@@ -5,7 +5,6 @@ export const navLinks = [
   { name: "Now", href: "#now" },
   { name: "Projects", href: "#projects" },
   { name: "Research", href: "#research" },
-  { name: "Experience", href: "#experience" },
   { name: "ExtraCurricular", href: "#activities" },
   { name: "Blog", href: "#blog" },
   { name: "Contact", href: "#contact" },
@@ -14,5 +13,5 @@ export const navLinks = [
 export const footerLinks = [
   { name: "GitHub", href: siteConfig.links.github },
   { name: "LinkedIn", href: siteConfig.links.linkedin },
-  { name: "Twitter", href: siteConfig.links.twitter },
+  { name: "X", href: siteConfig.links.twitter },
 ] as const;

@@ -1,5 +1,4 @@
 import { projects } from "@/data/projects";
-import { experiences } from "@/data/experiences";
 import { techStack } from "@/data/tech-stack";
 import { achievements } from "@/data/achievements";
 import { nowItems } from "@/data/now";
@@ -52,18 +51,6 @@ export function buildSystemPrompt(): string {
         .filter(Boolean)
         .join("\n");
     })
-    .join("\n");
-
-  const experience = experiences
-    .map((e) =>
-      [
-        `- ${e.role} — ${e.company} (${e.period})`,
-        ...e.description.map((d) => `  • ${d}`),
-        e.technologies?.length ? `  Stack: ${e.technologies.join(", ")}` : "",
-      ]
-        .filter(Boolean)
-        .join("\n")
-    )
     .join("\n");
 
   const projectList = projects
@@ -127,6 +114,7 @@ export function buildSystemPrompt(): string {
 
 # Facts
 Identity: ${name} (Tonmoy), age ${age(new Date("2002-12-20"))}. ${siteConfig.author.role}. Final-year BSc CSE (Data Science major) at United International University (UIU), Dhaka, Bangladesh. CGPA 3.85/4.0. Based in ${siteConfig.author.location}.
+Industry experience: He has not yet held an industry job or internship. Roles listed under projects describe project contributions, not employment. His academic tutoring is separate from industry employment.
 
 About:
 ${aboutContent.paragraphs.map((p) => `- ${plain(p)}`).join("\n")}
@@ -135,9 +123,6 @@ ${aboutContent.quote ? `- In his words: "${aboutContent.quote}"` : ""}
 
 Research (in progress):
 ${research || "- None listed."}
-
-Experience:
-${experience}
 
 Projects:
 ${projectList}
@@ -162,6 +147,6 @@ Contact and links:
 - GitHub: ${siteConfig.links.github}
 - LinkedIn: ${siteConfig.links.linkedin}
 - Resume (PDF): ${siteConfig.links.resume}
-- Site sections: /#projects, /#research, /#experience, /#activities, /#contact; all projects: /projects; blog: /blog
+- Site sections: /#projects, /#research, /#activities, /#contact; all projects: /projects; blog: /blog
 `;
 }

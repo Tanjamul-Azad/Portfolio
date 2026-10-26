@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+// Runtime validation works under the site's CSP without probing `new Function`.
+// Even a caught eval probe creates a browser security-policy issue.
+z.config({ jitless: true });
+
 // Kept in sync with the server-side schema in src/app/api/contact/route.ts.
 // They previously disagreed on maximum lengths, so an over-long message passed
 // client validation and then failed on the server with a raw error toast.

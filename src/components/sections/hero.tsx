@@ -41,13 +41,15 @@ export function Hero() {
             <SignaturePortrait />
           </div>
 
-          <h1 className="display hero-name relative z-10 col-start-1 row-start-2 mt-1 text-center text-[1.6rem] text-foreground hero-wide:row-start-1 hero-wide:mb-6 hero-wide:mt-0 hero-wide:self-end hero-wide:text-left hero-wide:text-[clamp(3.5rem,min(8vw,15svh),7.5rem)]">
-            {heroContent.headlineLines.map((line, i) => (
-              <span key={`${line.text}-${i}`} className={`inline hero-wide:block ${line.muted ? "text-muted-foreground" : ""}`}>
-                {i > 0 && <span className="hero-wide:hidden"> </span>}{line.text}
-              </span>
-            ))}
-          </h1>
+          <div className="hero-name-frame relative z-10 col-start-1 row-start-2 mt-1 min-w-0 [container-type:inline-size] hero-wide:row-start-1 hero-wide:mb-6 hero-wide:mt-0 hero-wide:self-end">
+            <h1 className="display hero-name text-center text-[1.6rem] text-foreground hero-wide:text-left hero-wide:text-[clamp(2rem,min(21cqw,15svh),7.5rem)]">
+              {heroContent.headlineLines.map((line, i) => (
+                <span key={`${line.text}-${i}`} className={`inline hero-wide:block ${line.muted ? "text-muted-foreground" : ""}`}>
+                  {i > 0 && <span className="hero-wide:hidden"> </span>}{line.text}
+                </span>
+              ))}
+            </h1>
+          </div>
 
           <div className="hero-copy col-start-1 row-start-3 mx-auto mt-3 w-full max-w-xl text-center hero-wide:row-start-2 hero-wide:mx-0 hero-wide:mt-0 hero-wide:self-start hero-wide:text-left">
             <p className="hero-tagline text-balance text-[15px] font-medium leading-snug tracking-[-0.02em] text-foreground sm:text-lg hero-wide:text-2xl">

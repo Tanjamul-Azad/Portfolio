@@ -70,6 +70,10 @@ if ! grep -q 'include /etc/nginx/snippets/tanzamul-image-delivery.conf;' "$site"
   sed -i '\|    location / {|i\    include /etc/nginx/snippets/tanzamul-image-delivery.conf;' "$site"
 fi
 sed -i -E "s|proxy_pass http://127\.0\.0\.1:[0-9]+;|proxy_pass http://127.0.0.1:$port;|" "$site"
+# This VM is the public edge: discard caller-supplied forwarding chains before
+# the application's per-IP contact/chat limits read the first address.
+sed -i -E 's|proxy_set_header X-Forwarded-For [^;]+;|proxy_set_header X-Forwarded-For $remote_addr;|' "$site"
+grep -Fq 'proxy_set_header X-Forwarded-For $remote_addr;' "$site"
 nginx -t
 systemctl reload nginx
 
