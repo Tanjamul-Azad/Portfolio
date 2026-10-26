@@ -1,0 +1,76 @@
+name: Deploy
+
+# Every push to main is checked, built into the production image on GitHub's
+# runner (the VM is too small to build), and streamed to the VM, where
+# scripts/deploy-portfolio.sh gates and swaps it in. See DEPLOYMENT.md.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx eslint src scripts
+      - run: npm run typecheck
+      - run: node --test scripts/github-contributions.test.mjs
+
+  deploy:
+    needs: check
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://tanzamul.dev
+    # Never run two production swaps at once; a newer push waits its turn.
+    concurrency:
+      group: production
+      cancel-in-progress: false
+    env:
+      IMAGE: tanzamul-portfolio:ci-${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build production image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: ${{ env.IMAGE }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Configure SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/deploy_key ~/.ssh/known_hosts
+
+      # The deploy key is pinned to ops/ci-deploy.sh on the VM, which reads the
+      # image from stdin and accepts only the commit SHA as its argument.
+      - name: Ship and deploy
+        run: |
+          docker save "$IMAGE" | gzip -1 | ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=yes -o ServerAliveInterval=30 \
+            "${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}" "${{ github.sha }}"
+
+      - name: Verify live site
+        run: |
+          curl -fsS --retry 5 --retry-delay 3 https://tanzamul.dev/ -o home.html
+          grep -q '/images/optimized/' home.html
+          curl -fsS https://tanzamul.dev/sitemap.xml -o /dev/null
