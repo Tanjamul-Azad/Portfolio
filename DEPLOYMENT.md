@@ -77,7 +77,7 @@ Production: https://tanzamul.dev
 
 Pushing to `main` deploys. `.github/workflows/deploy.yml` runs lint, typecheck and the unit test, builds the Docker image on GitHub's runner, and streams `docker save | gzip` over SSH to the VM. Pull requests run only the checks.
 
-On the VM, the deploy key in `/home/User/.ssh/authorized_keys` is pinned with `command=` and `restrict` to `/usr/local/sbin/tanzamul-ci-deploy` (installed from `ops/ci-deploy.sh`), which accepts nothing but a commit SHA. The wrapper keeps the live container plus the two newest stopped ones for rollback, removes other unused `tanzamul-portfolio` images (it never touches the other apps' containers or images), loads the new image, copies the gate scripts shipped inside the image, and runs `scripts/deploy-portfolio.sh` on whichever of ports 3008/3009 is idle.
+On the VM, the deploy key in `/home/User/.ssh/authorized_keys` is pinned with `command=` and `restrict` to `/usr/local/sbin/tanzamul-ci-deploy` (installed from `ops/ci-deploy.sh`), which accepts nothing but a commit SHA. The wrapper keeps the live container plus the newest stopped one for rollback, and the newest two Nginx config backups, removes other unused `tanzamul-portfolio` images (it never touches the other apps' containers or images), loads the new image, copies the gate scripts shipped inside the image, and runs `scripts/deploy-portfolio.sh` on whichever of ports 3008/3009 is idle.
 
 GitHub settings: secrets `DEPLOY_SSH_KEY` (private deploy key) and `DEPLOY_KNOWN_HOSTS` (the VM's ed25519 host key), variables `DEPLOY_HOST=35.232.136.37` and `DEPLOY_USER=User`. If `ops/ci-deploy.sh` changes, reinstall it on the VM with `sudo install -m 755 ci-deploy.sh /usr/local/sbin/tanzamul-ci-deploy`.
 

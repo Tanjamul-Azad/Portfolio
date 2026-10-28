@@ -15,15 +15,23 @@ root=/home/User/tanzamul-portfolio
 site=/etc/nginx/sites-available/tanzamul.dev
 image=tanzamul-portfolio:ci-$sha
 
-# The disk is small: keep the live container plus the two newest stopped ones
-# for rollback, then drop tanzamul-portfolio images nothing uses. Other apps on
-# this VM share Docker, so never prune beyond this repository's images.
-docker ps -a --filter 'name=^tanzamul-portfolio-' --format '{{.CreatedAt}}	{{.Names}}' \
-  | sort -r | tail -n +3 | cut -f2 | xargs -r docker rm -f
-used=$(docker ps -a --format '{{.Image}}' | sort -u)
-docker images tanzamul-portfolio --filter dangling=false --format '{{.Repository}}:{{.Tag}}' \
-  | { grep -vxF -f <(printf '%s\n' "$used") || true; } | xargs -r docker rmi >/dev/null
+# The disk is small: keep the live container plus the newest stopped one for
+# rollback, the images those two use, and the newest two Nginx config backups.
+# Other apps on this VM share Docker, so never prune beyond this site's own.
+prune() {
+  docker ps -a --filter 'name=^tanzamul-portfolio-' --format '{{.CreatedAt}}	{{.Names}}' \
+    | sort -r | tail -n +2 | cut -f2 | xargs -r docker rm -f >/dev/null
+  local used
+  used=$(docker ps -a --format '{{.Image}}' | sort -u)
+  docker images tanzamul-portfolio --filter dangling=false --format '{{.Repository}}:{{.Tag}}' \
+    | { grep -vxF -f <(printf '%s\n' "$used") || true; } | xargs -r docker rmi >/dev/null
+  { ls -1t "$site".before-* /etc/nginx/snippets/tanzamul-image-delivery.conf.before-* 2>/dev/null || true; } \
+    | awk -F'.before-' '{ if (++seen[$1] > 2) print }' | xargs -r rm -f
+}
 
+# Prune first so the new image fits, and again once the swap has made the old
+# live container the newest rollback.
+prune
 gunzip | docker load
 docker image inspect "$image" >/dev/null
 
@@ -41,3 +49,5 @@ current=$(grep -oE 'proxy_pass http://127\.0\.0\.1:[0-9]+' "$site" | grep -oE '[
 port=3008
 [[ "$current" != 3008 ]] || port=3009
 "$root/scripts/deploy-portfolio.sh" "$image" "$port"
+prune
+df -h / | tail -1
