@@ -305,6 +305,7 @@
     "image": "/images/projects/dawat.png",
     "color": "#7a2633",
     "tags": ["Next.js", "React", "TypeScript", "Supabase", "PostgreSQL", "Sharp", "Vitest"],
+    "liveUrl": "https://dawatcard.netlify.app/",
     "sourceUrl": "https://github.com/Tanjamul-Azad/Dawat",
     "status": "building",
     "featured": true,
