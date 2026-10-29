@@ -49,6 +49,8 @@ export default function SiteEditor() {
           <TextField label="LinkedIn" value={data.links.linkedin} onChange={(v) => setLinks({ linkedin: v })} />
           <TextField label="Facebook" value={data.links.facebook} onChange={(v) => setLinks({ facebook: v })} />
           <TextField label="Twitter / X" value={data.links.twitter} onChange={(v) => setLinks({ twitter: v })} />
+          <TextField label="ORCID" value={data.links.orcid} onChange={(v) => setLinks({ orcid: v })} />
+          <TextField label="ResearchGate" value={data.links.researchgate} onChange={(v) => setLinks({ researchgate: v })} />
           <TextField
             label="Résumé / CV"
             value={data.links.resume}

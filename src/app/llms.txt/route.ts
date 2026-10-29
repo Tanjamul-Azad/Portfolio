@@ -28,6 +28,8 @@ export function GET() {
     `- [GitHub](${links.github})`,
     `- [LinkedIn](${links.linkedin})`,
     `- [X](${links.twitter})`,
+    `- [ORCID](${links.orcid})`,
+    `- [ResearchGate](${links.researchgate})`,
     `- [Resume (PDF)](${new URL(links.resume, url)})`,
     "",
     "## Projects",

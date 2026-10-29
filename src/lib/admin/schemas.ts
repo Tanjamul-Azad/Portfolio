@@ -149,6 +149,8 @@ const site = z.object({
     linkedin: str,
     facebook: str,
     twitter: str,
+    orcid: str,
+    researchgate: str,
     resume: str,
   }),
   contact: z.object({ email: str, whatsapp: str }),

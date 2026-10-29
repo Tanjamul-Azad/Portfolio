@@ -164,6 +164,8 @@ export interface SiteConfig {
     linkedin: string;
     facebook: string;
     twitter: string;
+    orcid: string;
+    researchgate: string;
     resume: string;
   };
   contact: {

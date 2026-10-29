@@ -165,6 +165,8 @@ export default function RootLayout({
                     siteConfig.links.github,
                     siteConfig.links.linkedin,
                     siteConfig.links.twitter,
+                    siteConfig.links.orcid,
+                    siteConfig.links.researchgate,
                     siteConfig.links.facebook,
                   ],
                   affiliation:
