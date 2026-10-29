@@ -12,8 +12,6 @@ for (const file of readdirSync(portfolioPublic).filter((name) => /^google[0-9a-f
 writeFileSync(new URL("config.json", output), JSON.stringify({
   version: 3,
   routes: [
-    // Verification still works with noindex; this keeps the files out of search results.
-    { src: "/google[0-9a-f]+\\.html", headers: { "X-Robots-Tag": "noindex" }, continue: true },
     { handle: "filesystem" },
     {
       src: "/(.*)",
