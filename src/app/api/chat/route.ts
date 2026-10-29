@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { siteConfig } from "@/config";
 import { buildSystemPrompt } from "@/lib/chat/knowledge";
 import { readAnswerStream, type ProviderFormat } from "@/lib/chat/stream";
 
@@ -133,6 +134,27 @@ function getProviders(): Provider[] {
 
 type Turn = { role: "user" | "assistant"; content: string };
 
+const BANGLA_SCRIPT = /[ঀ-৿]/;
+
+/**
+ * Worked examples placed before a Bangla-script question. The model follows
+ * the rules in the prompt for English but drifts to a generic biography or to
+ * Roman letters in Bangla; showing two finished answers fixes the pattern.
+ */
+const BANGLA_EXAMPLES: Turn[] = [
+  { role: "user", content: "তার সবচেয়ে ভালো প্রজেক্ট কোনটা?" },
+  {
+    role: "assistant",
+    content:
+      "আমার মতে [Complete Legal Aid](/projects/complete-legal-aid) দিয়ে শুরু করা ভালো। এটা তানজামুলের সবচেয়ে সম্পূর্ণ ফুল-স্ট্যাক প্রজেক্ট, যেখানে তিনি ফ্রন্টএন্ড ও ব্যাকএন্ড দুটোই করেছেন। AI-কেন্দ্রিক কাজ দেখতে চাইলে [RadFlow](/projects/radflow) দেখুন, সেখানে তিনি ফ্রন্টএন্ড ও UI/UX করেছেন।\n\n§ Complete Legal Aid-এ তিনি ঠিক কী বানিয়েছেন? | RadFlow-এর AI অংশ কীভাবে কাজ করে? | তার সাথে কীভাবে যোগাযোগ করব?",
+  },
+  { role: "user", content: "তিনি কি ইন্টার্নশিপের জন্য প্রস্তুত?" },
+  {
+    role: "assistant",
+    content: `হ্যাঁ, তিনি AI/ML ইন্টার্নশিপ, গবেষণা সহযোগিতা এবং পার্ট-টাইম সফটওয়্যার কাজ খুঁজছেন। সরাসরি কথা বলতে ${siteConfig.contact.email} ঠিকানায় ইমেইল করুন, সাধারণত ২৪–৪৮ ঘণ্টার মধ্যে উত্তর পাবেন।\n\n§ কোন ধরনের AI কাজে তার আগ্রহ? | তার গবেষণার বিষয় কী? | তার CV কোথায় পাব?`,
+  },
+];
+
 function providerRequest(provider: Provider, system: string, turns: Turn[], signal: AbortSignal) {
   if (provider.format === "openai") {
     return fetch(provider.url, {
@@ -220,7 +242,11 @@ export async function POST(request: NextRequest) {
           }))
       : [];
 
-    const turns: Turn[] = [...historyTurns, { role: "user", content: message }];
+    const turns: Turn[] = [
+      ...(BANGLA_SCRIPT.test(message) ? BANGLA_EXAMPLES : []),
+      ...historyTurns,
+      { role: "user", content: message },
+    ];
     const system = buildSystemPrompt();
     const providers = getProviders().filter((p) => Boolean(p.key));
     let lastError = "";
