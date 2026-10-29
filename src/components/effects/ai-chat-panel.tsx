@@ -10,10 +10,13 @@ import {
   Copy,
   RotateCcw,
   Square,
+  ThumbsDown,
+  ThumbsUp,
   X,
 } from "lucide-react";
 import { siteConfig } from "@/config";
 import { splitFollowUps } from "@/lib/chat/constants";
+import { trackEvent } from "@/lib/telemetry";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -133,6 +136,27 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
+/** A thumbs up/down on an answer. Only the rating is counted, never the text, and only with analytics consent. */
+function FeedbackButtons() {
+  const [rating, setRating] = useState<"up" | "down" | null>(null);
+  const rate = (value: "up" | "down") => {
+    if (rating) return;
+    setRating(value);
+    trackEvent("chat_feedback", { method: value, source: "ai_chat" });
+  };
+  const cls = "inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground disabled:pointer-events-none";
+  return (
+    <>
+      <button type="button" onClick={() => rate("up")} disabled={!!rating} aria-label="Good answer" aria-pressed={rating === "up"} className={cn(cls, rating === "up" && "text-emerald-500", rating === "down" && "opacity-40")}>
+        <ThumbsUp className="h-3.5 w-3.5" />
+      </button>
+      <button type="button" onClick={() => rate("down")} disabled={!!rating} aria-label="Poor answer" aria-pressed={rating === "down"} className={cn(cls, rating === "down" && "text-amber-500", rating === "up" && "opacity-40")}>
+        <ThumbsDown className="h-3.5 w-3.5" />
+      </button>
+    </>
+  );
+}
+
 function Bubble({ children, role }: { children: ReactNode; role: Message["role"] }) {
   if (role === "user") {
     return (
@@ -195,17 +219,23 @@ export default function AiChatPanel({ onClose }: { onClose: () => void }) {
   }, [messages]);
 
   const send = useCallback(
-    async (text: string) => {
+    async (text: string, replaceLast = false) => {
       const question = text.trim();
       if (!question || streaming) return;
 
-      const history = messages
+      // A retry replaces the failed question and its error notice.
+      const base = replaceLast ? messages.slice(0, -2) : messages;
+      const history = base
         .filter((m) => !m.error)
         .map((m) => ({ role: m.role, content: splitFollowUps(m.content).text }));
       const userMsg: Message = { id: `u${Date.now()}`, role: "user", content: question };
       const answerId = `a${Date.now()}`;
 
-      setMessages((prev) => [...prev, userMsg, { id: answerId, role: "assistant", content: "" }]);
+      setMessages((prev) => [
+        ...(replaceLast ? prev.slice(0, -2) : prev),
+        userMsg,
+        { id: answerId, role: "assistant", content: "" },
+      ]);
       setInput("");
       setStreaming(true);
       stickToBottom.current = true;
@@ -372,7 +402,22 @@ export default function AiChatPanel({ onClose }: { onClose: () => void }) {
                 <div key={m.id}>
                   <Bubble role="assistant">
                     {m.error ? (
-                      <p className="text-muted-foreground">{text}</p>
+                      <div>
+                        <p className="text-muted-foreground">{text}</p>
+                        {!streaming && m.id === last?.id && messages.length >= 2 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const asked = messages[messages.length - 2];
+                              if (asked?.role === "user") void send(asked.content, true);
+                            }}
+                            className="mt-2 inline-flex h-8 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-[12px] font-medium text-foreground transition-colors hover:bg-surface-2"
+                          >
+                            <RotateCcw className="h-3 w-3" />
+                            Try again
+                          </button>
+                        )}
+                      </div>
                     ) : text ? (
                       <>
                         <Markdown components={markdown}>{text}</Markdown>
@@ -389,8 +434,9 @@ export default function AiChatPanel({ onClose }: { onClose: () => void }) {
                     )}
                   </Bubble>
                   {!isLive && !m.error && text && (
-                    <div className="-ml-2.5 mt-1">
+                    <div className="-ml-2.5 mt-1 flex items-center">
                       <CopyButton text={text} />
+                      <FeedbackButtons />
                     </div>
                   )}
                 </div>
@@ -472,7 +518,10 @@ export default function AiChatPanel({ onClose }: { onClose: () => void }) {
             <a href={siteConfig.links.resume} className="underline underline-offset-2 hover:text-foreground">
               resume
             </a>{" "}
-            is the source of truth.
+            is the source of truth.{" "}
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">
+              Privacy
+            </Link>
           </p>
         </form>
       </div>

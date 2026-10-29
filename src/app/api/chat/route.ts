@@ -40,6 +40,22 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
+// OpenAI's free daily tokens only cover so many answers. Past this many
+// requests a day the route skips OpenAI and uses the free fallbacks, so the
+// account never drifts into paid usage. Raise it with OPENAI_DAILY_LIMIT. The
+// counter lives in this process, so a redeploy restarts it from zero.
+const OPENAI_DAILY_DEFAULT = 200;
+const openAiUsage = { day: "", count: 0 };
+
+function openAiHasBudget(): boolean {
+  const day = new Date().toISOString().slice(0, 10);
+  if (openAiUsage.day !== day) {
+    openAiUsage.day = day;
+    openAiUsage.count = 0;
+  }
+  return openAiUsage.count < (Number(process.env.OPENAI_DAILY_LIMIT) || OPENAI_DAILY_DEFAULT);
+}
+
 interface Provider {
   name: string;
   url: string;
@@ -210,6 +226,10 @@ export async function POST(request: NextRequest) {
     let lastError = "";
 
     for (const provider of providers) {
+      if (provider.name === "OpenAI") {
+        if (!openAiHasBudget()) continue;
+        openAiUsage.count++;
+      }
       const controller = new AbortController();
       let timer = setTimeout(() => controller.abort(), FIRST_TOKEN_TIMEOUT_MS);
 
