@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     url: siteConfig.url,
     // The link card shows a short name; the page <title> keeps its keywords for search.
     title: "Tanzamul Azad | Portfolio",
-    description: siteConfig.description,
+    description: "Full Stack Developer and AI & Security Researcher from Dhaka, Bangladesh.",
     siteName: siteConfig.name,
     images: [
       {
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Tanzamul Azad | Portfolio",
-    description: siteConfig.description,
+    description: "Full Stack Developer and AI & Security Researcher from Dhaka, Bangladesh.",
     images: [siteConfig.ogImage],
     creator: siteConfig.author.twitterHandle,
   },
