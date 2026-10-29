@@ -22,6 +22,12 @@ function isRateLimited(ip: string): boolean {
   const record = rateLimitMap.get(ip);
 
   if (!record || now - record.timestamp > RATE_LIMIT_WINDOW) {
+    // Drop expired entries so the map cannot grow without bound.
+    if (rateLimitMap.size > 500) {
+      for (const [key, value] of rateLimitMap) {
+        if (now - value.timestamp > RATE_LIMIT_WINDOW) rateLimitMap.delete(key);
+      }
+    }
     rateLimitMap.set(ip, { count: 1, timestamp: now });
     return false;
   }
@@ -44,6 +50,16 @@ interface Provider {
 
 function getProviders(): Provider[] {
   const providers: Provider[] = [
+    {
+      // Tried first: a non-reasoning model, so max_tokens and temperature behave
+      // and no output budget is spent on hidden reasoning. Its limits are far
+      // above the free tiers below, which are kept as fallbacks.
+      name: "OpenAI",
+      url: "https://api.openai.com/v1/chat/completions",
+      key: process.env.OPENAI_API_KEY,
+      model: "gpt-4.1-mini",
+      format: "openai",
+    },
     {
       // llama-3.3-70b-versatile was retired from Groq and returned 404
       // model_not_found, which silently took the whole assistant down.

@@ -22,14 +22,6 @@ const RESEARCH_STATUS: Record<ResearchStatus, string> = {
 /** Markdown bold/italics out of editor copy, which reads oddly in a prompt. */
 const plain = (s: string) => s.replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1").trim();
 
-function age(dob: Date): number {
-  const today = new Date();
-  let years = today.getFullYear() - dob.getFullYear();
-  const m = today.getMonth() - dob.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) years--;
-  return years;
-}
-
 /**
  * Everything the assistant knows, built from the same content files the site
  * renders, so an edit in the admin editor reaches the assistant on the next
@@ -113,7 +105,7 @@ export function buildSystemPrompt(): string {
 - After your answer, on its own final line, write "${FOLLOW_UP_MARKER} " followed by 2 or 3 short follow-up questions the visitor might ask next, separated by " | ". Example: ${FOLLOW_UP_MARKER} What is RadFlow? | Is he open to internships?
 
 # Facts
-Identity: ${name} (Tonmoy), age ${age(new Date("2002-12-20"))}. ${siteConfig.author.role}. Final-year BSc CSE (Data Science major) at United International University (UIU), Dhaka, Bangladesh. CGPA 3.85/4.0. Based in ${siteConfig.author.location}.
+Identity: ${name} (Tonmoy). ${siteConfig.author.role}. Final-year BSc CSE (Data Science major) at United International University (UIU), Dhaka, Bangladesh. CGPA 3.85/4.0. Based in ${siteConfig.author.location}.
 Industry experience: He has not yet held an industry job or internship. Roles listed under projects describe project contributions, not employment. His academic tutoring is separate from industry employment.
 
 About:
