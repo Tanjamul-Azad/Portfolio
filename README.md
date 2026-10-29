@@ -2,7 +2,7 @@
 
 # Tanzamul Azad — Portfolio
 
-**AI Engineer · Generative AI Researcher · Full-Stack Developer**
+**Generative AI Researcher · Full-Stack Developer**
 
 [![Live site](https://img.shields.io/badge/live-tanzamul.dev-000000?style=for-the-badge&logo=googlechrome&logoColor=white)](https://tanzamul.dev)
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org)
