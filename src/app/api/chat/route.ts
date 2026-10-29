@@ -45,16 +45,27 @@ function isRateLimited(ip: string): boolean {
 // requests a day the route skips OpenAI and uses the free fallbacks, so the
 // account never drifts into paid usage. Raise it with OPENAI_DAILY_LIMIT. The
 // counter lives in this process, so a redeploy restarts it from zero.
-const OPENAI_DAILY_DEFAULT = 200;
-const openAiUsage = { day: "", count: 0 };
+// The Bangla route uses a larger model whose free daily allowance is much
+// smaller, so it has its own, lower cap.
+const DAILY_CAPS: Record<string, { env: string; limit: number }> = {
+  OpenAI: { env: "OPENAI_DAILY_LIMIT", limit: 200 },
+  "OpenAI (Bangla)": { env: "OPENAI_BANGLA_DAILY_LIMIT", limit: 20 },
+};
+const dailyUsage = new Map<string, { day: string; count: number }>();
 
-function openAiHasBudget(): boolean {
+/** Counts one request against a provider's daily cap; false once the cap is spent. */
+function takeDailyBudget(name: string): boolean {
+  const cap = DAILY_CAPS[name];
+  if (!cap) return true;
   const day = new Date().toISOString().slice(0, 10);
-  if (openAiUsage.day !== day) {
-    openAiUsage.day = day;
-    openAiUsage.count = 0;
+  let used = dailyUsage.get(name);
+  if (!used || used.day !== day) {
+    used = { day, count: 0 };
+    dailyUsage.set(name, used);
   }
-  return openAiUsage.count < (Number(process.env.OPENAI_DAILY_LIMIT) || OPENAI_DAILY_DEFAULT);
+  if (used.count >= (Number(process.env[cap.env]) || cap.limit)) return false;
+  used.count++;
+  return true;
 }
 
 interface Provider {
@@ -65,8 +76,21 @@ interface Provider {
   format: ProviderFormat;
 }
 
-function getProviders(): Provider[] {
+function getProviders(bangla: boolean): Provider[] {
   const providers: Provider[] = [
+    // Bangla in its own script needs a stronger model than the default: the
+    // small one drifts to a generic biography or to English.
+    ...(bangla
+      ? [
+          {
+            name: "OpenAI (Bangla)",
+            url: "https://api.openai.com/v1/chat/completions",
+            key: process.env.OPENAI_API_KEY,
+            model: "gpt-4.1",
+            format: "openai" as const,
+          },
+        ]
+      : []),
     {
       // Tried first: a non-reasoning model, so max_tokens and temperature behave
       // and no output budget is spent on hidden reasoning. Its limits are far
@@ -248,14 +272,11 @@ export async function POST(request: NextRequest) {
       { role: "user", content: message },
     ];
     const system = buildSystemPrompt();
-    const providers = getProviders().filter((p) => Boolean(p.key));
+    const providers = getProviders(BANGLA_SCRIPT.test(message)).filter((p) => Boolean(p.key));
     let lastError = "";
 
     for (const provider of providers) {
-      if (provider.name === "OpenAI") {
-        if (!openAiHasBudget()) continue;
-        openAiUsage.count++;
-      }
+      if (!takeDailyBudget(provider.name)) continue;
       const controller = new AbortController();
       let timer = setTimeout(() => controller.abort(), FIRST_TOKEN_TIMEOUT_MS);
 
