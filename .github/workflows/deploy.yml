@@ -2,7 +2,7 @@ name: Deploy
 
 # Every push to main is checked, built into the production image on GitHub's
 # runner (the VM is too small to build), and streamed to the VM, where
-# scripts/deploy-portfolio.sh gates and swaps it in. See DEPLOYMENT.md.
+# scripts/deploy-portfolio.sh gates and swaps it in. See docs/DEPLOYMENT.md.
 on:
   push:
     branches: [main]

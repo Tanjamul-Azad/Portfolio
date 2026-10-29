@@ -1,216 +1,127 @@
-# Portfolio
+<div align="center">
 
-A modern, high-performance portfolio website built with Next.js 16 and React 19, with a built-in content editor at `/admin`.
+# Tanzamul Azad — Portfolio
 
-## Tech Stack
+**AI Engineer · Generative AI Researcher · Full-Stack Developer**
 
-- **Framework:** Next.js 16 (App Router, React Compiler)
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS 4 with a token-based design system (see below)
-- **Type:** Geist, Geist Mono, Instrument Serif (via `next/font`)
-- **Animations:** Framer Motion
-- **UI Components:** Radix UI
-- **Form Handling:** React Hook Form + Zod
-- **Theming:** next-themes
+[![Live site](https://img.shields.io/badge/live-tanzamul.dev-000000?style=for-the-badge&logo=googlechrome&logoColor=white)](https://tanzamul.dev)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-149ECA?style=for-the-badge&logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 
-## Project Structure
+[![Lighthouse](https://img.shields.io/badge/Lighthouse-100%20%2F%20100%20%2F%20100-0CCE6B?style=flat-square&logo=lighthouse&logoColor=white)](#performance-and-quality)
+
+![Portfolio home page](docs/assets/home.png)
+
+</div>
+
+My personal portfolio: selected projects with case studies, research, hackathon and competition activity, a blog, and an "Ask AI about me" assistant. Live at **[tanzamul.dev](https://tanzamul.dev)**.
+
+## Highlights
+
+- **Project case studies.** 14 projects, each with problem, solution, architecture and outcome (for example RadFlow, Dawat, UniShare, Complete Legal Aid, PolarWindow).
+- **Ask AI about me.** A chat assistant that answers questions about my work, backed by the site's own content.
+- **Live GitHub activity.** Contribution data pulled from the GitHub API at build and run time.
+- **Blog and research.** Long-form articles with RSS, plus a research section.
+- **Content as data.** Copy and lists live in `src/content/*.json`, editable through a local-only admin UI (`/admin`), so no code change is needed to update the site.
+- **Opt-in analytics.** GA4 and Web Vitals only run after explicit consent, with a privacy page.
+- **Fast by default.** Prebuilt responsive WebP images, precompressed static assets and immutable caching.
+- **SEO-ready.** Structured data, sitemap with images, canonical URLs, `llms.txt` and an automated SEO check in CI.
+- **Accessible.** Light and dark themes, reduced-motion support, keyboard navigation, WCAG-checked labels.
+
+## Tech stack
+
+| Area | Tools |
+| --- | --- |
+| Framework | Next.js 16 (App Router, React Compiler), React 19 |
+| Language | TypeScript |
+| Styling | Tailwind CSS 4 with a token-based design system |
+| Motion and UI | Framer Motion, Radix UI, Lucide, Sonner |
+| Forms | React Hook Form, Zod |
+| Email | Resend (contact form) |
+| Images | sharp (build-time responsive WebP pipeline) |
+| Hosting | Docker + Nginx on a Google Cloud VM |
+| CI/CD | GitHub Actions: lint, typecheck, tests, build, deploy on push to `main` |
+
+## Project structure
 
 ```
 src/
-├── app/                    # Next.js App Router
-│   ├── globals.css         # Global styles
-│   ├── layout.tsx          # Root layout
-│   └── page.tsx            # Home page
-├── components/
-│   ├── common/             # Shared components
-│   │   └── preloader.tsx   # Site preloader animation
-│   ├── layout/             # Layout components
-│   │   ├── navbar.tsx      # Navigation bar
-│   │   └── footer.tsx      # Footer
-│   ├── providers/          # Context providers
-│   │   └── theme-provider.tsx
-│   ├── sections/           # Page sections
-│   │   ├── hero.tsx
-│   │   ├── projects.tsx
-│   │   ├── experience.tsx
-│   │   ├── tech-stack.tsx
-│   │   └── contact.tsx
-│   └── ui/                 # UI primitives (Radix-based)
-├── config/                 # Site configuration
-│   ├── site.ts             # Site metadata & settings
-│   └── navigation.ts       # Navigation links
-├── data/                   # Static data
-│   ├── projects.ts
-│   ├── experiences.ts
-│   └── tech-stack.ts
-├── lib/                    # Utilities & helpers
-│   ├── utils.ts            # General utilities
-│   ├── validations.ts      # Zod schemas
-│   └── animations.ts       # Framer Motion variants
-└── types/                  # TypeScript definitions
-    └── index.ts
+├── app/            # Routes: home, projects, blog, archive, privacy, API routes, admin
+├── components/     # Layout, sections, common and UI primitives
+├── config/         # Site metadata and navigation
+├── content/        # JSON content (hero, about, projects, research, blog, ...)
+├── data/           # Static data helpers
+├── lib/            # Utilities, validation, animation variants
+└── types/          # Shared TypeScript types
+scripts/            # Image pipeline, SEO / telemetry / delivery checks, deploy script
+ops/                # Nginx config, CI deploy script, legacy-URL redirect
+docs/               # Admin guide, deployment log, SEO audit, design notes
+cv/                 # LaTeX source of my CV
 ```
 
-## Getting Started
+## Getting started
 
-### Prerequisites
-
-- Node.js 20 or later
-- npm
-
-### Installation
+Requires Node.js 22 (matches CI) and npm.
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd portfolio
-
-# Install dependencies
+git clone https://github.com/Tanjamul-Azad/Portfolio.git
+cd Portfolio
 npm install
-
-# Start development server
+cp .env.example .env.local   # fill in the keys you need
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the site.
+Open [http://localhost:3000](http://localhost:3000).
 
-## Configuration
+### Environment variables
 
-### Site Settings
+Everything is optional for a basic run; features degrade gracefully when a key is missing. See [.env.example](.env.example) for the full list.
 
-Edit `src/config/site.ts` to update:
-- Name and title
-- Contact information
-- Social links
-- Author statistics
+| Variable | Used for |
+| --- | --- |
+| `RESEND_API_KEY`, `RESEND_FROM_EMAIL` | Contact form email |
+| `GROQ_API_KEY`, `GEMINI_API_KEY`, `DEEPSEEK_API_KEY`, `GLM_API_KEY` | "Ask AI about me" providers |
+| `GITHUB_TOKEN`, `GITHUB_OWNER`, `GITHUB_REPO` | Live GitHub activity |
+| `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET` | Local `/admin` content editor |
 
-### Content
+## Editing content
 
-Update data files in `src/data/` to modify:
-- Projects (`projects.ts`)
-- Work experience (`experiences.ts`)
-- Tech stack (`tech-stack.ts`)
+Most of the site is driven by `src/content/*.json`. Run the dev server and open `/admin` to edit hero, about, projects, research, experience, achievements and blog through forms. The admin is disabled on the live site. See [docs/ADMIN.md](docs/ADMIN.md).
 
-### Styling
-
-All design tokens live in `src/app/globals.css`:
-
-- **Colors:** `background` → `surface` → `surface-2` layers and hairline `line` / `line-strong` borders, defined per theme (light and dark). Use `bg-surface`, `border-line`, `text-muted-foreground`, `text-accent` rather than literal `neutral-*` shades.
-- **Utilities:** `shell` (page container), `section-y` (section rhythm), `eyebrow` (mono label), `surface` (card), `chip` (tag), `display` (headline type), `accent-serif` (italic serif accent word).
-- **Section headers:** every home section uses `SectionHeading` (`src/components/common/section-heading.tsx`).
-
-### Editable content
-
-Most copy and lists live in `src/content/*.json` and can be edited from `/admin` (hero, about, projects, research, experience, achievements, blog, …).
+Design tokens (colors, surfaces, spacing, type) live in `src/app/globals.css`; use the token utilities (`bg-surface`, `border-line`, `text-muted-foreground`, `text-accent`) instead of raw color shades.
 
 ## Scripts
 
 ```bash
-npm run dev        # Start development server
-npm run build      # Build for production
-npm run start      # Start production server
-npm run lint       # Run ESLint
-npm run typecheck  # TypeScript check
-npm run quality    # lint + typecheck + build
+npm run dev          # Dev server (prepares images first)
+npm run build        # Production build
+npm run start        # Serve the production build
+npm run lint         # ESLint
+npm run typecheck    # TypeScript check
+npm run quality      # lint + typecheck + build
+npm run images:check # Validate the responsive image set
 ```
 
-## Dev-Only Hydration Guard Checklist
+## Performance and quality
 
-Use this quick checklist when building animated/theme-aware client components in App Router.
-
-- Keep first render deterministic:
-    no `Date.now()`, `Math.random()`, locale-formatted dates, or runtime-only values directly in initial JSX.
-- Avoid server/client render branching in markup:
-    do not conditionally render different class trees using `typeof window !== "undefined"` during first paint.
-- Prefer static Tailwind variants over runtime class switches:
-    use `dark:*` classes instead of building class strings from `resolvedTheme` for initial shell markup.
-- Move browser-only logic into `useEffect`:
-    pointer listeners, `window`, `document`, `localStorage`, viewport sizing, etc.
-- For motion-heavy UI:
-    keep base DOM shape identical and animate style/transform values after mount.
-- If a value must differ after mount:
-    render a stable fallback first, then update state in `useEffect`.
-- Keep IDs stable:
-    use React `useId()` for client components instead of random IDs.
-- Validate quickly in dev:
-    watch console for hydration warnings after hard refresh and route reload.
-
-### Safe Pattern (Theme + Client Effect)
-
-```tsx
-"use client";
-
-import { useEffect, useState } from "react";
-
-export function Example() {
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    return (
-        <div className="bg-black dark:bg-neutral-950">
-            {mounted ? "Client-ready" : "Loading..."}
-        </div>
-    );
-}
-```
+The latest live Lighthouse audit (October 2026) scored 100 for Accessibility, Best Practices and SEO. Every deployment passes an SEO check (25 public pages) and an image-delivery check (140+ image URLs) before traffic is switched.
 
 ## Deployment
 
-### Vercel (Recommended)
+Every push to `main` runs checks, builds the production image on GitHub's runner, streams it to the VM, and swaps it in behind Nginx only if the gates pass. Previous containers are kept for instant rollback. Details: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
-1. Push to GitHub
-2. Import project to Vercel
-3. Deploy
+## Docs
 
-### Other Platforms
+Design and engineering notes live in [`docs/`](docs): [deployment log](docs/DEPLOYMENT.md), [admin guide](docs/ADMIN.md), [SEO audit](docs/SEO-AUDIT-2026-10-22.md), [analytics](docs/ANALYTICS.md), [image delivery](docs/IMAGE-DELIVERY.md).
 
-Build the project and deploy the `.next` folder:
+## Contact
 
-```bash
-npm run build
-```
-
-## Backend Integration
-
-This project is structured for easy backend integration:
-
-### API Routes
-
-Add API routes in `src/app/api/`:
-
-```
-src/app/api/
-├── contact/
-│   └── route.ts    # Contact form submission
-└── projects/
-    └── route.ts    # Projects API
-```
-
-### Database
-
-1. Install your preferred ORM (Prisma, Drizzle)
-2. Add database schemas in `src/db/`
-3. Create server actions in `src/actions/`
-
-### Environment Variables
-
-Create `.env.local`:
-
-```env
-# Database
-DATABASE_URL=
-
-# Email (for contact form)
-RESEND_API_KEY=
-RESEND_FROM_EMAIL=Portfolio Contact <onboarding@resend.dev>
-
-# Analytics
-NEXT_PUBLIC_GA_ID=
-```
+- Website: [tanzamul.dev](https://tanzamul.dev)
+- LinkedIn: [tanjamul-azad](https://linkedin.com/in/tanjamul-azad)
+- Email: [i.m.tanjamul@gmail.com](mailto:i.m.tanjamul@gmail.com)
 
 ## License
 
-MIT
+The code is shared for reference and inspiration. The text, images, CV and personal content are © Tanzamul Azad and are not licensed for reuse.
