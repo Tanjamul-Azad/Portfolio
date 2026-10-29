@@ -93,6 +93,7 @@ export function ContactForm() {
           />
         </div>
         
+        <div className="grid gap-5 sm:grid-cols-2">
         <FormField
           control={form.control}
           name="name"
@@ -132,6 +133,7 @@ export function ContactForm() {
             </FormItem>
           )}
         />
+        </div>
         <FormField
           control={form.control}
           name="message"
