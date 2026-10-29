@@ -21,10 +21,6 @@ Use the explicitly generated Build Output API routing configuration. The initial
 
 This redirect-only project has Vercel Authentication disabled so anonymous visitors and crawlers can receive the redirect; this does not change authentication on other projects or the Google Cloud application.
 
-## Search Console verification
-
-`prepare.mjs` copies the `public/google*.html` verification files from the portfolio and serves them with 200 (the `filesystem` route runs first); every other path still redirects. This lets the old hostname be verified in Search Console so its Change of Address tool can point Google at `https://tanzamul.dev`. Keep the files and redirect in place for at least a year.
-
 ## Verification — October 22, 2026
 
 Anonymous HTTPS requests to `/`, `/projects`, `/blog/checking-real-actions-in-mcp-systems`, and `/projects/polarwindow?source=legacy` all returned 308 to the exact corresponding `https://tanzamul.dev` URL. Each destination returned 200. Query strings were preserved. No Vercel login is required.
